@@ -3,7 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["gapi", "gapi.client", "gapi.client.sheets"],
   },
   "files": [
     "src/main.ts",

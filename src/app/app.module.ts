@@ -13,6 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MovecardComponent } from './movecard/movecard.component';
 import { MovesContentComponent } from './moves-content/moves-content.component';
+import { AppRoutingModuleModule } from './app-routing-module/app-routing-module.module';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { MovesContentComponent } from './moves-content/moves-content.component';
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    MatCardModule
+    MatCardModule,
+    AppRoutingModuleModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ApiclientService } from '../apiclient.service';
 import { MoveDto } from '../movecard/move-dto';
 @Component({
@@ -10,15 +11,22 @@ export class MovesContentComponent implements OnInit {
 
   moves: MoveDto[] = [];
 
-  constructor(private apiclientService: ApiclientService) { 
-   
-    this.moves.push({name: "Basic", dance: "Salsa"})
-    this.moves.push({name: "Timestep", dance: "ChaCha"})
+  constructor(private apiclientService: ApiclientService, private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     console.log(this.moves);
-    this.apiclientService.getMoves();
+    this.route.queryParams.subscribe(params => {
+      const spreadsheetId = params['spreadsheetId'] as string;
+      const apiKey = params['apiKey'] as string;
+      if (!spreadsheetId || !apiKey) {
+        return;
+      }
+      this.apiclientService.getMoves((moves: MoveDto[]) => {
+        this.moves = moves;
+      }, spreadsheetId, apiKey);
+    })
+
   }
 
 }
