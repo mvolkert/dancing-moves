@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { SecretDto } from "./model/secret-dto";
+import { SecretDto } from '../model/secret-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,7 @@ export class SettingsService {
 
   fetchSettings(){
     this.route.queryParams.subscribe(params => {
+      console.log(params);
       let secretBase64 = params['secret'];
       if(secretBase64){
         this.cookies.set("secret",secretBase64);

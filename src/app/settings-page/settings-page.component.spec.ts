@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MovecardComponent } from './movecard.component';
+import { SettingsPageComponent } from './settings-page.component';
 
-describe('MovecardComponent', () => {
-  let component: MovecardComponent;
-  let fixture: ComponentFixture<MovecardComponent>;
+describe('SettingsComponent', () => {
+  let component: SettingsPageComponent;
+  let fixture: ComponentFixture<SettingsPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MovecardComponent ]
+      declarations: [ SettingsPageComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MovecardComponent);
+    fixture = TestBed.createComponent(SettingsPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

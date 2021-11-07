@@ -1,13 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApiclientService } from '../apiclient.service';
-import { MoveDto } from '../movecard/move-dto';
+import { MoveDto } from '../model/move-dto';
+import { ApiclientService } from '../services/apiclient.service';
 @Component({
-  selector: 'app-moves-content',
-  templateUrl: './moves-content.component.html',
-  styleUrls: ['./moves-content.component.css']
+  selector: 'app-move-cards-page',
+  templateUrl: './move-cards-page.component.html',
+  styleUrls: ['./move-cards-page.component.css']
 })
-export class MovesContentComponent implements OnInit {
+export class MoveCardsPageComponent implements OnInit {
 
   moves: MoveDto[] = [];
   allMoves: MoveDto[] = [];

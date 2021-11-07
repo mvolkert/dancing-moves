@@ -1,7 +1,6 @@
-import { Injectable, NgZone } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { MoveDto } from './movecard/move-dto';
+import { MoveDto } from '../model/move-dto';
 import { SettingsService } from './settings.service';
 
 @Injectable({

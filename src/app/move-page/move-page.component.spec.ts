@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MovesContentComponent } from './moves-content.component';
+import { MovePageComponent } from './move-page.component';
 
-describe('MovesContentComponent', () => {
-  let component: MovesContentComponent;
-  let fixture: ComponentFixture<MovesContentComponent>;
+describe('MovePageComponent', () => {
+  let component: MovePageComponent;
+  let fixture: ComponentFixture<MovePageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MovesContentComponent ]
+      declarations: [ MovePageComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MovesContentComponent);
+    fixture = TestBed.createComponent(MovePageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
