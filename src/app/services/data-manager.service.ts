@@ -38,4 +38,8 @@ export class DataManagerService {
     return new Set(this.movesSubject.value.map(move => move.dance));
   }
 
+  getTypes(): Set<string> {
+    return new Set(this.movesSubject.value.map(move => move.type).sort());
+  }
+
 }

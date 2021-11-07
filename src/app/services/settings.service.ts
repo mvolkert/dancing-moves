@@ -11,17 +11,17 @@ export class SettingsService {
 
   constructor(private route: ActivatedRoute, private cookies: CookieService) { }
 
-  fetchSettings(){
+  fetchSettings() {
     this.route.queryParams.subscribe(params => {
       console.log(params);
       let secretBase64 = params['secret'];
-      if(secretBase64){
-        this.cookies.set("secret",secretBase64);
-      }else{
-        secretBase64= this.cookies.get('secret');
+      if (secretBase64) {
+        this.cookies.set("secret", secretBase64, new Date(Date.now() + 1000 * 3600 * 24 * 10));
+      } else {
+        secretBase64 = this.cookies.get('secret');
       }
       // console.log(btoa(JSON.stringify({sheetId:"",apiKey:""})));
-      if(secretBase64){
+      if (secretBase64) {
         this.secret = JSON.parse(atob(secretBase64));
       }
     })

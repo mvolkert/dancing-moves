@@ -12,6 +12,7 @@ import { DataManagerService } from '../services/data-manager.service';
 export class MovePageComponent implements OnInit {
   move: MoveDto | undefined;
   dances = new Set<string>();
+  types = new Set<string>();
   moveForm = new FormGroup({
     firstName: new FormControl(''),
     name: new FormControl(''),
@@ -34,6 +35,7 @@ export class MovePageComponent implements OnInit {
     toDo: new FormControl(''),
     links: new FormControl('')
   });
+
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService) { }
 
   ngOnInit(): void {
@@ -44,10 +46,11 @@ export class MovePageComponent implements OnInit {
       let name = params.get('name') as string;
       name = decodeURI(name);
       this.move = this.dataManager.getMove(name);
-      this.dances = this.dataManager.getDances();
       if (this.move) {
+        this.dances = this.dataManager.getDances();
+        this.types = this.dataManager.getTypes();
         this.moveForm.patchValue(this.move);
-        this.moveForm.disable();
+        //this.moveForm.disable();
       }
     });
   }

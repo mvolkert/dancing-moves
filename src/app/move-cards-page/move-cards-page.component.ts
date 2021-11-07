@@ -23,7 +23,7 @@ export class MoveCardsPageComponent implements OnInit {
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
       this.changeDetectorRef.detectChanges();
-      this.dataManagerService.getDances();
+      this.dances = this.dataManagerService.getDances();
     });
   }
 

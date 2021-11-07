@@ -10,6 +10,27 @@
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Order</mat-label>
+        <input type="number" matInput formControlName="order">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Count</mat-label>
+        <input type="number" matInput formControlName="count">
+    </mat-form-field>
+    <mat-checkbox formControlName="nameVerified">Name Verified</mat-checkbox>
+    <mat-form-field appearance="fill">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+            <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
         <mat-label>Description</mat-label>
         <textarea matInput formControlName="description"></textarea>
     </mat-form-field>
