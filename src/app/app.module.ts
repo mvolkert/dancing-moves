@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MovecardComponent } from './movecard/movecard.component';
 import { MovesContentComponent } from './moves-content/moves-content.component';
 import { AppRoutingModuleModule } from './app-routing-module/app-routing-module.module';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,7 @@ import { AppRoutingModuleModule } from './app-routing-module/app-routing-module.
     MatCardModule,
     AppRoutingModuleModule
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

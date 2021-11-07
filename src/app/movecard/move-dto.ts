@@ -1,4 +1,21 @@
 export interface MoveDto {
     name: string,
-    dance: string
+    dance: string,
+    date: string,
+    order: string,
+    count: string,
+    nameVerified: boolean,
+    type: string,
+    relatedMoves: string,
+    videoname: string,
+    description: string,
+    sequence: string,
+    sequenceLeader: string,
+    sequenceFollower: string,
+    mind: string,
+    variations: string,
+    date1: string,
+    date2: string,
+    toDo: string,
+    links:string
 }

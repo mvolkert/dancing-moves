@@ -1,48 +1,74 @@
 import { Injectable, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 import { MoveDto } from './movecard/move-dto';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiclientService {
-  spreadsheetId: string = "";
-  apiKey: string = "";
+  constructor(private settingsService: SettingsService) { }
 
-  constructor(private route: ActivatedRoute) { }
-
-  getMoves(producer: any, spreadsheetId: string, apiKey: string): void {
-    this.spreadsheetId = spreadsheetId;
-    this.apiKey = apiKey;
-    gapi.load('client:auth2', () => this.newMethod(producer));
+  getMoves(producer: any): void {
+    if (!this.settingsService.secret || !environment.sheetsApiActive) {
+      return;
+    }
+    gapi.load('client:auth2', () => this.getData(producer));
   }
 
-  private newMethod(producer: any) {
+  private getData(producer: any) {
     const moves = new Array<MoveDto>();
     //Google Sheets API
 
-    let sheetRange = 'Tanzfiguren!A1:B400'
+    let sheetRange = 'Tanzfiguren!A1:S500'
     gapi.client.init({
-      'apiKey': this.apiKey,
-      'discoveryDocs': ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+      apiKey: this.settingsService.secret?.apiKey,
+      discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
     }).then(r => {
       gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: this.spreadsheetId,
+        spreadsheetId: this.settingsService.secret?.sheetId as string,
         range: sheetRange
-      }).then(function (response: any) {
+      }).then((response: any) => {
         var range: any = response.result;
         if (range.values.length > 0) {
           for (let i = 1; i < range.values.length; i++) {
             var row = range.values[i];
-            moves.push({ name: row[0], dance: row[1] });
+            if(row[0]){
+              moves.push(this.createMovesDto(row));
+            }
           }
           producer(moves);
         } else {
           console.log('No data found.');
         }
-      }, function (response: any) {
+      }, (response: any) => {
         console.log('Error: ' + response.result.error.message);
       });
     });
+  }
+
+  private createMovesDto(row: any): MoveDto {
+    return {
+      name: row[0],
+      dance: row[1],
+      date: row[2],
+      order: row[3],
+      count: row[4],
+      nameVerified: row[5],
+      type: row[6],
+      relatedMoves: row[7],
+      videoname: row[8],
+      description: row[9],
+      sequence: row[10],
+      sequenceLeader: row[11],
+      sequenceFollower: row[12],
+      mind: row[13],
+      variations: row[14],
+      date1: row[15],
+      date2: row[16],
+      toDo: row[17],
+      links:row[18]
+    };
   }
 }
