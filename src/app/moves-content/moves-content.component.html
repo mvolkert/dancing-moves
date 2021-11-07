@@ -1,3 +1,10 @@
+<mat-form-field appearance="fill">
+    <mat-label>Dance</mat-label>
+    <mat-select (valueChange)="selectDance($event)">
+        <mat-option>None</mat-option>
+        <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
+    </mat-select>
+</mat-form-field>
 <ng-container *ngFor="let move of moves">
     <app-movecard [move-dto]=move></app-movecard>
 </ng-container>

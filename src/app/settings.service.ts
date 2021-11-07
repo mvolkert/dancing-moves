@@ -22,7 +22,6 @@ export class SettingsService {
       // console.log(btoa(JSON.stringify({sheetId:"",apiKey:""})));
       if(secretBase64){
         this.secret = JSON.parse(atob(secretBase64));
-        console.log(this.secret);
       }
     })
   }

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  sheetsApiActive: false
+  sheetsApiActive: true
 };
 
 /*
