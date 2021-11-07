@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MoveDto } from '../model/move-dto';
 import { ApiclientService } from '../services/apiclient.service';
+import { DataManagerService } from '../services/data-manager.service';
 @Component({
   selector: 'app-move-cards-page',
   templateUrl: './move-cards-page.component.html',
@@ -10,19 +11,19 @@ export class MoveCardsPageComponent implements OnInit {
 
   moves: MoveDto[] = [];
   allMoves: MoveDto[] = [];
-  dances = new Set<string>()
+  dances = new Set<string>();
 
-  constructor(private apiclientService: ApiclientService, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private dataManagerService: DataManagerService, private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
 
-    this.apiclientService.getMoves((moves: MoveDto[]) => {
+    this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
 
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
       this.changeDetectorRef.detectChanges();
-      this.dances = new Set(this.moves.map(move => move.dance));
+      this.dataManagerService.getDances();
     });
   }
 

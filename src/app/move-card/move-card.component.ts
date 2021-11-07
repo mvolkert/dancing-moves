@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-move-card',
@@ -9,10 +10,13 @@ export class MoveCardComponent implements OnInit {
 
   @Input("move-dto") moveDto: any
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     console.log(this.moveDto);
   }
 
+  edit() {
+    this.router.navigate(["move", encodeURI(this.moveDto.name)]);
+  }
 }

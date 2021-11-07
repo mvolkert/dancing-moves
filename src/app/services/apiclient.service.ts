@@ -9,14 +9,14 @@ import { SettingsService } from './settings.service';
 export class ApiclientService {
   constructor(private settingsService: SettingsService) { }
 
-  getMoves(producer: any): void {
+  getMoves(producer: (moves: Array<MoveDto>) => void): void {
     if (!this.settingsService.secret || !environment.sheetsApiActive) {
       return;
     }
     gapi.load('client:auth2', () => this.getData(producer));
   }
 
-  private getData(producer: any) {
+  private getData(producer: (moves: Array<MoveDto>) => void) {
     const moves = new Array<MoveDto>();
     //Google Sheets API
 
@@ -33,7 +33,7 @@ export class ApiclientService {
         if (range.values.length > 0) {
           for (let i = 1; i < range.values.length; i++) {
             var row = range.values[i];
-            if(row[0]){
+            if (row[0]) {
               moves.push(this.createMovesDto(row));
             }
           }
@@ -67,7 +67,7 @@ export class ApiclientService {
       date1: row[15],
       date2: row[16],
       toDo: row[17],
-      links:row[18]
+      links: row[18]
     };
   }
 }

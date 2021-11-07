@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'settings', component: SettingsPageComponent },
   { path: 'dances', component: DanceCardsPageComponent },
   { path: 'moves', component: MoveCardsPageComponent },
-  { path: 'move', component: MovePageComponent }];
+  { path: 'move/:name', component: MovePageComponent }];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

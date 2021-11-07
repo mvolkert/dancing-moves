@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DataManagerService } from './services/data-manager.service';
 import { SettingsService } from './services/settings.service';
 
 
@@ -11,11 +12,12 @@ export class AppComponent implements OnInit {
  
   title = 'dancing-moves';
 
-  constructor(private settingsService: SettingsService){
+  constructor(private settingsService: SettingsService,private dataManagerService: DataManagerService){
 
   }
   
   ngOnInit(): void {
     this.settingsService.fetchSettings();
+    this.dataManagerService.refresh();
   }
 }

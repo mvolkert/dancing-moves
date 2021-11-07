@@ -1,1 +1,16 @@
-<p>move-page works!</p>
+<form *ngIf="move" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Dance</mat-label>
+        <mat-select formControlName="dance">
+            <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+</form>
