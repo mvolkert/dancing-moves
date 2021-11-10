@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
+import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { ApiclientService } from './apiclient.service';
 
@@ -18,20 +19,38 @@ export class DataManagerService {
     type: "Figur"
   } as MoveDto));
   movesObservable = this.movesSubject.asObservable();
+  isStarted = false;
+  isStarting = new Subject<boolean>();
 
-  constructor(private apiclientService: ApiclientService) { }
+  constructor(private apiclientService: ApiclientService, private cookies: CookieService) { }
 
-  refresh() {
-    this.apiclientService.getMoves(moves => this.movesSubject.next(moves))
+  start() {
+    this.refresh();
   }
 
-  getMove(name: string): MoveDto | undefined {
+  refresh() {
+    this.apiclientService.getMoves(moves => {
+      this.movesSubject.next(moves);
+      this.isStarting.next(false);
+      this.isStarted = true;
+    });
+  }
+
+
+  async getMove(name: string): Promise<MoveDto | undefined> {
     console.log(name);
+    if (!this.isStarted) {
+      await firstValueFrom(this.isStarting);
+    }
     const moves = this.movesSubject.value.filter(m => m.name == name);
     if (moves.length > 0) {
       return moves[0];
     }
     return
+  }
+
+  getMovesNames(): Set<string> {
+    return new Set(this.movesSubject.value.map(move => move.name));
   }
 
   getDances(): Set<string> {

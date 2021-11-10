@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { DataManagerService } from '../services/data-manager.service';
 
@@ -13,6 +13,7 @@ export class MovePageComponent implements OnInit {
   move: MoveDto | undefined;
   dances = new Set<string>();
   types = new Set<string>();
+  possibleRelatedMoves = new Set<string>();
   moveForm = new FormGroup({
     firstName: new FormControl(''),
     name: new FormControl(''),
@@ -40,20 +41,26 @@ export class MovePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      if (!params.has('name')) {
-        return;
-      }
-      let name = params.get('name') as string;
-      name = decodeURI(name);
-      this.move = this.dataManager.getMove(name);
-      if (this.move) {
-        this.dances = this.dataManager.getDances();
-        this.types = this.dataManager.getTypes();
-        this.moveForm.patchValue(this.move);
-        //this.moveForm.disable();
-      }
+      this.init(params);
     });
   }
+
+  async init(params: ParamMap) {
+    if (!params.has('name')) {
+      return;
+    }
+    let name = params.get('name') as string;
+    name = decodeURI(name);
+    this.move = await this.dataManager.getMove(name);
+    if (this.move) {
+      this.dances = this.dataManager.getDances();
+      this.types = this.dataManager.getTypes();
+      this.possibleRelatedMoves = this.dataManager.getMovesNames();
+      this.moveForm.patchValue(this.move);
+      //this.moveForm.disable();
+    }
+  }
+
   onSubmit() {
     console.log(this.moveForm.value);
   }

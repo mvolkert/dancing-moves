@@ -6,7 +6,7 @@ export interface MoveDto {
     count: string,
     nameVerified: boolean,
     type: string,
-    relatedMoves: string,
+    relatedMoves: string[],
     videoname: string,
     description: string,
     sequence: string,

@@ -1,37 +1,97 @@
 <form *ngIf="move" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name">
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-        <mat-label>Dance</mat-label>
-        <mat-select formControlName="dance">
-            <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-        <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-        <mat-label>Order</mat-label>
-        <input type="number" matInput formControlName="order">
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-        <mat-label>Count</mat-label>
-        <input type="number" matInput formControlName="count">
-    </mat-form-field>
-    <mat-checkbox formControlName="nameVerified">Name Verified</mat-checkbox>
-    <mat-form-field appearance="fill">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-            <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-        <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
+    <div>
+        <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Dance</mat-label>
+            <mat-select formControlName="dance">
+                <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Order</mat-label>
+            <input type="number" matInput formControlName="order">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Count</mat-label>
+            <input type="number" matInput formControlName="count">
+        </mat-form-field>
+        <mat-checkbox formControlName="nameVerified">Name Verified</mat-checkbox>
+        <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+                <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Related Moves</mat-label>
+            <mat-select formControlName="relatedMoves" multiple>
+                <mat-option *ngFor="let possibleRelatedMove of possibleRelatedMoves" [value]="possibleRelatedMove">{{possibleRelatedMove}}</mat-option>
+              </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Date 1</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="date1">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Date 2</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="date2">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>ToDo</mat-label>
+            <input matInput formControlName="toDo">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>links</mat-label>
+            <input matInput formControlName="links">
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field appearance="fill">
+            <mat-label>videoname</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput formControlName="videoname">
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="description"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Sequence</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="sequence"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Sequence Leader</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="sequenceLeader"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Sequence Leader</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="sequenceFollower"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Mind</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="mind"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Variations</mat-label>
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="variations"></textarea>
+        </mat-form-field>
+    </div>
 </form>

@@ -56,7 +56,7 @@ export class ApiclientService {
       count: row[4],
       nameVerified: row[5],
       type: row[6],
-      relatedMoves: row[7],
+      relatedMoves: row[7]?.split(", "),
       videoname: row[8],
       description: row[9],
       sequence: row[10],
