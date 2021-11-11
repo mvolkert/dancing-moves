@@ -1,10 +1,23 @@
-<mat-form-field appearance="fill">
-    <mat-label>Dance</mat-label>
-    <mat-select (valueChange)="selectDance($event)">
-        <mat-option>None</mat-option>
-        <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
-    </mat-select>
-</mat-form-field>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Dance</mat-label>
+        <mat-select (valueChange)="selectDance($event)">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input type="text" matInput [formControl]="moveSearch" [matAutocomplete]="autoGroup">
+        <mat-autocomplete #autoGroup="matAutocomplete">
+            <mat-optgroup *ngFor="let group of movesGroupOptions | async" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-autocomplete>
+    </mat-form-field>
+</form>
 <ng-container *ngFor="let move of moves">
     <app-move-card [move-dto]=move></app-move-card>
 </ng-container>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
+import { MoveGroupDto } from '../model/move-group-dto';
 import { DataManagerService } from '../services/data-manager.service';
 
 @Component({
@@ -13,7 +14,6 @@ export class MovePageComponent implements OnInit {
   move: MoveDto | undefined;
   dances = new Set<string>();
   types = new Set<string>();
-  possibleRelatedMoves = new Set<string>();
   moveForm = new FormGroup({
     firstName: new FormControl(''),
     name: new FormControl(''),
@@ -36,6 +36,7 @@ export class MovePageComponent implements OnInit {
     toDo: new FormControl(''),
     links: new FormControl('')
   });
+  movesGroup: MoveGroupDto[] | undefined;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService) { }
 
@@ -55,10 +56,12 @@ export class MovePageComponent implements OnInit {
     if (this.move) {
       this.dances = this.dataManager.getDances();
       this.types = this.dataManager.getTypes();
-      this.possibleRelatedMoves = this.dataManager.getMovesNames();
       this.moveForm.patchValue(this.move);
       //this.moveForm.disable();
     }
+    this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
+      this.movesGroup = groupedMoveNames;
+    });
   }
 
   onSubmit() {

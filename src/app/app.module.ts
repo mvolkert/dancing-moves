@@ -24,6 +24,7 @@ import { MoveCardsPageComponent } from './move-cards-page/move-cards-page.compon
 import { MovePageComponent } from './move-page/move-page.component';
 import { NavComponent } from './nav/nav.component';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,10 +49,11 @@ import { SettingsPageComponent } from './settings-page/settings-page.component';
     MatSelectModule,
     MatInputModule,
     MatDatepickerModule,
-    AppRoutingModuleModule, 
+    AppRoutingModuleModule,
     ReactiveFormsModule,
-    MatNativeDateModule, 
-    MatCheckboxModule
+    MatNativeDateModule,
+    MatCheckboxModule,
+    MatAutocompleteModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

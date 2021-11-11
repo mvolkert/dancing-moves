@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { map, Observable, startWith } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
-import { ApiclientService } from '../services/apiclient.service';
+import { MoveGroupDto } from '../model/move-group-dto';
 import { DataManagerService } from '../services/data-manager.service';
 @Component({
   selector: 'app-move-cards-page',
@@ -12,6 +14,10 @@ export class MoveCardsPageComponent implements OnInit {
   moves: MoveDto[] = [];
   allMoves: MoveDto[] = [];
   dances = new Set<string>();
+  movesGroup: MoveGroupDto[] = [];
+
+  movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
+  moveSearch = new FormControl("");
 
   constructor(private dataManagerService: DataManagerService, private changeDetectorRef: ChangeDetectorRef) {
   }
@@ -25,12 +31,30 @@ export class MoveCardsPageComponent implements OnInit {
       this.changeDetectorRef.detectChanges();
       this.dances = this.dataManagerService.getDances();
     });
+    this.dataManagerService.getGroupedMoveNames().subscribe(groupedMoveNames => {
+      this.movesGroup = groupedMoveNames;
+      this.movesGroupOptions = this.moveSearch!.valueChanges.pipe(
+        startWith(''),
+        map(value => {
+          this.selectMoveName(value)
+          return this._filterGroup(value)
+        }),
+      );
+    });
+
   }
 
   selectDance(event: any) {
-    console.log(event);
     if (this.dances.has(event)) {
       this.moves = this.allMoves.filter(move => move.dance == event);
+    } else {
+      this.moves = JSON.parse(JSON.stringify(this.allMoves));
+    }
+  }
+
+  selectMoveName(event: any) {
+    if (event) {
+      this.moves = this.allMoves.filter(move => move.name.includes(event));
     } else {
       this.moves = JSON.parse(JSON.stringify(this.allMoves));
     }
@@ -50,5 +74,19 @@ export class MoveCardsPageComponent implements OnInit {
       return 0;
     };
   };
+  private _filter = (opt: string[], value: string): string[] => {
+    const filterValue = value.toLowerCase();
 
+    return opt.filter(item => item.toLowerCase().includes(filterValue));
+  };
+
+  private _filterGroup(value: string): MoveGroupDto[] {
+    if (value) {
+      return this.movesGroup
+        .map(group => ({ dance: group.dance, names: this._filter(group.names, value) }))
+        .filter(group => group.names.length > 0);
+    }
+
+    return this.movesGroup;
+  }
 }

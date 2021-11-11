@@ -34,8 +34,12 @@
         <mat-form-field appearance="fill">
             <mat-label>Related Moves</mat-label>
             <mat-select formControlName="relatedMoves" multiple>
-                <mat-option *ngFor="let possibleRelatedMove of possibleRelatedMoves" [value]="possibleRelatedMove">{{possibleRelatedMove}}</mat-option>
-              </mat-select>
+                <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
+                    <mat-option *ngFor="let name of group.names" [value]="name">
+                        {{name}}
+                    </mat-option>
+                </mat-optgroup>
+            </mat-select>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Date 1</mat-label>
@@ -61,7 +65,8 @@
     <div>
         <mat-form-field appearance="fill">
             <mat-label>videoname</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput formControlName="videoname">
+            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+                formControlName="videoname">
         </mat-form-field>
         <mat-form-field appearance="fill" class="full-width">
             <mat-label>Description</mat-label>

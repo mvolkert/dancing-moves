@@ -3,6 +3,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { ApiclientService } from './apiclient.service';
+import { reduce, map } from 'rxjs/operators';
+import { MoveGroupDto } from '../model/move-group-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +40,6 @@ export class DataManagerService {
 
 
   async getMove(name: string): Promise<MoveDto | undefined> {
-    console.log(name);
     if (!this.isStarted) {
       await firstValueFrom(this.isStarting);
     }
@@ -47,6 +48,14 @@ export class DataManagerService {
       return moves[0];
     }
     return
+  }
+
+  getGroupedMoveNames(): Observable<MoveGroupDto[]> {
+    return this.movesSubject.asObservable()
+      .pipe(map(moves =>
+        Object.entries(this.groupByDance(moves))
+          .map(([key, value]) => { return { dance: key, names: value } as MoveGroupDto; })
+      ))
   }
 
   getMovesNames(): Set<string> {
@@ -60,5 +69,15 @@ export class DataManagerService {
   getTypes(): Set<string> {
     return new Set(this.movesSubject.value.map(move => move.type).sort());
   }
+  private groupByDance = (xs: MoveDto[]): [string, string[]] => {
+    return xs.reduce((rv: any, x: MoveDto) => {
+      if (!rv[x.dance]) {
+        rv[x.dance] = []
+      }
+      rv[x.dance].push(x.name);
+      return rv;
+    }, {});
+  };
 
 }
+
