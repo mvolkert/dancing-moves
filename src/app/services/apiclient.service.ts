@@ -10,22 +10,20 @@ import { SettingsService } from './settings.service';
 export class ApiclientService {
   constructor(private settingsService: SettingsService) { }
 
-  getMoves(producer: (moves: Array<MoveDto>) => void): void {
+  private initClient(callback: () => void) {
     if (!this.settingsService.secret || !environment.sheetsApiActive) {
       return;
     }
-    gapi.load('client:auth2', () => this.getData(producer));
-  }
-
-  private getData(producer: (moves: Array<MoveDto>) => void) {
-    const moves = new Array<MoveDto>();
-    //Google Sheets API
-
-    let sheetRange = 'Tanzfiguren!A1:S500'
-    gapi.client.init({
+    gapi.load('client:auth2', () => gapi.client.init({
       apiKey: this.settingsService.secret?.apiKey,
       discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-    }).then(r => {
+    }).then(callback));
+  }
+
+  getMoves(producer: (moves: Array<MoveDto>) => void): void {
+    this.initClient(() => {
+      const moves = new Array<MoveDto>();
+      const sheetRange = 'Tanzfiguren!A1:S500'
       gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: this.settingsService.secret?.sheetId as string,
         range: sheetRange
@@ -42,6 +40,23 @@ export class ApiclientService {
         } else {
           console.log('No data found.');
         }
+      }, (response: any) => {
+        console.log('Error: ' + response.result.error.message);
+      });
+    });
+  }
+
+  appendData(moveDto: MoveDto) {
+    this.initClient(() => {
+      const values = Object.values(moveDto);
+      console.log(values);
+      const sheetRange = 'Tanzfiguren!A500:S500'
+      gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: this.settingsService.secret?.sheetId as string,
+        range: sheetRange,
+        resource: { values: values }
+      }).then((response: any) => {
+        console.log(response);
       }, (response: any) => {
         console.log('Error: ' + response.result.error.message);
       });

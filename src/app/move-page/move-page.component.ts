@@ -15,7 +15,6 @@ export class MovePageComponent implements OnInit {
   dances = new Set<string>();
   types = new Set<string>();
   moveForm = new FormGroup({
-    firstName: new FormControl(''),
     name: new FormControl(''),
     dance: new FormControl(''),
     date: new FormControl(''),
@@ -69,5 +68,6 @@ export class MovePageComponent implements OnInit {
 
   onSubmit() {
     console.log(this.moveForm.value);
+    this.dataManager.save(this.moveForm.value);
   }
 }

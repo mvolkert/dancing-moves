@@ -81,5 +81,9 @@ export class DataManagerService {
     }, {});
   };
 
+
+  save(moveDto: MoveDto){
+    this.apiclientService.appendData(moveDto);
+  }
 }
 
