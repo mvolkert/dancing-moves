@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { MoveDto } from '../model/move-dto';
+import { parseBoolean, parseDate } from '../util/util';
 import { SettingsService } from './settings.service';
 
 @Injectable({
@@ -51,10 +52,10 @@ export class ApiclientService {
     return {
       name: row[0],
       dance: row[1],
-      date: row[2],
+      date: parseDate(row[2]),
       order: row[3],
       count: row[4],
-      nameVerified: row[5],
+      nameVerified: parseBoolean(row[5]),
       type: row[6],
       relatedMoves: row[7]?.split(", "),
       videoname: row[8],
@@ -64,8 +65,8 @@ export class ApiclientService {
       sequenceFollower: row[12],
       mind: row[13],
       variations: row[14],
-      date1: row[15],
-      date2: row[16],
+      date1: parseDate(row[15]),
+      date2: parseDate(row[16]),
       toDo: row[17],
       links: row[18]
     };

@@ -5,6 +5,8 @@ import { MoveDto } from '../model/move-dto';
 import { ApiclientService } from './apiclient.service';
 import { reduce, map } from 'rxjs/operators';
 import { MoveGroupDto } from '../model/move-group-dto';
+import { environment } from 'src/environments/environment';
+import { parseBoolean, parseDate } from '../util/util';
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +16,10 @@ export class DataManagerService {
   private movesSubject = new BehaviorSubject<MoveDto[]>(new Array<MoveDto>({
     name: "Basico (B)",
     dance: "Bachata",
-    date: "04.11.2021",
+    date: parseDate("04.11.2021"),
     order: "0",
     count: "8",
-    nameVerified: true,
+    nameVerified: parseBoolean("FALSE"),
     type: "Figur"
   } as MoveDto));
   movesObservable = this.movesSubject.asObservable();
@@ -40,7 +42,7 @@ export class DataManagerService {
 
 
   async getMove(name: string): Promise<MoveDto | undefined> {
-    if (!this.isStarted) {
+    if (!this.isStarted && environment.sheetsApiActive) {
       await firstValueFrom(this.isStarting);
     }
     const moves = this.movesSubject.value.filter(m => m.name == name);

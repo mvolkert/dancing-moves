@@ -62,6 +62,9 @@ export class MovePageComponent implements OnInit {
     this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
     });
+    this.moveForm.valueChanges.subscribe(value=>{
+      console.log(value);
+    });
   }
 
   onSubmit() {
