@@ -1,12 +1,12 @@
 <form>
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" class="halfwidth">
         <mat-label>Dance</mat-label>
         <mat-select (valueChange)="selectDance($event)">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" class="halfwidth">
         <mat-label>Name</mat-label>
         <input type="text" matInput [formControl]="moveSearch" [matAutocomplete]="autoGroup">
         <mat-autocomplete #autoGroup="matAutocomplete">
