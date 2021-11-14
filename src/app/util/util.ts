@@ -23,6 +23,6 @@ export const toGermanDate = (date: Date): string => {
 }
 
 export const parseBoolean = (boolString: string): boolean => {
-    boolString = boolString.toLowerCase();
+    boolString = boolString?.toLowerCase();
     return boolString == "true" || boolString == "wahr";
 }

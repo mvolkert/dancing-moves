@@ -25,6 +25,7 @@ import { MovePageComponent } from './move-page/move-page.component';
 import { NavComponent } from './nav/nav.component';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +54,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     ReactiveFormsModule,
     MatNativeDateModule,
     MatCheckboxModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    HttpClientModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]
