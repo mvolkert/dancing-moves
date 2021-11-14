@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -15,8 +15,8 @@ export class MovePageComponent implements OnInit {
   dances = new Set<string>();
   types = new Set<string>();
   moveForm = new FormGroup({
-    name: new FormControl(''),
-    dance: new FormControl(''),
+    name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
+    dance: new FormControl('', Validators.required),
     date: new FormControl(''),
     order: new FormControl(''),
     count: new FormControl(''),
@@ -33,9 +33,11 @@ export class MovePageComponent implements OnInit {
     date1: new FormControl(''),
     date2: new FormControl(''),
     toDo: new FormControl(''),
-    links: new FormControl('')
+    links: new FormControl(''),
+    row: new FormControl('')
   });
   movesGroup: MoveGroupDto[] | undefined;
+  otherMovesNames: Set<string> = new Set<string>();
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService) { }
 
@@ -61,7 +63,11 @@ export class MovePageComponent implements OnInit {
     this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
     });
-    this.moveForm.valueChanges.subscribe(value=>{
+    this.otherMovesNames = this.dataManager.getMovesNames();
+    if (this.move) {
+      this.otherMovesNames.delete(this.move.name);
+    }
+    this.moveForm.valueChanges.subscribe(value => {
       console.log(value);
     });
   }
@@ -69,5 +75,12 @@ export class MovePageComponent implements OnInit {
   onSubmit() {
     console.log(this.moveForm.value);
     this.dataManager.save(this.moveForm.value);
+  }
+
+  private nameExistsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const forbidden = this.otherMovesNames?.has(control.value);
+      return forbidden ? { nameExists: { value: control.value } } : null;
+    };
   }
 }

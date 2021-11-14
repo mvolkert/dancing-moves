@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class SettingsService {
   secret: SecretDto | undefined;
-  secretWrite: SecretWriteDto = {} as SecretWriteDto;
+  secretWrite: SecretWriteDto | undefined;
 
   constructor(private route: ActivatedRoute, private cookies: CookieService, private http: HttpClient) { }
 

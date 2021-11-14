@@ -17,5 +17,6 @@ export interface MoveDto {
     date1: Date,
     date2: Date,
     toDo: string,
-    links:string
+    links:string,
+    row: number
 }

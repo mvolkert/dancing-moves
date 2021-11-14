@@ -83,6 +83,10 @@ export class DataManagerService {
 
 
   save(moveDto: MoveDto){
+    this.apiclientService.patchData(moveDto);
+  }
+
+  create(moveDto: MoveDto){
     this.apiclientService.appendData(moveDto);
   }
 }

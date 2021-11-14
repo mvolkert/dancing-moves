@@ -3,6 +3,12 @@
         <mat-form-field appearance="fill">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name">
+            <mat-error *ngIf="moveForm.get('name')?.hasError('nameExists') && !moveForm.get('name')?.hasError('required')">
+                Name must be unique
+            </mat-error>
+            <mat-error *ngIf="moveForm.get('name')?.hasError('required')">
+                Name is <strong>required</strong>
+            </mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Dance</mat-label>

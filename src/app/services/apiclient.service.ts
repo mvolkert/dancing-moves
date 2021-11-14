@@ -6,6 +6,7 @@ import { MoveDto } from '../model/move-dto';
 import { parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 import * as jwt from 'jwt-simple';
+import { SecretWriteDto } from '../model/secret-write-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,7 @@ export class ApiclientService {
           for (let i = 1; i < range.values.length; i++) {
             var row = range.values[i];
             if (row[0]) {
-              moves.push(this.createMovesDto(row));
+              moves.push(this.createMovesDto(row, i));
             }
           }
           producer(moves);
@@ -56,7 +57,7 @@ export class ApiclientService {
   appendData(moveDto: MoveDto) {
     const sheetRange = 'Tanzfiguren!A400:S400';
     const body = { values: [this.moveToLine(moveDto)] }
-    this.spreadsheetsWrite(sheetRange,body, ':append').subscribe({
+    this.spreadsheetsPost(sheetRange, body, ':append').subscribe({
       next: (response: any) => {
         console.log(response);
       }, error: (response: any) => {
@@ -65,15 +66,40 @@ export class ApiclientService {
     });
   }
 
-  private spreadsheetsWrite(sheetRange: string, body: any, type = ''): Observable<any> {
+  patchData(moveDto: MoveDto) {
+    const sheetRange = `Tanzfiguren!A${moveDto.row}:S${moveDto.row}`;
+    const body = { values: [this.moveToLine(moveDto)] }
+    this.spreadsheetsPut(sheetRange, body).subscribe({
+      next: (response: any) => {
+        console.log(response);
+      }, error: (response: any) => {
+        console.log(response);
+      }
+    });
+  }
+
+  private spreadsheetsPost(sheetRange: string, body: any, type = ''): Observable<any> {
+    if (!this.settingsService.secretWrite) {
+      return of({});
+    }
     const token = this.createJwt();
     return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(switchMap(r => {
-      return this.http.post<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.sheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED', alt: 'json' } })
+      return this.http.post<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.sheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+    }));
+  }
+
+  private spreadsheetsPut(sheetRange: string, body: any, type = ''): Observable<any> {
+    if (!this.settingsService.secretWrite) {
+      return of({});
+    }
+    const token = this.createJwt();
+    return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(switchMap(r => {
+      return this.http.put<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.sheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
     }));
   }
 
   private createJwt() {
-    const secretWrite = this.settingsService.secretWrite;
+    const secretWrite = this.settingsService.secretWrite as SecretWriteDto;
     const iat = Date.now() / 1000;
     const token = jwt.encode({
       'iss': secretWrite.client_email,
@@ -86,7 +112,7 @@ export class ApiclientService {
     return token;
   }
 
-  private createMovesDto(row: any): MoveDto {
+  private createMovesDto(row: any, i: number): MoveDto {
     return {
       name: row[0],
       dance: row[1],
@@ -106,7 +132,8 @@ export class ApiclientService {
       date1: parseDate(row[15]),
       date2: parseDate(row[16]),
       toDo: row[17],
-      links: row[18]
+      links: row[18],
+      row: i + 1
     };
   }
 
