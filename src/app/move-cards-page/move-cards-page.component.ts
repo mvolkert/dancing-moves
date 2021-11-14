@@ -25,7 +25,6 @@ export class MoveCardsPageComponent implements OnInit {
   ngOnInit(): void {
 
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
-
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
       this.changeDetectorRef.detectChanges();

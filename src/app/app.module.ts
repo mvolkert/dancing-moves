@@ -25,8 +25,9 @@ import { MovePageComponent } from './move-page/move-page.component';
 import { NavComponent } from './nav/nav.component';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,7 +58,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     MatCheckboxModule,
     MatAutocompleteModule,
     HttpClientModule,
-    ClipboardModule
+    ClipboardModule,
+    MatProgressBarModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

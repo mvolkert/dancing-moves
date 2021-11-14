@@ -13,15 +13,7 @@ import { parseBoolean, parseDate } from '../util/util';
 })
 export class DataManagerService {
 
-  private movesSubject = new BehaviorSubject<MoveDto[]>(new Array<MoveDto>({
-    name: "Basico (B)",
-    dance: "Bachata",
-    date: parseDate("04.11.2021"),
-    order: "0",
-    count: "8",
-    nameVerified: parseBoolean("FALSE"),
-    type: "Figur"
-  } as MoveDto));
+  private movesSubject = new BehaviorSubject<MoveDto[]>(new Array<MoveDto>());
   movesObservable = this.movesSubject.asObservable();
   isStarted = false;
   isStarting = new Subject<boolean>();
@@ -29,6 +21,17 @@ export class DataManagerService {
   constructor(private apiclientService: ApiclientService, private cookies: CookieService) { }
 
   start() {
+    if (!environment.sheetsApiActive) {
+      this.movesSubject.next([{
+        name: "Basico (B)",
+        dance: "Bachata",
+        date: parseDate("04.11.2021"),
+        order: "0",
+        count: "8",
+        nameVerified: parseBoolean("FALSE"),
+        type: "Figur"
+      } as MoveDto])
+    }
     this.refresh();
   }
 
@@ -82,11 +85,11 @@ export class DataManagerService {
   };
 
 
-  save(moveDto: MoveDto){
+  save(moveDto: MoveDto) {
     this.apiclientService.patchData(moveDto);
   }
 
-  create(moveDto: MoveDto){
+  create(moveDto: MoveDto) {
     this.apiclientService.appendData(moveDto);
   }
 }
