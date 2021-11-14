@@ -4,6 +4,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { DataManagerService } from '../services/data-manager.service';
+import { SettingsService } from '../services/settings.service';
 
 @Component({
   selector: 'app-move-page',
@@ -39,7 +40,7 @@ export class MovePageComponent implements OnInit {
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
 
-  constructor(private route: ActivatedRoute, private dataManager: DataManagerService) { }
+  constructor(private route: ActivatedRoute, private dataManager: DataManagerService, private settings: SettingsService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -58,18 +59,20 @@ export class MovePageComponent implements OnInit {
       this.dances = this.dataManager.getDances();
       this.types = this.dataManager.getTypes();
       this.moveForm.patchValue(this.move);
-      //this.moveForm.disable();
+      this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
+        this.movesGroup = groupedMoveNames;
+      });
+      this.otherMovesNames = this.dataManager.getMovesNames();
+      if (this.move) {
+        this.otherMovesNames.delete(this.move.name);
+      }
+      this.moveForm.valueChanges.subscribe(value => {
+        console.log(value);
+      });
+      if (!this.settings.secretWrite) {
+        this.moveForm.disable();
+      }
     }
-    this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
-      this.movesGroup = groupedMoveNames;
-    });
-    this.otherMovesNames = this.dataManager.getMovesNames();
-    if (this.move) {
-      this.otherMovesNames.delete(this.move.name);
-    }
-    this.moveForm.valueChanges.subscribe(value => {
-      console.log(value);
-    });
   }
 
   onSubmit() {

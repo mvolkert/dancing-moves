@@ -12,27 +12,33 @@ import { HttpClient } from '@angular/common/http';
 export class SettingsService {
   secret: SecretDto | undefined;
   secretWrite: SecretWriteDto | undefined;
+  secretReadString: string | undefined;
+  secretWriteString: string | undefined;
 
   constructor(private route: ActivatedRoute, private cookies: CookieService, private http: HttpClient) { }
 
   fetchSettings() {
     this.http.get('assets/secret-write.txt')
     this.route.queryParams.subscribe(params => {
-      console.log(params);
-      const secretBase64 = this.getSetting(params, 'secret');
-      // console.log(btoa(JSON.stringify({sheetId:"",apiKey:""})));
-      if (secretBase64) {
-        this.secret = JSON.parse(atob(secretBase64));
-      }
-      const secretWriteKey = this.getSetting(params, 'secret-write');
-
-      if (secretWriteKey) {
-        this.http.get<string>('assets/secret-write.txt', { responseType: 'text' as 'json' }).subscribe(data => {
-          const decrypted = CryptoJS.AES.decrypt(data, secretWriteKey)
-          this.secretWrite = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-        });
-      }
+      this.initSettings(params);
     })
+  }
+
+  initSettings(params: Params) {
+    console.log(params);
+    this.secretReadString = this.getSetting(params, 'secret');
+    // console.log(btoa(JSON.stringify({sheetId:"",apiKey:""})));
+    if (this.secretReadString) {
+      this.secret = JSON.parse(atob(this.secretReadString));
+    }
+    this.secretWriteString = this.getSetting(params, 'secret-write');
+
+    if (this.secretWriteString) {
+      this.http.get<string>('assets/secret-write.txt', { responseType: 'text' as 'json' }).subscribe(data => {
+        const decrypted = CryptoJS.AES.decrypt(data, this.secretWriteString as string);
+        this.secretWrite = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+      });
+    }
   }
 
   private getSetting(params: Params, key: string): string {

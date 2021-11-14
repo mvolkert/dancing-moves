@@ -1,1 +1,15 @@
-<p>settings works!</p>
+<form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Secret for reading</mat-label>
+        <input matInput formControlName="secretRead">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Secret for writing</mat-label>
+        <input matInput formControlName="secretWrite">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Resulting Url</mat-label>
+        <input readonly matInput [value]="url">
+    </mat-form-field>
+    <button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
+</form>

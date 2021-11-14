@@ -26,6 +26,7 @@ import { NavComponent } from './nav/nav.component';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,7 +56,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     MatNativeDateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    HttpClientModule
+    HttpClientModule,
+    ClipboardModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]
