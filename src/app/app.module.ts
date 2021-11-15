@@ -19,7 +19,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { AppRoutingModuleModule } from './app-routing-module/app-routing-module.module';
 import { AppComponent } from './app.component';
 import { DanceCardsPageComponent } from './dance-cards-page/dance-cards-page.component';
-import { MoveCardComponent } from './move-card/move-card.component';
+import { MoveCardComponent } from './move-cards-page/move-card/move-card.component';
 import { MoveCardsPageComponent } from './move-cards-page/move-cards-page.component';
 import { MovePageComponent } from './move-page/move-page.component';
 import { NavComponent } from './nav/nav.component';
