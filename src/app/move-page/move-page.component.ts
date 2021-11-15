@@ -39,6 +39,8 @@ export class MovePageComponent implements OnInit {
   });
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
+  loaded = false;
+  nameParam = ""
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService, private settings: SettingsService) { }
 
@@ -46,38 +48,49 @@ export class MovePageComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.init(params);
     });
+    this.moveForm.valueChanges.subscribe(value => {
+      console.log(value);
+    });
+    this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
+      this.movesGroup = groupedMoveNames;
+    });
   }
 
   async init(params: ParamMap) {
+    await this.dataManager.loading();
+    this.dances = this.dataManager.getDances();
+    this.types = this.dataManager.getTypes();
+    this.otherMovesNames = this.dataManager.getMovesNames();
+    this.otherMovesNames.add("new");
     if (!params.has('name')) {
       return;
     }
-    let name = params.get('name') as string;
-    name = decodeURI(name);
-    this.move = await this.dataManager.getMove(name);
-    if (this.move) {
-      this.dances = this.dataManager.getDances();
-      this.types = this.dataManager.getTypes();
-      this.moveForm.patchValue(this.move);
-      this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
-        this.movesGroup = groupedMoveNames;
-      });
-      this.otherMovesNames = this.dataManager.getMovesNames();
+    this.nameParam = params.get('name') as string;
+    this.nameParam = decodeURI(this.nameParam);
+
+    if (this.nameParam == "new") {
+      this.loaded = true;
+    } else {
+      this.move = this.dataManager.getMove(this.nameParam);
       if (this.move) {
+        this.moveForm.patchValue(this.move);
         this.otherMovesNames.delete(this.move.name);
+        this.loaded = true;
       }
-      this.moveForm.valueChanges.subscribe(value => {
-        console.log(value);
-      });
-      if (!this.settings.secretWrite) {
-        this.moveForm.disable();
-      }
+    }
+    this.moveForm.updateValueAndValidity();
+    if (!this.settings.secretWrite) {
+      this.moveForm.disable();
     }
   }
 
   onSubmit() {
     console.log(this.moveForm.value);
-    this.dataManager.save(this.moveForm.value);
+    if (this.nameParam == "new") {
+      this.dataManager.create(this.moveForm.value);
+    } else {
+      this.dataManager.save(this.moveForm.value);
+    }
   }
 
   private nameExistsValidator(): ValidatorFn {

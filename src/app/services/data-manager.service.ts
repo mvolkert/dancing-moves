@@ -43,11 +43,14 @@ export class DataManagerService {
     });
   }
 
-
-  async getMove(name: string): Promise<MoveDto | undefined> {
+  async loading(){
     if (!this.isStarted && environment.sheetsApiActive) {
       await firstValueFrom(this.isStarting);
     }
+  }
+
+
+  getMove(name: string): MoveDto | undefined {
     const moves = this.movesSubject.value.filter(m => m.name == name);
     if (moves.length > 0) {
       return moves[0];

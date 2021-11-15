@@ -1,4 +1,4 @@
-<form *ngIf="move" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
+<form *ngIf="loaded" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
     <div>
         <mat-form-field appearance="fill" class="full-width-adaptive">
             <mat-label>Name</mat-label>
@@ -108,4 +108,4 @@
     </div>
     <button *ngIf="!moveForm.disabled" mat-raised-button color="primary" type="submit">Save</button>
 </form>
-<mat-progress-bar  *ngIf="!move" mode="indeterminate"></mat-progress-bar>
+<mat-progress-bar  *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
