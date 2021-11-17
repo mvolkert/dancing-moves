@@ -54,28 +54,16 @@ export class ApiclientService {
     });
   }
 
-  appendData(moveDto: MoveDto) {
+  appendData(moveDto: MoveDto): Observable<any> {
     const sheetRange = 'Tanzfiguren!A400:S400';
     const body = { values: [this.moveToLine(moveDto)] }
-    this.spreadsheetsPost(sheetRange, body, ':append').subscribe({
-      next: (response: any) => {
-        console.log(response);
-      }, error: (response: any) => {
-        console.log('Error: ' + response.result.error.message);
-      }
-    });
+    return this.spreadsheetsPost(sheetRange, body, ':append');
   }
 
-  patchData(moveDto: MoveDto) {
+  patchData(moveDto: MoveDto): Observable<any> {
     const sheetRange = `Tanzfiguren!A${moveDto.row}:S${moveDto.row}`;
     const body = { values: [this.moveToLine(moveDto)] }
-    this.spreadsheetsPut(sheetRange, body).subscribe({
-      next: (response: any) => {
-        console.log(response);
-      }, error: (response: any) => {
-        console.log(response);
-      }
-    });
+    return this.spreadsheetsPut(sheetRange, body);
   }
 
   private spreadsheetsPost(sheetRange: string, body: any, type = ''): Observable<any> {

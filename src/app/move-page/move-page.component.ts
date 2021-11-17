@@ -42,7 +42,8 @@ export class MovePageComponent implements OnInit {
   loaded = false;
   nameParam = ""
 
-  constructor(private route: ActivatedRoute, private dataManager: DataManagerService, private settings: SettingsService) { }
+  constructor(private route: ActivatedRoute, private dataManager: DataManagerService, 
+    private settings: SettingsService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
