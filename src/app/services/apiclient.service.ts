@@ -55,13 +55,13 @@ export class ApiclientService {
   }
 
   appendData(moveDto: MoveDto): Observable<any> {
-    const sheetRange = 'Tanzfiguren!A400:S400';
+    const sheetRange = 'Tanzfiguren!A400:U400';
     const body = { values: [this.moveToLine(moveDto)] }
     return this.spreadsheetsPost(sheetRange, body, ':append');
   }
 
   patchData(moveDto: MoveDto): Observable<any> {
-    const sheetRange = `Tanzfiguren!A${moveDto.row}:S${moveDto.row}`;
+    const sheetRange = `Tanzfiguren!A${moveDto.row}:U${moveDto.row}`;
     const body = { values: [this.moveToLine(moveDto)] }
     return this.spreadsheetsPut(sheetRange, body);
   }
@@ -109,18 +109,20 @@ export class ApiclientService {
       count: row[4],
       nameVerified: parseBoolean(row[5]),
       type: row[6],
-      relatedMoves: row[7]?.split(", "),
-      videoname: row[8],
-      description: row[9],
-      sequence: row[10],
-      sequenceLeader: row[11],
-      sequenceFollower: row[12],
-      mind: row[13],
-      variations: row[14],
-      date1: parseDate(row[15]),
-      date2: parseDate(row[16]),
-      toDo: row[17],
-      links: row[18],
+      startMove: row[7]?.split(", "),
+      endMove: row[8]?.split(", "),
+      relatedMoves: row[9]?.split(", "),
+      videoname: row[10],
+      description: row[11],
+      sequence: row[12],
+      sequenceLeader: row[13],
+      sequenceFollower: row[14],
+      mind: row[15],
+      variations: row[16],
+      date1: parseDate(row[17]),
+      date2: parseDate(row[18]),
+      toDo: row[19],
+      links: row[20],
       row: i + 1
     };
   }
@@ -128,7 +130,7 @@ export class ApiclientService {
   private moveToLine(moveDto: MoveDto): string[] {
     return [moveDto.name, moveDto.dance, toGermanDate(moveDto.date),
     moveDto.order, moveDto.count, String(moveDto.nameVerified),
-    moveDto.type, moveDto.relatedMoves?.join(", "), moveDto.videoname,
+    moveDto.type, moveDto.startMove?.join(", "), moveDto.endMove?.join(", "), moveDto.relatedMoves?.join(", "), moveDto.videoname,
     moveDto.description, moveDto.sequence, moveDto.sequenceLeader,
     moveDto.sequenceFollower, moveDto.mind, moveDto.variations,
     toGermanDate(moveDto.date1), toGermanDate(moveDto.date2), moveDto.toDo, moveDto.links]

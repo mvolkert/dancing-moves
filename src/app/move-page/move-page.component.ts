@@ -23,6 +23,8 @@ export class MovePageComponent implements OnInit {
     count: new FormControl(''),
     nameVerified: new FormControl(''),
     type: new FormControl(''),
+    startMove: new FormControl(''),
+    endMove: new FormControl(''),
     relatedMoves: new FormControl(''),
     videoname: new FormControl(''),
     description: new FormControl(''),
