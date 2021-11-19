@@ -113,18 +113,41 @@ export class ApiclientService {
       endMove: row[8]?.split(", "),
       relatedMoves: row[9]?.split(", "),
       videoname: row[10],
-      description: row[11],
-      sequence: row[12],
-      sequenceLeader: row[13],
-      sequenceFollower: row[14],
-      mind: row[15],
-      variations: row[16],
+      description: this.mergeDescription(row),
+      sequence: '',
+      sequenceLeader: '',
+      sequenceFollower: '',
+      mind: '',
+      variations: '',
       date1: parseDate(row[17]),
       date2: parseDate(row[18]),
       toDo: row[19],
       links: row[20],
       row: i + 1
     };
+  }
+
+  private mergeDescription(row: any): string {
+    let description = "";
+    if (row[11]) {
+      description += row[11] + "\n\n"
+    }
+    if (row[12] || row[13] || row[14]) {
+      description += "# Ablauf\n" + row[12] + "\n\n"
+    }
+    if (row[13]) {
+      description += "## Leader\n" + row[13] + "\n\n"
+    }
+    if (row[14]) {
+      description += "## Follower\n" + row[14] + "\n\n"
+    }
+    if (row[15]) {
+      description += "# zu Beachten\n" + row[15] + "\n\n"
+    }
+    if (row[16]) {
+      description += "# Variationen\n" + row[16] + "\n\n"
+    }
+    return description;
   }
 
   private moveToLine(moveDto: MoveDto): string[] {

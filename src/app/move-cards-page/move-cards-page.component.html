@@ -1,3 +1,4 @@
+<mat-progress-bar *ngIf="moves?.length==0" mode="indeterminate"></mat-progress-bar>
 <form>
     <mat-form-field appearance="fill" class="half-width">
         <mat-label>Dance</mat-label>
@@ -18,7 +19,6 @@
         </mat-autocomplete>
     </mat-form-field>
 </form>
-<mat-progress-bar *ngIf="moves?.length==0" mode="indeterminate"></mat-progress-bar>
 <ng-container *ngFor="let move of moves">
     <app-move-card [move-dto]=move></app-move-card>
 </ng-container>

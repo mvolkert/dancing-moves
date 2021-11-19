@@ -1,131 +1,107 @@
+<mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
 <form *ngIf="loaded" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name">
-            <mat-error
-                *ngIf="moveForm.get('name')?.hasError('nameExists') && !moveForm.get('name')?.hasError('required')">
-                Name must be unique
-            </mat-error>
-            <mat-error *ngIf="moveForm.get('name')?.hasError('required')">
-                Name is <strong>required</strong>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Dance</mat-label>
-            <mat-select formControlName="dance">
-                <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="half-width">
-            <mat-label>Order</mat-label>
-            <input type="number" matInput formControlName="order">
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="half-width">
-            <mat-label>Count</mat-label>
-            <input type="number" matInput formControlName="count">
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="half-width">
-            <mat-label>Type</mat-label>
-            <mat-select formControlName="type">
-                <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-checkbox formControlName="nameVerified" class="half-width">Name Verified</mat-checkbox>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Start Move</mat-label>
-            <mat-select formControlName="startMove" multiple>
-                <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                    <mat-option *ngFor="let name of group.names" [value]="name">
-                        {{name}}
-                    </mat-option>
-                </mat-optgroup>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>End Move</mat-label>
-            <mat-select formControlName="endMove" multiple>
-                <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                    <mat-option *ngFor="let name of group.names" [value]="name">
-                        {{name}}
-                    </mat-option>
-                </mat-optgroup>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Related Moves</mat-label>
-            <mat-select formControlName="relatedMoves" multiple>
-                <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                    <mat-option *ngFor="let name of group.names" [value]="name">
-                        {{name}}
-                    </mat-option>
-                </mat-optgroup>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Date 1</mat-label>
-            <input matInput [matDatepicker]="picker1" formControlName="date1">
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>Date 2</mat-label>
-            <input matInput [matDatepicker]="picker2" formControlName="date2">
-            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-            <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>ToDo</mat-label>
-            <input matInput formControlName="toDo">
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>links</mat-label>
-            <input matInput formControlName="links">
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width-adaptive">
-            <mat-label>videoname</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="videoname">
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>the field that nobody sees</mat-label>
-            <textarea></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Description</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="description"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Sequence</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="sequence"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Sequence Leader</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="sequenceLeader"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Sequence Leader</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="sequenceFollower"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Mind</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="mind"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Variations</mat-label>
-            <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-                formControlName="variations"></textarea>
-        </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name">
+        <mat-error *ngIf="moveForm.get('name')?.hasError('nameExists') && !moveForm.get('name')?.hasError('required')">
+            Name must be unique
+        </mat-error>
+        <mat-error *ngIf="moveForm.get('name')?.hasError('required')">
+            Name is <strong>required</strong>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Dance</mat-label>
+        <mat-select formControlName="dance">
+            <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Order</mat-label>
+        <input type="number" matInput formControlName="order">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Count</mat-label>
+        <input type="number" matInput formControlName="count">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+            <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-checkbox formControlName="nameVerified" class="half-width">Name Verified</mat-checkbox>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Start Move</mat-label>
+        <mat-select formControlName="startMove" multiple>
+            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>End Move</mat-label>
+        <mat-select formControlName="endMove" multiple>
+            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Related Moves</mat-label>
+        <mat-select formControlName="relatedMoves" multiple>
+            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Date 1</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="date1">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Date 2</mat-label>
+        <input matInput [matDatepicker]="picker2" formControlName="date2">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>ToDo</mat-label>
+        <input matInput formControlName="toDo">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>links</mat-label>
+        <input matInput formControlName="links">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>videoname</mat-label>
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="videoname">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>the field that nobody sees</mat-label>
+        <textarea></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="description"></textarea>
+    </mat-form-field>
+    <div markdown [data]="moveForm.value.description">
+    </div>
     <button *ngIf="!moveForm.disabled" mat-raised-button color="primary" type="submit">Save</button>
 </form>
-<mat-progress-bar  *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
