@@ -26,3 +26,7 @@ export const parseBoolean = (boolString: string): boolean => {
     boolString = boolString?.toLowerCase();
     return boolString == "true" || boolString == "wahr";
 }
+
+export const delay = (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

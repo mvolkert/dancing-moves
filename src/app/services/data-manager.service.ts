@@ -6,7 +6,7 @@ import { ApiclientService } from './apiclient.service';
 import { reduce, map } from 'rxjs/operators';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { environment } from 'src/environments/environment';
-import { parseBoolean, parseDate } from '../util/util';
+import { delay, parseBoolean, parseDate } from '../util/util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
@@ -44,7 +44,7 @@ export class DataManagerService {
     });
   }
 
-  async loading(){
+  async loading() {
     if (!this.isStarted && environment.sheetsApiActive) {
       await firstValueFrom(this.isStarting);
     }
@@ -111,6 +111,17 @@ export class DataManagerService {
         this.snackBar.open(`error:${response}`, "OK");
       }
     });;
+  }
+
+  async normalize() {
+    console.log('normalize');
+    for (const move of this.movesSubject.value) {
+      if(move.description){
+        console.log(move);
+        this.save(move);
+        await delay(1000);
+      }
+    }
   }
 }
 
