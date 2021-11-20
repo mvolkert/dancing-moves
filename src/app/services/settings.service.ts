@@ -5,6 +5,7 @@ import { SecretDto } from '../model/secret-dto';
 import * as CryptoJS from 'crypto-js';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,8 @@ export class SettingsService {
   secretWrite: SecretWriteDto | undefined;
   secretReadString: string | undefined;
   secretWriteString: string | undefined;
+  isStarted = false;
+  isStarting = new Subject<boolean>();
 
   constructor(private route: ActivatedRoute, private cookies: CookieService, private http: HttpClient) { }
 
@@ -24,12 +27,22 @@ export class SettingsService {
     })
   }
 
+  async loading() {
+    if (!this.isStarted) {
+      await firstValueFrom(this.isStarting);
+    }
+  }
+
   initSettings(params: Params) {
-    console.log(params);
     this.secretReadString = this.getSetting(params, 'secret');
-    // console.log(btoa(JSON.stringify({sheetId:"",apiKey:""})));
+
     if (this.secretReadString) {
-      this.secret = JSON.parse(atob(this.secretReadString));
+      this.http.get<string>('assets/secret-read.txt', { responseType: 'text' as 'json' }).subscribe(data => {
+        const decrypted = CryptoJS.AES.decrypt(data, this.secretReadString as string);
+        this.secret = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+        this.isStarting.next(false);
+        this.isStarted = true;
+      });
     }
     this.secretWriteString = this.getSetting(params, 'secret-write');
 

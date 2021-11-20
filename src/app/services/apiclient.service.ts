@@ -27,12 +27,13 @@ export class ApiclientService {
     }));
   }
 
-  getMoves(producer: (moves: Array<MoveDto>) => void): void {
+  async getMoves(producer: (moves: Array<MoveDto>) => void): Promise<void> {
+    await this.settingsService.loading();
     this.initClient(() => {
       const moves = new Array<MoveDto>();
       const sheetRange = 'Tanzfiguren!A1:S500'
       gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: this.settingsService.secret?.sheetId as string,
+        spreadsheetId: this.settingsService.secret?.movesSheetId as string,
         range: sheetRange
       }).then((response: any) => {
         var range: any = response.result;
@@ -72,7 +73,7 @@ export class ApiclientService {
     }
     const token = this.createJwt();
     return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(switchMap(r => {
-      return this.http.post<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.sheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+      return this.http.post<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.movesSheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
     }));
   }
 
@@ -82,7 +83,7 @@ export class ApiclientService {
     }
     const token = this.createJwt();
     return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(switchMap(r => {
-      return this.http.put<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.sheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+      return this.http.put<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.movesSheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
     }));
   }
 

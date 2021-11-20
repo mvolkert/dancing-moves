@@ -1,4 +1,6 @@
 export interface SecretDto{
-    sheetId: string,
+    movesSheetId: string,
+    dancesSheetId: string,
+    courseDatesSheetId: string,
     apiKey: string
 }
