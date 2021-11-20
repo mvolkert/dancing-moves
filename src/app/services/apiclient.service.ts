@@ -7,6 +7,7 @@ import { parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 import * as jwt from 'jwt-simple';
 import { SecretWriteDto } from '../model/secret-write-dto';
+import { resolve } from 'dns';
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +54,37 @@ export class ApiclientService {
         console.log('Error: ' + response.result.error.message);
       });
     });
+  }
+
+  async getCourseDates(): Promise<Array<MoveDto>> {
+    await this.settingsService.loading();
+    return new Promise(resolve => {
+      this.initClient(() => {
+        const moves = new Array<MoveDto>();
+        const sheetRange = 'Tanzfiguren!A1:S500'
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: this.settingsService.secret?.movesSheetId as string,
+          range: sheetRange
+        }).then((response: any) => {
+          var range: any = response.result;
+          if (range.values.length > 0) {
+            this.keys = range.values[0];
+            for (let i = 1; i < range.values.length; i++) {
+              var row = range.values[i];
+              if (row[0]) {
+                moves.push(this.createMovesDto(row, i));
+              }
+            }
+            resolve(moves);
+          } else {
+            console.log('No data found.');
+          }
+        }, (response: any) => {
+          console.log('Error: ' + response.result.error.message);
+        });
+      });
+    });
+
   }
 
   appendData(moveDto: MoveDto): Observable<any> {
