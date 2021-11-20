@@ -28,13 +28,6 @@ export class MovePageComponent implements OnInit {
     relatedMoves: new FormControl(''),
     videoname: new FormControl(''),
     description: new FormControl(''),
-    sequence: new FormControl(''),
-    sequenceLeader: new FormControl(''),
-    sequenceFollower: new FormControl(''),
-    mind: new FormControl(''),
-    variations: new FormControl(''),
-    date1: new FormControl(''),
-    date2: new FormControl(''),
     toDo: new FormControl(''),
     links: new FormControl(''),
     row: new FormControl('')
