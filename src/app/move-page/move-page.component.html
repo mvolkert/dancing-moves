@@ -75,11 +75,26 @@
         <mat-label>links</mat-label>
         <input matInput formControlName="links">
     </mat-form-field>
+    <div formArrayName="courseDates">
+        <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill" class="full-width-adaptive">
+                <mat-label>Course {{i}}</mat-label>
+                <input matInput formControlName="course">
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="full-width-adaptive">
+                <mat-label>Date {{i}}</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>videoname</mat-label>
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
             formControlName="videoname">
     </mat-form-field>
+   
     <mat-form-field>
         <mat-label>the field that nobody sees</mat-label>
         <textarea></textarea>

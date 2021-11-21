@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -30,14 +30,15 @@ export class MovePageComponent implements OnInit {
     description: new FormControl(''),
     toDo: new FormControl(''),
     links: new FormControl(''),
-    row: new FormControl('')
+    row: new FormControl(''),
+    courseDates: new FormArray([])
   });
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
   loaded = false;
   nameParam = ""
 
-  constructor(private route: ActivatedRoute, private dataManager: DataManagerService, 
+  constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService) { }
 
   ngOnInit(): void {
@@ -69,7 +70,9 @@ export class MovePageComponent implements OnInit {
     } else {
       this.move = this.dataManager.getMove(this.nameParam);
       if (this.move) {
+        this.move.courseDates.forEach(this.addCourseDateForm);
         this.moveForm.patchValue(this.move);
+
         this.otherMovesNames.delete(this.move.name);
         this.loaded = true;
       }
@@ -78,6 +81,31 @@ export class MovePageComponent implements OnInit {
     if (!this.settings.secretWrite) {
       this.moveForm.disable();
     }
+  }
+
+  private createCourseDateForm = () => {
+    return new FormGroup({
+      course: new FormControl(''),
+      date: new FormControl('')
+    });
+  }
+
+  addCourseDateForm = () => {
+    const formArray = this.moveForm.get("courseDates") as FormArray;
+    formArray.push(this.createCourseDateForm());
+  }
+
+  removeOrClearCourseDateForm = (i: number) => {
+    const formArray = this.moveForm.get('courseDates') as FormArray
+    if (formArray.length > 1) {
+      formArray.removeAt(i)
+    } else {
+      formArray.reset()
+    }
+  }
+
+  getCourseDateControls() {
+    return (this.moveForm.get('courseDates') as FormArray).controls;
   }
 
   onSubmit() {
