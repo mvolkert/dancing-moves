@@ -36,12 +36,16 @@ export class DataManagerService {
     this.refresh();
   }
 
-  refresh() {
-    this.apiclientService.getMoves(moves => {
-      this.movesSubject.next(moves);
-      this.isStarting.next(false);
-      this.isStarted = true;
-    });
+  async refresh() {
+    const moves = await this.apiclientService.getMoves();
+    const courseDates = await this.apiclientService.getCourseDates();
+
+    for (const move of moves) {
+      move.courseDates = courseDates.filter(c => c.moveName == move.name);
+    }
+    this.movesSubject.next(moves);
+    this.isStarting.next(false);
+    this.isStarted = true;
   }
 
   async loading() {
@@ -116,7 +120,7 @@ export class DataManagerService {
   async normalize() {
     console.log('normalize');
     for (const move of this.movesSubject.value) {
-      if(move.description){
+      if (move.description) {
         console.log(move);
         this.save(move);
         await delay(1000);

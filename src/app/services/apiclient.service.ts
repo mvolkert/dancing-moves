@@ -7,7 +7,7 @@ import { parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 import * as jwt from 'jwt-simple';
 import { SecretWriteDto } from '../model/secret-write-dto';
-import { resolve } from 'dns';
+import { CourseDateDto } from '../model/course-date-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -28,37 +28,9 @@ export class ApiclientService {
     }));
   }
 
-  async getMoves(producer: (moves: Array<MoveDto>) => void): Promise<void> {
+  async getMoves(): Promise<MoveDto[]> {
     await this.settingsService.loading();
-    this.initClient(() => {
-      const moves = new Array<MoveDto>();
-      const sheetRange = 'Tanzfiguren!A1:S500'
-      gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: this.settingsService.secret?.movesSheetId as string,
-        range: sheetRange
-      }).then((response: any) => {
-        var range: any = response.result;
-        if (range.values.length > 0) {
-          this.keys = range.values[0];
-          for (let i = 1; i < range.values.length; i++) {
-            var row = range.values[i];
-            if (row[0]) {
-              moves.push(this.createMovesDto(row, i));
-            }
-          }
-          producer(moves);
-        } else {
-          console.log('No data found.');
-        }
-      }, (response: any) => {
-        console.log('Error: ' + response.result.error.message);
-      });
-    });
-  }
-
-  async getCourseDates(): Promise<Array<MoveDto>> {
-    await this.settingsService.loading();
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.initClient(() => {
         const moves = new Array<MoveDto>();
         const sheetRange = 'Tanzfiguren!A1:S500'
@@ -80,7 +52,39 @@ export class ApiclientService {
             console.log('No data found.');
           }
         }, (response: any) => {
+          reject(response?.result?.error)
           console.log('Error: ' + response.result.error.message);
+        });
+      });
+    });
+  }
+
+  async getCourseDates(): Promise<Array<CourseDateDto>> {
+    await this.settingsService.loading();
+    return new Promise((resolve, reject) => {
+      this.initClient(() => {
+        const courseDates = new Array<CourseDateDto>();
+        const sheetRange = 'Course Dates!A1:C1000'
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: this.settingsService.secret?.courseDatesSheetId as string,
+          range: sheetRange
+        }).then((response: any) => {
+          var range: any = response.result;
+          if (range.values.length > 0) {
+            this.keys = range.values[0];
+            for (let i = 1; i < range.values.length; i++) {
+              var row = range.values[i];
+              if (row[0]) {
+                courseDates.push(this.createCourseDateDto(row, i));
+              }
+            }
+            resolve(courseDates);
+          } else {
+            console.log('No data found.');
+          }
+        }, (response: any) => {
+          reject(response?.result?.error)
+          console.log('Error: ' + response?.result?.error?.message);
         });
       });
     });
@@ -133,6 +137,15 @@ export class ApiclientService {
     return token;
   }
 
+  private createCourseDateDto(row: any, i: number): CourseDateDto {
+    return {
+      date: parseDate(row[0]),
+      course: row[1],
+      moveName: row[2]
+    };
+  }
+
+
   private createMovesDto(row: any, i: number): MoveDto {
     return {
       name: row[0],
@@ -149,7 +162,8 @@ export class ApiclientService {
       description: row[11],
       toDo: row[12],
       links: row[13],
-      row: i + 1
+      row: i + 1,
+      courseDates: []
     };
   }
 

@@ -1,3 +1,5 @@
+import { CourseDateDto } from "./course-date-dto";
+
 export interface MoveDto {
     name: string,
     dance: string,
@@ -13,5 +15,6 @@ export interface MoveDto {
     description: string,
     toDo: string,
     links:string,
-    row: number
+    row: number,
+    courseDates: CourseDateDto[]
 }
