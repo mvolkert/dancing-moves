@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -11,10 +11,10 @@ import { SettingsService } from '../services/settings.service';
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.css']
 })
-export class NavComponent {
+export class NavComponent implements OnInit {
 
   devMode = !environment.production;
-  readonly = !this.settingsService.secretWrite
+  readonly = true;
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -26,6 +26,10 @@ export class NavComponent {
     private dataManager: DataManagerService,
     private settingsService: SettingsService) {
 
+  }
+  async ngOnInit() {
+    await this.settingsService.loading();
+    this.readonly = !this.settingsService.secretWriteString;
   }
 
   normalize() {

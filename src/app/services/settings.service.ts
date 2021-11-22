@@ -35,6 +35,7 @@ export class SettingsService {
 
   initSettings(params: Params) {
     this.secretReadString = this.getSetting(params, 'secret');
+    this.secretWriteString = this.getSetting(params, 'secret-write');
 
     if (this.secretReadString) {
       this.http.get<string>('assets/secret-read.txt', { responseType: 'text' as 'json' }).subscribe(data => {
@@ -44,7 +45,6 @@ export class SettingsService {
         this.isStarted = true;
       });
     }
-    this.secretWriteString = this.getSetting(params, 'secret-write');
 
     if (this.secretWriteString) {
       this.http.get<string>('assets/secret-write.txt', { responseType: 'text' as 'json' }).subscribe(data => {
