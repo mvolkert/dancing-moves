@@ -37,6 +37,7 @@ export class MovePageComponent implements OnInit {
   otherMovesNames: Set<string> = new Set<string>();
   loaded = false;
   nameParam = ""
+  readonly = false;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService) { }
@@ -80,6 +81,7 @@ export class MovePageComponent implements OnInit {
     this.moveForm.updateValueAndValidity();
     if (!this.settings.secretWrite) {
       this.moveForm.disable();
+      this.readonly = true;
     }
   }
 

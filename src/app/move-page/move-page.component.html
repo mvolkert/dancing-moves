@@ -87,13 +87,13 @@
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
-            <button mat-icon-button color="primary" type=button aria-label="Remove/clear"
+            <button *ngIf="!readonly" mat-icon-button color="primary" type=button aria-label="Remove/clear"
                 (click)="removeOrClearCourseDate(i)" matTooltip="Remove">
                 <mat-icon>highlight_off</mat-icon>
             </button>
         </div>
-        <button mat-icon-button color="primary" type=button aria-label="Add" (click)="addCourseDateForm()"
-            matTooltip="Add">
+        <button *ngIf="!readonly" mat-icon-button color="primary" type=button aria-label="Add"
+            (click)="addCourseDateForm()" matTooltip="Add">
             <mat-icon>add_circle_outline</mat-icon>
         </button>
     </div>
@@ -103,16 +103,16 @@
             formControlName="videoname">
     </mat-form-field>
    
-    <mat-form-field>
+    <mat-form-field *ngIf="!readonly">
         <mat-label>the field that nobody sees</mat-label>
         <textarea></textarea>
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width">
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width">
         <mat-label>Description</mat-label>
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
             formControlName="description"></textarea>
     </mat-form-field>
     <div markdown [data]="moveForm.value.description">
     </div>
-    <button *ngIf="!moveForm.disabled" mat-raised-button color="primary" type="submit">Save</button>
+    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit">Save</button>
 </form>

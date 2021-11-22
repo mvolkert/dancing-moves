@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { DataManagerService } from '../services/data-manager.service';
+import { SettingsService } from '../services/settings.service';
 
 @Component({
   selector: 'app-nav',
@@ -13,6 +14,7 @@ import { DataManagerService } from '../services/data-manager.service';
 export class NavComponent {
 
   devMode = !environment.production;
+  readonly = !this.settingsService.secretWrite
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -20,11 +22,13 @@ export class NavComponent {
       shareReplay()
     );
 
-  constructor(private breakpointObserver: BreakpointObserver, private dataManager: DataManagerService) {
+  constructor(private breakpointObserver: BreakpointObserver,
+    private dataManager: DataManagerService,
+    private settingsService: SettingsService) {
 
   }
 
-  normalize(){
+  normalize() {
     this.dataManager.normalize();
   }
 
