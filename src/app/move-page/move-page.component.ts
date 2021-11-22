@@ -95,7 +95,7 @@ export class MovePageComponent implements OnInit {
     formArray.push(this.createCourseDateForm());
   }
 
-  removeOrClearCourseDateForm = (i: number) => {
+  removeOrClearCourseDate = (i: number) => {
     const formArray = this.moveForm.get('courseDates') as FormArray
     if (formArray.length > 1) {
       formArray.removeAt(i)

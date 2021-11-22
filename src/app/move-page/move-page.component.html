@@ -76,18 +76,26 @@
         <input matInput formControlName="links">
     </mat-form-field>
     <div formArrayName="courseDates">
-        <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i">
-            <mat-form-field appearance="fill" class="full-width-adaptive">
+        <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i" class="full-width">
+            <mat-form-field appearance="fill">
                 <mat-label>Course {{i}}</mat-label>
                 <input matInput formControlName="course">
             </mat-form-field>
-            <mat-form-field appearance="fill" class="full-width-adaptive">
+            <mat-form-field appearance="fill">
                 <mat-label>Date {{i}}</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="date">
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
+            <button mat-icon-button color="primary" type=button aria-label="Remove/clear"
+                (click)="removeOrClearCourseDate(i)" matTooltip="Remove">
+                <mat-icon>highlight_off</mat-icon>
+            </button>
         </div>
+        <button mat-icon-button color="primary" type=button aria-label="Add" (click)="addCourseDateForm()"
+            matTooltip="Add">
+            <mat-icon>add_circle_outline</mat-icon>
+        </button>
     </div>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>videoname</mat-label>

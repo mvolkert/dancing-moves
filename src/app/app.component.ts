@@ -9,13 +9,13 @@ import { SettingsService } from './services/settings.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
- 
+
   title = 'dancing-moves';
 
-  constructor(private settingsService: SettingsService,private dataManagerService: DataManagerService){
+  constructor(private settingsService: SettingsService, private dataManagerService: DataManagerService) {
 
   }
-  
+
   ngOnInit(): void {
     this.settingsService.fetchSettings();
     this.dataManagerService.start();
