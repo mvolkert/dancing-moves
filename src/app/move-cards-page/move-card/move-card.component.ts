@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CourseDateDto } from 'src/app/model/course-date-dto';
 
 @Component({
   selector: 'app-move-card',
@@ -15,7 +16,11 @@ export class MoveCardComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  edit() {
+  openDetails() {
     this.router.navigate(["move", encodeURI(this.moveDto.name)]);
+  }
+
+  isDateValid(courseDate: CourseDateDto) {
+    return courseDate?.date && courseDate?.date?.toString() !== 'Invalid Date';
   }
 }
