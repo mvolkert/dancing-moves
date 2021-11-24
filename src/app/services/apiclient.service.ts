@@ -141,7 +141,8 @@ export class ApiclientService {
     return {
       date: parseDate(row[0]),
       course: row[1],
-      moveName: row[2]
+      moveName: row[2],
+      row: i + 1
     };
   }
 

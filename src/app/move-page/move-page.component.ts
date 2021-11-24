@@ -15,6 +15,7 @@ export class MovePageComponent implements OnInit {
   move: MoveDto | undefined;
   dances = new Set<string>();
   types = new Set<string>();
+  courseNames = new Set<string>();
   moveForm = new FormGroup({
     name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
     dance: new FormControl('', Validators.required),
@@ -58,6 +59,7 @@ export class MovePageComponent implements OnInit {
     await this.dataManager.loading();
     this.dances = this.dataManager.getDances();
     this.types = this.dataManager.getTypes();
+    this.courseNames = this.dataManager.getCourseNames();
     this.otherMovesNames = this.dataManager.getMovesNames();
     this.otherMovesNames.add("new");
     if (!params.has('name')) {
@@ -88,7 +90,8 @@ export class MovePageComponent implements OnInit {
   private createCourseDateForm = () => {
     return new FormGroup({
       course: new FormControl(''),
-      date: new FormControl('')
+      date: new FormControl(''),
+      row: new FormControl('')
     });
   }
 

@@ -6,5 +6,6 @@ export interface CourseDateDto {
     school: string,
     level: string,
     description: string,
-    links: string
+    links: string,
+    row: number
 }

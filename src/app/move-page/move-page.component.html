@@ -77,20 +77,19 @@
     </mat-form-field>
     <div formArrayName="courseDates">
         <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i" class="full-width">
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="fill" class="half-width">
                 <mat-label>Course {{i}}</mat-label>
-                <input matInput formControlName="course">
+                <mat-select formControlName="course">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let course of courseNames" [value]="course">{{course}}</mat-option>
+                </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="fill" class="half-width">
                 <mat-label>Date {{i}}</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="date">
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
-            <button *ngIf="!readonly" mat-icon-button color="primary" type=button aria-label="Remove/clear"
-                (click)="removeOrClearCourseDate(i)" matTooltip="Remove">
-                <mat-icon>highlight_off</mat-icon>
-            </button>
         </div>
         <button *ngIf="!readonly" mat-icon-button color="primary" type=button aria-label="Add"
             (click)="addCourseDateForm()" matTooltip="Add">

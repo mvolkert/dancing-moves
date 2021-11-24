@@ -118,7 +118,7 @@ export class DataManagerService {
         console.log('Error: ' + response.result.error.message);
         this.snackBar.open(`error:${response}`, "OK");
       }
-    });;
+    });
   }
 
   async normalize() {
