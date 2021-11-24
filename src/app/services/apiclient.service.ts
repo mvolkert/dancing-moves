@@ -1,126 +1,100 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 import * as jwt from 'jwt-simple';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { CourseDateDto } from '../model/course-date-dto';
+import { ResponseUpdate } from '../model/response-update';
+import { ResponseCreate } from '../model/response-create';
+import { ResponseGet } from '../model/response-get';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiclientService {
-  private keys: string[] = new Array<string>();
+  private movesKeys: string[] = new Array<string>();
+  private courseDatesKeys: string[] = new Array<string>();
   constructor(private settingsService: SettingsService, private http: HttpClient) { }
-
-  private initClient(callback: () => void) {
-    if (!this.settingsService.secret || !environment.sheetsApiActive) {
-      return;
-    }
-    gapi.load('client:auth2', () => gapi.client.init({
-      apiKey: this.settingsService.secret?.apiKey,
-      discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-    }).then(() => {
-      callback();
-    }));
-  }
 
   async getMoves(): Promise<MoveDto[]> {
     await this.settingsService.loading();
-    return new Promise((resolve, reject) => {
-      this.initClient(() => {
-        const moves = new Array<MoveDto>();
-        const sheetRange = 'Tanzfiguren!A1:S500'
-        gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: this.settingsService.secret?.movesSheetId as string,
-          range: sheetRange
-        }).then((response: any) => {
-          var range: any = response.result;
-          if (range.values.length > 0) {
-            this.keys = range.values[0];
-            for (let i = 1; i < range.values.length; i++) {
-              var row = range.values[i];
-              if (row[0]) {
-                moves.push(this.createMovesDto(row, i));
-              }
-            }
-            resolve(moves);
-          } else {
-            console.log('No data found.');
+    const moves = new Array<MoveDto>();
+    const sheetRange = 'Tanzfiguren!A1:S500'
+    return firstValueFrom(this.spreadsheetsGet(
+      this.settingsService.secret?.movesSheetId as string,
+      sheetRange
+    ).pipe(map((result: ResponseGet) => {
+      const values = result?.values;
+      if (values.length > 0) {
+        this.movesKeys = values[0];
+        for (let i = 1; i < values.length; i++) {
+          var row = values[i];
+          if (row[0]) {
+            moves.push(this.createMovesDto(row, i));
           }
-        }, (response: any) => {
-          reject(response?.result?.error)
-          console.log('Error: ' + response.result.error.message);
-        });
-      });
-    });
+        }
+      }
+      return moves;
+    })));
   }
 
   async getCourseDates(): Promise<Array<CourseDateDto>> {
     await this.settingsService.loading();
-    return new Promise((resolve, reject) => {
-      this.initClient(() => {
-        const courseDates = new Array<CourseDateDto>();
-        const sheetRange = 'Course Dates!A1:C1000'
-        gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: this.settingsService.secret?.courseDatesSheetId as string,
-          range: sheetRange
-        }).then((response: any) => {
-          var range: any = response.result;
-          if (range.values.length > 0) {
-            this.keys = range.values[0];
-            for (let i = 1; i < range.values.length; i++) {
-              var row = range.values[i];
-              if (row[0]) {
-                courseDates.push(this.createCourseDateDto(row, i));
-              }
-            }
-            resolve(courseDates);
-          } else {
-            console.log('No data found.');
+    const courseDates = new Array<CourseDateDto>();
+    const sheetRange = 'Course Dates!A1:C1000'
+    return firstValueFrom(this.spreadsheetsGet(
+      this.settingsService.secret?.courseDatesSheetId as string,
+      sheetRange
+    ).pipe(map((result: ResponseGet) => {
+      const values = result?.values;
+      if (values.length > 0) {
+        this.courseDatesKeys = values[0];
+        for (let i = 1; i < values.length; i++) {
+          var row = values[i];
+          if (row[0]) {
+            courseDates.push(this.createCourseDateDto(row, i));
           }
-        }, (response: any) => {
-          reject(response?.result?.error)
-          console.log('Error: ' + response?.result?.error?.message);
-        });
-      });
-    });
-
+        }
+      }
+      return courseDates;
+    })));
   }
 
-  appendData(moveDto: MoveDto): Observable<any> {
+  appendData(moveDto: MoveDto): Observable<ResponseCreate> {
     const sheetRange = 'Tanzfiguren!A400:U400';
     const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPost(sheetRange, body, ':append');
+    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
   }
 
-  patchData(moveDto: MoveDto): Observable<any> {
+  patchData(moveDto: MoveDto): Observable<ResponseUpdate> {
     const sheetRange = `Tanzfiguren!A${moveDto.row}:U${moveDto.row}`;
     const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPut(sheetRange, body);
+    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+  }
+  private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
+    return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
+  }
+  private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {
+    return this.loginWrite().pipe(switchMap(r => {
+      return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+    }));
   }
 
-  private spreadsheetsPost(sheetRange: string, body: any, type = ''): Observable<any> {
+  private spreadsheetsPut(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseUpdate> {
+    return this.loginWrite().pipe(switchMap(r => {
+      return this.http.put<ResponseUpdate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+    }));
+  }
+
+  private loginWrite(): Observable<any> {
     if (!this.settingsService.secretWrite) {
       return of({});
     }
     const token = this.createJwt();
-    return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(switchMap(r => {
-      return this.http.post<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.movesSheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
-    }));
-  }
-
-  private spreadsheetsPut(sheetRange: string, body: any, type = ''): Observable<any> {
-    if (!this.settingsService.secretWrite) {
-      return of({});
-    }
-    const token = this.createJwt();
-    return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(switchMap(r => {
-      return this.http.put<any>(`https://content-sheets.googleapis.com/v4/spreadsheets/${this.settingsService.secret?.movesSheetId as string}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
-    }));
+    return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token });
   }
 
   private createJwt() {

@@ -104,7 +104,7 @@ export class DataManagerService {
         this.snackBar.open("saved", "OK");
       }, error: (response: any) => {
         console.log(response);
-        this.snackBar.open(`error:${response}`, "OK");
+        this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
       }
     });
   }
@@ -116,7 +116,7 @@ export class DataManagerService {
         this.snackBar.open("created", "OK");
       }, error: (response: any) => {
         console.log('Error: ' + response.result.error.message);
-        this.snackBar.open(`error:${response}`, "OK");
+        this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
       }
     });
   }
