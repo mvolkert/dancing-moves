@@ -79,6 +79,10 @@ export class DataManagerService {
     return new Set(this.movesSubject.value.map(move => move.dance));
   }
 
+  getCourseNames(): Set<string> {
+    return new Set(this.movesSubject.value.flatMap(move => move.courseDates.map(c=>c.course)));
+  }
+
   getTypes(): Set<string> {
     return new Set(this.movesSubject.value.map(move => move.type).sort());
   }
