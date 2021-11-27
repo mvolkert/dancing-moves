@@ -80,7 +80,7 @@ export class DataManagerService {
   }
 
   getCourseNames(): Set<string> {
-    return new Set(this.movesSubject.value.flatMap(move => move.courseDates.map(c=>c.course)));
+    return new Set(this.movesSubject.value.flatMap(move => move.courseDates.map(c => c.course)));
   }
 
   getTypes(): Set<string> {
@@ -95,6 +95,31 @@ export class DataManagerService {
       return rv;
     }, {});
   };
+
+  getRelationPairs(): Array<Array<string>> {
+    const pairs = [];
+    for (const move of this.movesSubject.value) {
+      for (const name of move.relatedMoves) {
+        if (!name) {
+          continue
+        }
+        pairs.push([move.name, name]);
+      }
+      for (const name of move.startMove) {
+        if (!name) {
+          continue
+        }
+        pairs.push([move.name, name]);
+      }
+      for (const name of move.endMove) {
+        if (!name) {
+          continue
+        }
+        pairs.push([move.name, name]);
+      }
+    }
+    return pairs;
+  }
 
 
   save(moveDto: MoveDto) {

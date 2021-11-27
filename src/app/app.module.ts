@@ -30,6 +30,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MarkdownModule } from 'ngx-markdown';
+import { RelationsPageComponent } from './relations-page/relations-page.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +39,8 @@ import { MarkdownModule } from 'ngx-markdown';
     MoveCardsPageComponent,
     MovePageComponent,
     SettingsPageComponent,
-    DanceCardsPageComponent
+    DanceCardsPageComponent,
+    RelationsPageComponent
   ],
   imports: [
     BrowserModule,
