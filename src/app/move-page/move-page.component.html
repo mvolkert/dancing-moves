@@ -16,7 +16,7 @@
             <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
         <mat-label>Date</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="date">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -67,7 +67,7 @@
             </mat-optgroup>
         </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
         <mat-label>ToDo</mat-label>
         <input matInput formControlName="toDo">
     </mat-form-field>
