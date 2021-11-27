@@ -598,6 +598,9 @@ THE SOFTWARE.
 hash.js
 MIT
 
+highcharts
+https://www.highcharts.com/license
+
 hmac-drbg
 MIT
 
