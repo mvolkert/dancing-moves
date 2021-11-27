@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -65,7 +65,7 @@ import { MarkdownModule } from 'ngx-markdown';
     MatSnackBarModule,
     MarkdownModule.forRoot(),
   ],
-  providers: [CookieService],
+  providers: [CookieService, {provide: MAT_DATE_LOCALE, useValue: 'de-DE'}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

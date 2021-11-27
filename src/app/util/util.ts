@@ -1,7 +1,8 @@
-export const regexGermanDate = /(\d\d).(\d\d).(\d\d\d\d)/y;
-export const regexIsoDate = /(\d\d\d\d)-(\d\d)-(\d\d)/y;
+export const regexGermanDate = /([0-9]{2})\.([0-9]{2})\.([0-9]{4})/;
+export const regexIsoDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
 
 export const parseDate = (dateString: string): Date => {
+    dateString = dateString.trim();
     const match = regexGermanDate.exec(dateString);
     if (match) {
         dateString = `${match[3]}-${match[2]}-${match[1]}`

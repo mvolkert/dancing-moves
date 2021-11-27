@@ -3,7 +3,7 @@
   <mat-card-subtitle>{{moveDto.dance}}</mat-card-subtitle>
   <mat-card-content>
     <div *ngFor="let courseDate of moveDto.courseDates">
-      <span *ngIf="isDateValid(courseDate)">{{courseDate.date | date}}&nbsp;</span>
+      <span *ngIf="isDateValid(courseDate)">{{courseDate.date | date: 'dd.MM.yyyy'}}&nbsp;</span>
       <span>{{courseDate.course}}</span>
     </div>
   </mat-card-content>
