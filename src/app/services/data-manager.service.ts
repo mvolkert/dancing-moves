@@ -17,7 +17,7 @@ export class DataManagerService {
 
   private movesSubject = new BehaviorSubject<MoveDto[]>(new Array<MoveDto>());
   movesObservable = this.movesSubject.asObservable();
-  searchFilterObservable = new BehaviorSubject<SearchDto>( {} as SearchDto);
+  searchFilterObservable = new BehaviorSubject<SearchDto>({} as SearchDto);
   isStarted = false;
   isStarting = new Subject<boolean>();
 
@@ -100,24 +100,13 @@ export class DataManagerService {
 
   getRelationPairs(): Observable<Array<Array<string>>> {
     return this.searchFilterObservable.pipe(map(searchFilter => {
-      const pairs = [];
+      const pairs = new Array<Array<string>>();
       const moves = this.selectMoves(this.movesSubject.value, this.getDances(), searchFilter);
       for (const move of moves) {
-        for (const name of move.relatedMoves) {
-          if (name) {
-            pairs.push([move.name, name]);
-          }
-        }
-        for (const name of move.startMove) {
-          if (name) {
-            pairs.push([move.name, name]);
-          }
-        }
-        for (const name of move.endMove) {
-          if (name) {
-            pairs.push([move.name, name]);
-          }
-        }
+        move.startMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        move.endMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        move.relatedMoves.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        move.relatedMovesOtherDances.filter(name => name).forEach(name => pairs.push([move.name, name]));
       }
       return pairs;
     }))

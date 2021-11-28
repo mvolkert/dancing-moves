@@ -131,10 +131,10 @@ export class ApiclientService {
       count: row[5],
       nameVerified: parseBoolean(row[6]),
       type: row[7],
-      startMove: row[8]?.split(", "),
-      endMove: row[9]?.split(", "),
-      relatedMoves: row[10]?.split(", "),
-      relatedMovesOtherDances: row[11]?.split(", "),
+      startMove: row[8]?.split(",").map((e: string) => e.trim()),
+      endMove: row[9]?.split(",").map((e: string) => e.trim()),
+      relatedMoves: row[10]?.split(",").map((e: string) => e.trim()),
+      relatedMovesOtherDances: row[11]?.split(",").map((e: string) => e.trim()),
       videoname: row[12],
       links: row[13],
       toDo: row[14],
@@ -148,7 +148,7 @@ export class ApiclientService {
   private moveToLine(moveDto: MoveDto): string[] {
     return [moveDto.name, moveDto.dance, moveDto.description, toGermanDate(moveDto.date),
     moveDto.order, moveDto.count, String(moveDto.nameVerified),
-    moveDto.type, moveDto.startMove?.join(", "), moveDto.endMove?.join(", "), moveDto.relatedMoves?.join(", "), moveDto.relatedMovesOtherDances?.join(", "),
+    moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
     moveDto.videoname, moveDto.links, moveDto.toDo]
   }
 }
