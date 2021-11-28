@@ -31,11 +31,31 @@ export class RelationsPageComponent implements OnInit {
       },
       plotOptions: {
         networkgraph: {
-          keys: ['from', 'to']
+          keys: ['from', 'to'],
+          layoutAlgorithm: {
+            enableSimulation: false,
+            integration: 'verlet',
+            linkLength: 100
+          }
         }
       },
       series: [{
         name: 'K8',
+        marker: {
+          radius: 35
+        },
+        dataLabels: {
+          enabled: true,
+          textPath: {
+            enabled: true,
+            attributes: {
+              dy: 10,
+              startOffset: '45%'
+            } as Highcharts.SVGAttributes
+          },
+          linkFormat: '',
+          allowOverlap: true
+        },
         data: pairs
       }]
     } as Highcharts.Options);
