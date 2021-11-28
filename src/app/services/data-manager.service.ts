@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { ApiclientService } from './apiclient.service';
 import { reduce, map } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { MoveGroupDto } from '../model/move-group-dto';
 import { environment } from 'src/environments/environment';
 import { delay, parseBoolean, parseDate } from '../util/util';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SearchDto } from '../model/search-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class DataManagerService {
 
   private movesSubject = new BehaviorSubject<MoveDto[]>(new Array<MoveDto>());
   movesObservable = this.movesSubject.asObservable();
+  searchFilterObservable = new BehaviorSubject<SearchDto>( {} as SearchDto);
   isStarted = false;
   isStarting = new Subject<boolean>();
 
@@ -96,29 +98,38 @@ export class DataManagerService {
     }, {});
   };
 
-  getRelationPairs(): Array<Array<string>> {
-    const pairs = [];
-    for (const move of this.movesSubject.value) {
-      for (const name of move.relatedMoves) {
-        if (!name) {
-          continue
+  getRelationPairs(): Observable<Array<Array<string>>> {
+    return this.searchFilterObservable.pipe(map(searchFilter => {
+      const pairs = [];
+      const moves = this.selectMoves(this.movesSubject.value, this.getDances(), searchFilter);
+      for (const move of moves) {
+        for (const name of move.relatedMoves) {
+          if (name) {
+            pairs.push([move.name, name]);
+          }
         }
-        pairs.push([move.name, name]);
-      }
-      for (const name of move.startMove) {
-        if (!name) {
-          continue
+        for (const name of move.startMove) {
+          if (name) {
+            pairs.push([move.name, name]);
+          }
         }
-        pairs.push([move.name, name]);
-      }
-      for (const name of move.endMove) {
-        if (!name) {
-          continue
+        for (const name of move.endMove) {
+          if (name) {
+            pairs.push([move.name, name]);
+          }
         }
-        pairs.push([move.name, name]);
       }
-    }
-    return pairs;
+      return pairs;
+    }))
+
+  }
+
+  selectMoves(moves: MoveDto[], dances: Set<string>, search: SearchDto): MoveDto[] {
+    return moves
+      .filter(move => !dances.has(search.dance) || move.dance == search.dance)
+      .filter(move => !search.move || move.name.includes(search.move))
+      .filter(move => !search.course || move.courseDates.map(c => c.course).includes(search.course))
+      .filter(move => !search.type || move.type.includes(search.type));
   }
 
 

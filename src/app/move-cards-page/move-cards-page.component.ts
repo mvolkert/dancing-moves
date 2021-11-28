@@ -33,7 +33,7 @@ export class MoveCardsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.searchForm!.valueChanges.subscribe(value => this.dataManagerService.searchFilterObservable.next(value));
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
@@ -50,23 +50,13 @@ export class MoveCardsPageComponent implements OnInit {
       this.movesGroupOptions = this.searchForm!.valueChanges.pipe(
         startWith(''),
         map((value: SearchDto) => {
-          this.selectMoves(value);
+          this.dataManagerService.selectMoves(this.allMoves, this.dances, value);
           return this.filterGroup(value);
         }),
       );
     });
 
   }
-
-  selectMoves(search: SearchDto) {
-    this.moves = this.allMoves
-      .filter(move => !this.dances.has(search.dance) || move.dance == search.dance)
-      .filter(move => !search.move || move.name.includes(search.move))
-      .filter(move => !search.course || move.courseDates.map(c => c.course).includes(search.course))
-      .filter(move => !search.type || move.type.includes(search.type));
-  }
-
-
 
   generateSortFn(props: any) {
     return (a: any, b: any) => {

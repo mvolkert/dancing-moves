@@ -19,46 +19,47 @@ export class RelationsPageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
-    const pairs = this.dataManagerService.getRelationPairs();
-    console.log(pairs);
-    Highcharts.chart(this.chartViewChild.nativeElement, {
-      chart: {
-        type: 'networkgraph',
-        plotBorderWidth: 1
-      },
-      title: {
-        text: 'Relations'
-      },
-      plotOptions: {
-        networkgraph: {
-          keys: ['from', 'to'],
-          layoutAlgorithm: {
-            enableSimulation: false,
-            integration: 'verlet',
-            linkLength: 100
+    this.dataManagerService.getRelationPairs().subscribe(pairs => {
+      console.log(pairs);
+      Highcharts.chart(this.chartViewChild.nativeElement, {
+        chart: {
+          type: 'networkgraph',
+          plotBorderWidth: 1
+        },
+        title: {
+          text: 'Relations'
+        },
+        plotOptions: {
+          networkgraph: {
+            keys: ['from', 'to'],
+            layoutAlgorithm: {
+              enableSimulation: false,
+              integration: 'verlet',
+              linkLength: 100
+            }
           }
-        }
-      },
-      series: [{
-        name: 'K8',
-        marker: {
-          radius: 35
         },
-        dataLabels: {
-          enabled: true,
-          textPath: {
-            enabled: true,
-            attributes: {
-              dy: 10,
-              startOffset: '45%'
-            } as Highcharts.SVGAttributes
+        series: [{
+          name: 'K8',
+          marker: {
+            radius: 35
           },
-          linkFormat: '',
-          allowOverlap: true
-        },
-        data: pairs
-      }]
-    } as Highcharts.Options);
+          dataLabels: {
+            enabled: true,
+            textPath: {
+              enabled: true,
+              attributes: {
+                dy: 10,
+                startOffset: '45%'
+              } as Highcharts.SVGAttributes
+            },
+            linkFormat: '',
+            allowOverlap: true
+          },
+          data: pairs
+        }]
+      } as Highcharts.Options);
+    });
   };
 
 }
