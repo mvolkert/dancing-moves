@@ -125,18 +125,19 @@ export class ApiclientService {
     return {
       name: row[0],
       dance: row[1],
-      date: parseDate(row[2]),
-      order: row[3],
-      count: row[4],
-      nameVerified: parseBoolean(row[5]),
-      type: row[6],
-      startMove: row[7]?.split(", "),
-      endMove: row[8]?.split(", "),
-      relatedMoves: row[9]?.split(", "),
-      videoname: row[10],
-      description: row[11],
-      toDo: row[12],
+      description: row[2],
+      date: parseDate(row[3]),
+      order: row[4],
+      count: row[5],
+      nameVerified: parseBoolean(row[6]),
+      type: row[7],
+      startMove: row[8]?.split(", "),
+      endMove: row[9]?.split(", "),
+      relatedMoves: row[10]?.split(", "),
+      relatedMovesOtherDances: row[11]?.split(", "),
+      videoname: row[12],
       links: row[13],
+      toDo: row[14],
       row: i + 1,
       courseDates: []
     };
@@ -145,9 +146,9 @@ export class ApiclientService {
 
 
   private moveToLine(moveDto: MoveDto): string[] {
-    return [moveDto.name, moveDto.dance, toGermanDate(moveDto.date),
+    return [moveDto.name, moveDto.dance, moveDto.description, toGermanDate(moveDto.date),
     moveDto.order, moveDto.count, String(moveDto.nameVerified),
-    moveDto.type, moveDto.startMove?.join(", "), moveDto.endMove?.join(", "), moveDto.relatedMoves?.join(", "), moveDto.videoname,
-    moveDto.description, moveDto.toDo, moveDto.links]
+    moveDto.type, moveDto.startMove?.join(", "), moveDto.endMove?.join(", "), moveDto.relatedMoves?.join(", "), moveDto.relatedMovesOtherDances?.join(", "),
+    moveDto.videoname, moveDto.links, moveDto.toDo]
   }
 }

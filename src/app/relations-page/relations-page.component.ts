@@ -20,7 +20,6 @@ export class RelationsPageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
     this.dataManagerService.getRelationPairs().subscribe(pairs => {
-      console.log(pairs);
       Highcharts.chart(this.chartViewChild.nativeElement, {
         chart: {
           type: 'networkgraph',

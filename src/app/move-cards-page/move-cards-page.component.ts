@@ -33,6 +33,7 @@ export class MoveCardsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.searchForm.patchValue(this.dataManagerService.searchFilterObservable.value);
     this.searchForm!.valueChanges.subscribe(value => this.dataManagerService.searchFilterObservable.next(value));
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
@@ -47,10 +48,9 @@ export class MoveCardsPageComponent implements OnInit {
     });
     this.dataManagerService.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
-      this.movesGroupOptions = this.searchForm!.valueChanges.pipe(
-        startWith(''),
+      this.movesGroupOptions = this.dataManagerService.searchFilterObservable.pipe(
         map((value: SearchDto) => {
-          this.dataManagerService.selectMoves(this.allMoves, this.dances, value);
+          this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dances, value);
           return this.filterGroup(value);
         }),
       );
