@@ -1,3 +1,4 @@
+import { style } from '@angular/animations';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as  Highcharts from 'highcharts';
 import { DataManagerService } from '../services/data-manager.service';
@@ -49,7 +50,7 @@ export class RelationsPageComponent implements OnInit {
         series: [{
           name: 'K8',
           marker: {
-            radius: 30,
+            radius: 20,
             fillColor: "#c2185b"
           },
           dataLabels: {
@@ -57,10 +58,14 @@ export class RelationsPageComponent implements OnInit {
             textPath: {
               enabled: true,
               attributes: {
-                dy: 10,
+                dy: 9,
                 startOffset: '45%',
                 fill: "#fff"
               } as Highcharts.SVGAttributes
+            },
+            style: {
+              fontSize: '9',
+              fontWeight: '100'
             },
             linkFormat: '',
             allowOverlap: true
