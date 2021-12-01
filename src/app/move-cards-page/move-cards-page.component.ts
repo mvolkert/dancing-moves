@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, startWith } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -29,7 +30,7 @@ export class MoveCardsPageComponent implements OnInit {
     type: new FormControl(""),
   });
 
-  constructor(private dataManagerService: DataManagerService, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private dataManagerService: DataManagerService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -55,6 +56,15 @@ export class MoveCardsPageComponent implements OnInit {
         }),
       );
     });
+    this.dataManagerService.searchFilterObservable.subscribe(searchFilter => {
+      this.router.navigate([], {
+        queryParams: searchFilter,
+        queryParamsHandling: 'merge'
+      })
+      if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
+        this.searchForm.patchValue(searchFilter);
+      }
+    });
 
   }
 
@@ -77,7 +87,7 @@ export class MoveCardsPageComponent implements OnInit {
     if (search.move || search.dance) {
       return this.movesGroup
         .filter(group => !this.dances.has(search.dance) || group.dance == search.dance)
-        .map(group => ({ dance: group.dance, names: group.names.filter(item => item.toLowerCase().includes(search.move.toLowerCase())) }))
+        .map(group => ({ dance: group.dance, names: group.names.filter(item => item?.toLowerCase()?.includes(search.move?.toLowerCase())) }))
         .filter(group => group.names.length > 0);
     }
 

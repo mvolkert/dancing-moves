@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
@@ -13,7 +13,7 @@ export class SettingsPageComponent implements OnInit {
     secretWrite: new FormControl(''),
   });
   url: string = this.createUrl();
-  constructor(private settings: SettingsService) { }
+  constructor(private settings: SettingsService, private router: Router) { }
 
   ngOnInit(): void {
     this.settingsForm.patchValue({
@@ -21,21 +21,23 @@ export class SettingsPageComponent implements OnInit {
       secretWrite: this.settings.secretWriteString
     });
     this.settingsForm.valueChanges.subscribe(value => {
-      console.log(window.location.href);
-      this.settings.initSettings({'secret': value.secretRead, 'secret-write': value.secretWrite});
+      this.router.navigate([], {
+        queryParams: { 'secret': value.secretRead, 'secret-write': value.secretWrite },
+        queryParamsHandling: 'merge'
+      })
       this.url = this.createUrl();
     });
   }
 
   private createUrl() {
     const options = []
-    if(this.settings.secretReadString){
+    if (this.settings.secretReadString) {
       options.push(`secret=${this.settings.secretReadString}`)
     }
-    if(this.settings.secretWriteString){
+    if (this.settings.secretWriteString) {
       options.push(`secret-write=${this.settings.secretWriteString}`)
     }
-    if(options.length>0){
+    if (options.length > 0) {
       return `${document.baseURI}?${options.join('&')}`
     }
     return document.baseURI

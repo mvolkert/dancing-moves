@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { delay, parseBoolean, parseDate } from '../util/util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SearchDto } from '../model/search-dto';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,13 @@ export class DataManagerService {
   isStarted = false;
   isStarting = new Subject<boolean>();
 
-  constructor(private apiclientService: ApiclientService, private cookies: CookieService, private snackBar: MatSnackBar) { }
+  constructor(private apiclientService: ApiclientService, private cookies: CookieService, private snackBar: MatSnackBar, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (params["dance"] || params["move"] || params["course"] || params["type"]) {
+        this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], type: params["type"] });
+      }
+    })
+  }
 
   start() {
     if (!environment.sheetsApiActive) {
