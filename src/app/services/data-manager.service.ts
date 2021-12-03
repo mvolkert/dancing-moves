@@ -10,6 +10,7 @@ import { delay, parseBoolean, parseDate } from '../util/util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SearchDto } from '../model/search-dto';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RelationType } from '../model/relation-type-enum';
 
 @Injectable({
   providedIn: 'root'
@@ -105,15 +106,23 @@ export class DataManagerService {
     }, {});
   };
 
-  getRelationPairs(): Observable<Array<Array<string>>> {
+  getRelationPairs(types: Array<string>): Observable<Array<Array<string>>> {
     return this.searchFilterObservable.pipe(map(searchFilter => {
       const pairs = new Array<Array<string>>();
       const moves = this.selectMoves(this.movesSubject.value, this.getDances(), searchFilter);
       for (const move of moves) {
-        move.startMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
-        move.endMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
-        move.relatedMoves.filter(name => name).forEach(name => pairs.push([move.name, name]));
-        move.relatedMovesOtherDances.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        if (types.includes(RelationType.start)) {
+          move.startMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        }
+        if (types.includes(RelationType.end)) {
+          move.endMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        }
+        if (types.includes(RelationType.related)) {
+          move.relatedMoves.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        }
+        if (types.includes(RelationType.otherDance)) {
+          move.relatedMovesOtherDances.filter(name => name).forEach(name => pairs.push([move.name, name]));
+        }
       }
       return pairs;
     }))
