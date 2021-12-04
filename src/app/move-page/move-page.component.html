@@ -40,31 +40,25 @@
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Start Move</mat-label>
         <mat-select formControlName="startMove" multiple>
-            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                <mat-option *ngFor="let name of group.names" [value]="name">
-                    {{name}}
-                </mat-option>
-            </mat-optgroup>
+            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
+                {{name}}
+            </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>End Move</mat-label>
         <mat-select formControlName="endMove" multiple>
-            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                <mat-option *ngFor="let name of group.names" [value]="name">
-                    {{name}}
-                </mat-option>
-            </mat-optgroup>
+            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
+                {{name}}
+            </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Related Moves</mat-label>
         <mat-select formControlName="relatedMoves" multiple>
-            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                <mat-option *ngFor="let name of group.names" [value]="name">
-                    {{name}}
-                </mat-option>
-            </mat-optgroup>
+            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
+                {{name}}
+            </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
@@ -123,5 +117,6 @@
     </mat-form-field>
     <div markdown [data]="moveForm.value.description">
     </div>
-    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit" [disabled]="moveForm.invalid">Save</button>
+    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
+        [disabled]="moveForm.invalid">Save</button>
 </form>

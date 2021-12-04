@@ -37,6 +37,7 @@ export class MovePageComponent implements OnInit {
   });
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
+  danceMovesNames: Set<string> = new Set<string>();
   loaded = false;
   nameParam = ""
   readonly = false;
@@ -84,9 +85,14 @@ export class MovePageComponent implements OnInit {
         this.otherMovesNames.delete(this.move.name);
       }
     }
+    this.moveForm.valueChanges.subscribe(value => {
+      this.move = value;
+      this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
+    });
     if (this.move) {
       this.moveForm.patchValue(this.move);
     }
+
     this.moveForm.updateValueAndValidity();
     if (!this.settings.secretWrite) {
       this.moveForm.disable();
@@ -122,18 +128,17 @@ export class MovePageComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.moveForm.invalid) {
-      return;
+    if (this.moveForm.valid && this.move) {
+      this.loaded = false;
+      this.readonly = true;
+      this.moveForm.disable();
+      this.dataManager.saveOrCreate(this.move).subscribe(m => {
+        this.moveForm.patchValue(m);
+        this.loaded = true;
+        this.readonly = false;
+        this.moveForm.enable();
+      });
     }
-    this.loaded = false;
-    this.readonly = true;
-    this.moveForm.disable();
-    this.dataManager.saveOrCreate(this.moveForm.value).subscribe(m => {
-      this.moveForm.patchValue(m);
-      this.loaded = true;
-      this.readonly = false;
-      this.moveForm.enable();
-    });
   }
 
   private nameExistsValidator(): ValidatorFn {

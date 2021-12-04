@@ -80,6 +80,10 @@ export class DataManagerService {
       ))
   }
 
+  getMovesNamesOf(dance: string | undefined): Set<string> {
+    return new Set(this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.name));
+  }
+
   getMovesNames(): Set<string> {
     return new Set(this.movesSubject.value.map(move => move.name));
   }
@@ -148,17 +152,22 @@ export class DataManagerService {
 
   saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
     if (moveDto.row) {
-      return this.apiclientService.patchData(moveDto).pipe(map(r => moveDto), this.tapRequest);
+      return this.apiclientService.patchData(moveDto).pipe(map(r => this.updateMoveData(moveDto)), this.tapRequest);
     } else {
       return this.apiclientService.appendData(moveDto).pipe(map(r => {
         moveDto.row = getRow(r.updates.updatedRange);
-        const moves = JSON.parse(JSON.stringify(this.movesSubject.value));
-        moves.push(moveDto)
-        this.movesSubject.next(moves);
-        this.router.navigate(["move", moveDto.name], { queryParamsHandling: 'merge' });
-        return moveDto;
+        return this.updateMoveData(moveDto);
       }), this.tapRequest)
     }
+  }
+
+  private updateMoveData = (moveDto: MoveDto): MoveDto => {
+    let moves = JSON.parse(JSON.stringify(this.movesSubject.value)) as Array<MoveDto>;
+    moves = moves.filter(m => m.name != moveDto.name);
+    moves.push(moveDto)
+    this.movesSubject.next(moves);
+    this.router.navigate(["move", moveDto.name], { queryParamsHandling: 'merge' });
+    return moveDto;
   }
 
   async normalize() {
