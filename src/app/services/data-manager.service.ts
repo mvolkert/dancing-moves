@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
-import { BehaviorSubject, firstValueFrom, Observable, of, Subject } from 'rxjs';
-import { MoveDto } from '../model/move-dto';
-import { ApiclientService } from './apiclient.service';
-import { reduce, map } from 'rxjs/operators';
-import { MoveGroupDto } from '../model/move-group-dto';
-import { environment } from 'src/environments/environment';
-import { delay, parseBoolean, parseDate } from '../util/util';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SearchDto } from '../model/search-dto';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { MoveDto } from '../model/move-dto';
+import { MoveGroupDto } from '../model/move-group-dto';
+import { SearchDto } from '../model/search-dto';
+import { delay, getRow, parseBoolean, parseDate } from '../util/util';
+import { ApiclientService } from './apiclient.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,7 @@ export class DataManagerService {
   isStarted = false;
   isStarting = new Subject<boolean>();
 
-  constructor(private apiclientService: ApiclientService, private cookies: CookieService, private snackBar: MatSnackBar, private route: ActivatedRoute) {
+  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params["dance"] || params["move"] || params["course"] || params["type"]) {
         this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], type: params["type"] });
@@ -128,29 +127,29 @@ export class DataManagerService {
       .filter(move => !search.type || move.type.includes(search.type));
   }
 
+  private tapRequest = tap({
+    next: (response: any) => {
+      console.log(response);
+      this.snackBar.open("saved", "OK");
+    }, error: (response: any) => {
+      console.log(response);
+      this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
+    }
+  })
 
-  save(moveDto: MoveDto) {
-    this.apiclientService.patchData(moveDto).subscribe({
-      next: (response: any) => {
-        console.log(response);
-        this.snackBar.open("saved", "OK");
-      }, error: (response: any) => {
-        console.log(response);
-        this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
-      }
-    });
-  }
-
-  create(moveDto: MoveDto) {
-    this.apiclientService.appendData(moveDto).subscribe({
-      next: (response: any) => {
-        console.log(response);
-        this.snackBar.open("created", "OK");
-      }, error: (response: any) => {
-        console.log('Error: ' + response.result.error.message);
-        this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
-      }
-    });
+  saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
+    if (moveDto.row) {
+      return this.apiclientService.patchData(moveDto).pipe(map(r => moveDto), this.tapRequest);
+    } else {
+      return this.apiclientService.appendData(moveDto).pipe(map(r => {
+        moveDto.row = getRow(r.updates.updatedRange);
+        const moves = JSON.parse(JSON.stringify(this.movesSubject.value));
+        moves.push(moveDto)
+        this.movesSubject.next(moves);
+        this.router.navigate(["move", moveDto.name], { queryParamsHandling: 'merge' });
+        return moveDto;
+      }), this.tapRequest)
+    }
   }
 
   async normalize() {
@@ -158,10 +157,11 @@ export class DataManagerService {
     for (const move of this.movesSubject.value) {
       if (move.description) {
         console.log(move);
-        this.save(move);
+        this.saveOrCreate(move);
         await delay(1000);
       }
     }
   }
 }
+
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { DataManagerService } from '../services/data-manager.service';
@@ -19,14 +19,15 @@ export class MovePageComponent implements OnInit {
   moveForm = new FormGroup({
     name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
     dance: new FormControl('', Validators.required),
-    date: new FormControl(''),
+    date: new FormControl(null),
     order: new FormControl(''),
     count: new FormControl(''),
     nameVerified: new FormControl(''),
     type: new FormControl(''),
-    startMove: new FormControl(''),
-    endMove: new FormControl(''),
-    relatedMoves: new FormControl(''),
+    startMove: new FormControl([]),
+    endMove: new FormControl([]),
+    relatedMoves: new FormControl([]),
+    relatedMovesOtherDances: new FormControl([]),
     videoname: new FormControl(''),
     description: new FormControl(''),
     toDo: new FormControl(''),
@@ -69,28 +70,35 @@ export class MovePageComponent implements OnInit {
     this.nameParam = decodeURI(this.nameParam);
 
     if (this.nameParam == "new") {
-      this.loaded = true;
+      if (this.move) {
+        this.moveForm.reset();
+        this.move = JSON.parse(JSON.stringify(this.move));
+        if (this.move) {
+          this.move.row = NaN;
+        }
+      }
     } else {
       this.move = this.dataManager.getMove(this.nameParam);
       if (this.move) {
         this.move.courseDates.forEach(this.addCourseDateForm);
-        this.moveForm.patchValue(this.move);
-
         this.otherMovesNames.delete(this.move.name);
-        this.loaded = true;
       }
+    }
+    if (this.move) {
+      this.moveForm.patchValue(this.move);
     }
     this.moveForm.updateValueAndValidity();
     if (!this.settings.secretWrite) {
       this.moveForm.disable();
       this.readonly = true;
     }
+    this.loaded = true;
   }
 
   private createCourseDateForm = () => {
     return new FormGroup({
       course: new FormControl(''),
-      date: new FormControl(''),
+      date: new FormControl(null),
       row: new FormControl('')
     });
   }
@@ -114,12 +122,18 @@ export class MovePageComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.moveForm.value);
-    if (this.nameParam == "new") {
-      this.dataManager.create(this.moveForm.value);
-    } else {
-      this.dataManager.save(this.moveForm.value);
+    if (this.moveForm.invalid) {
+      return;
     }
+    this.loaded = false;
+    this.readonly = true;
+    this.moveForm.disable();
+    this.dataManager.saveOrCreate(this.moveForm.value).subscribe(m => {
+      this.moveForm.patchValue(m);
+      this.loaded = true;
+      this.readonly = false;
+      this.moveForm.enable();
+    });
   }
 
   private nameExistsValidator(): ValidatorFn {

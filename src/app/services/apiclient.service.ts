@@ -131,10 +131,10 @@ export class ApiclientService {
       count: row[5],
       nameVerified: parseBoolean(row[6]),
       type: row[7],
-      startMove: row[8]?.split(",").map((e: string) => e.trim()),
-      endMove: row[9]?.split(",").map((e: string) => e.trim()),
-      relatedMoves: row[10]?.split(",").map((e: string) => e.trim()),
-      relatedMovesOtherDances: row[11]?.split(",").map((e: string) => e.trim()),
+      startMove: this.stringToArray(row[8]),
+      endMove: this.stringToArray(row[9]),
+      relatedMoves: this.stringToArray(row[10]),
+      relatedMovesOtherDances: this.stringToArray(row[11]),
       videoname: row[12],
       links: row[13],
       toDo: row[14],
@@ -143,6 +143,14 @@ export class ApiclientService {
     };
   }
 
+  private stringToArray(str: string) {
+    str = str?.trim();
+    if (str) {
+      return str.split(",").map((e: string) => e.trim()).filter(e => Boolean(e));
+    } else {
+      return []
+    }
+  }
 
 
   private moveToLine(moveDto: MoveDto): string[] {

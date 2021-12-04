@@ -1,5 +1,5 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
-<form *ngIf="loaded" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
+<form *ngIf="loaded||move" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name">
@@ -67,6 +67,16 @@
             </mat-optgroup>
         </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Related Moves Other Dances</mat-label>
+        <mat-select formControlName="relatedMovesOtherDances" multiple>
+            <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-select>
+    </mat-form-field>
     <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
         <mat-label>ToDo</mat-label>
         <input matInput formControlName="toDo">
@@ -113,5 +123,5 @@
     </mat-form-field>
     <div markdown [data]="moveForm.value.description">
     </div>
-    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit">Save</button>
+    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit" [disabled]="moveForm.invalid">Save</button>
 </form>
