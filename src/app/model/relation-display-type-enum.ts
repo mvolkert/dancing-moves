@@ -1,4 +1,4 @@
 export enum RelationDisplayType {
     highchartsNetworkgraph = "highcharts networkgraph",
-    gojsInteractiveForce = "gojs interactiveForce"
+    gojsConceptMap = "gojs conceptMap"
 }

@@ -20,7 +20,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   loaded = false;
   showGoJs = false;
   relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance];
-  displayTypes: Array<string> = [RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsInteractiveForce]
+  displayTypes: Array<string> = [RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsConceptMap]
   private valueChangesSubscription!: Subscription
 
   relationsForm = new FormGroup({
@@ -120,38 +120,29 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     } as Highcharts.Options);
   }
 
-  ngOnDestroy(): void {
-    this.valueChangesSubscription?.unsubscribe();
-  }
-
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is required of state for change detection
-  public gojsState = {
+  gojsState = {
     // Diagram state props
-    diagramNodeData: [
-    ],
-    diagramLinkData: [
-    ],
+    diagramNodeData: [],
+    diagramLinkData: [],
     diagramModelData: { prop: 'value' },
     skipsDiagramUpdate: false,
-  }; // end state object
+  };
 
-  public gojsDivClassName: string = 'gojsDiv';
-
-  updateGojsDiagram(pairs: Array<Connection>) {
+  private updateGojsDiagram(pairs: Array<Connection>) {
     const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { id: m, text: m } });
     const links = pairs;
     this.gojsState = {
-      // Diagram state props
       diagramNodeData: nodes as any,
       diagramLinkData: links as any,
       diagramModelData: { prop: 'value' },
       skipsDiagramUpdate: false,
-    }; // end state object
+    }; 
     console.log(this.gojsState);
   }
   // initialize diagram / templates
-  public createGojsDiagram(): go.Diagram {
+  createGojsDiagram(): go.Diagram {
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
       'undoManager.isEnabled': true,
@@ -206,9 +197,13 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
    * This method should iterate over thoe changes and update state to keep in sync with the FoJS model.
    * This can be done with any preferred state management method, as long as immutability is preserved.
    */
-  public diagramModelChange = function (changes: go.IncrementalData) {
+  diagramModelChange = function (changes: go.IncrementalData) {
     console.log(changes);
     // see gojs-angular-basic for an example model changed handler that preserves immutability
     // when setting state, be sure to set skipsDiagramUpdate: true since GoJS already has this update
   };
+
+  ngOnDestroy(): void {
+    this.valueChangesSubscription?.unsubscribe();
+  }
 }

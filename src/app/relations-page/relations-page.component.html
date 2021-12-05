@@ -20,7 +20,7 @@
 <div  [hidden]="showGoJs" #chart class="chart-container"></div>
 <gojs-diagram *ngIf="showGoJs"
   [initDiagram]='createGojsDiagram'
-  [divClassName]='gojsDivClassName'
+  divClassName='gojsDiv'
   [nodeDataArray]='gojsState.diagramNodeData'
   [linkDataArray]='gojsState.diagramLinkData'
   [modelData]='gojsState.diagramModelData'
