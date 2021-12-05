@@ -11,6 +11,7 @@ import { delay, getRow, parseBoolean, parseDate } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { RelationType } from '../model/relation-type-enum';
 import { CourseDateDto } from '../model/course-date-dto';
+import { Connection } from '../model/connection';
 
 @Injectable({
   providedIn: 'root'
@@ -110,22 +111,22 @@ export class DataManagerService {
     }, {});
   };
 
-  getRelationPairs(types: Array<string>): Observable<Array<Array<string>>> {
+  getRelationPairs(types: Array<string>): Observable<Array<Connection>> {
     return this.searchFilterObservable.pipe(map(searchFilter => {
-      const pairs = new Array<Array<string>>();
+      const pairs = new Array<Connection>();
       const moves = this.selectMoves(this.movesSubject.value, this.getDances(), searchFilter);
       for (const move of moves) {
         if (types.includes(RelationType.start)) {
-          move.startMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
+          move.startMove.filter(name => name).forEach(name => pairs.push({ to: move.name, from: name }));
         }
         if (types.includes(RelationType.end)) {
-          move.endMove.filter(name => name).forEach(name => pairs.push([move.name, name]));
+          move.endMove.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
         }
         if (types.includes(RelationType.related)) {
-          move.relatedMoves.filter(name => name).forEach(name => pairs.push([move.name, name]));
+          move.relatedMoves.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
         }
         if (types.includes(RelationType.otherDance)) {
-          move.relatedMovesOtherDances.filter(name => name).forEach(name => pairs.push([move.name, name]));
+          move.relatedMovesOtherDances.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
         }
       }
       return pairs;

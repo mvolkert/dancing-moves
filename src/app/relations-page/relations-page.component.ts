@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import * as go from 'gojs';
 import * as  Highcharts from 'highcharts';
 import { Subscription, switchMap, tap } from 'rxjs';
+import { Connection } from '../model/connection';
 import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
@@ -42,7 +43,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
         queryParams: value,
         queryParamsHandling: 'merge'
       })),
-      switchMap((value: RelationParams) => this.dataManagerService.getRelationPairs(value.relationTypes))).subscribe((pairs: Array<Array<string>>) => {
+      switchMap((value: RelationParams) => this.dataManagerService.getRelationPairs(value.relationTypes))).subscribe((pairs: Array<Connection>) => {
         if (this.relationsForm.get("displayType")?.value === RelationDisplayType.highchartsNetworkgraph) {
           this.showGoJs = false;
           this.createHighchart(pairs);
@@ -67,7 +68,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     })
   };
 
-  private createHighchart(pairs: string[][]) {
+  private createHighchart(pairs: Connection[]) {
     Highcharts.chart(this.chartViewChild.nativeElement, {
       chart: {
         type: 'networkgraph',
@@ -128,11 +129,8 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   public gojsState = {
     // Diagram state props
     diagramNodeData: [
-      { id: 'Alpha', text: "Alpha", color: 'lightblue' },
-      { id: 'Beta', text: "Beta", color: 'orange' }
     ],
     diagramLinkData: [
-      { key: -1, from: 'Alpha', to: 'Beta' }
     ],
     diagramModelData: { prop: 'value' },
     skipsDiagramUpdate: false,
@@ -140,9 +138,9 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   public gojsDivClassName: string = 'gojsDiv';
 
-  updateGojsDiagram(pairs: Array<Array<string>>) {
-    const nodes = Array.from(new Set(pairs.flatMap(m => m)).values()).map(m => { return { id: m, text: m } });
-    const links = pairs.map(pair => { return {  from: pair[1], to: pair[0] } });
+  updateGojsDiagram(pairs: Array<Connection>) {
+    const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { id: m, text: m } });
+    const links = pairs;
     this.gojsState = {
       // Diagram state props
       diagramNodeData: nodes as any,
@@ -176,7 +174,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
         { locationSpot: go.Spot.Center },
         // define the node's outer shape, which will surround the TextBlock
         $(go.Shape, "Rectangle",
-          { fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }), stroke: "black" }),
+          { fill: $(go.Brush, "Linear", { 0: "#c2185b", 1: "#c2185b" }) }),
         $(go.TextBlock,
           { font: "bold 10pt helvetica, bold arial, sans-serif", margin: 4 },
           new go.Binding("text", "text"))
@@ -186,15 +184,10 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     dia.linkTemplate =
       $(go.Link,  // the whole link panel
         $(go.Shape,  // the link shape
-          { stroke: "black" }),
+          { stroke: "white" }),
         $(go.Shape,  // the arrowhead
-          { toArrow: "standard", stroke: null }),
+          { toArrow: "standard", stroke: "white" }),
         $(go.Panel, "Auto",
-          $(go.Shape,  // the label background, which becomes transparent around the edges
-            {
-              fill: $(go.Brush, "Radial", { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
-              stroke: null
-            }),
           $(go.TextBlock,  // the label text
             {
               textAlign: "center",

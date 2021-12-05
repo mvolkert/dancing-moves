@@ -170,7 +170,7 @@ export class ApiclientService {
   private stringToArray(str: string) {
     str = str?.trim();
     if (str) {
-      return str.split(",").map((e: string) => e.trim()).filter(e => Boolean(e));
+      return Array.from(new Set(str.split(",").map((e: string) => e.trim()).filter(e => Boolean(e))).values());
     } else {
       return []
     }
