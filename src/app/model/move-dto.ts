@@ -3,7 +3,7 @@ import { CourseDateDto } from "./course-date-dto";
 export interface MoveDto {
     name: string,
     dance: string,
-    date: Date,
+    date: Date | null,
     order: string,
     count: string,
     nameVerified: boolean,
@@ -15,7 +15,7 @@ export interface MoveDto {
     videoname: string,
     description: string,
     toDo: string,
-    links:string,
+    links: string,
     row: number,
     courseDates: CourseDateDto[]
 }
