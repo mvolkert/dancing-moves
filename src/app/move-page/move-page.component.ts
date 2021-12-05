@@ -23,7 +23,7 @@ export class MovePageComponent implements OnInit {
     order: new FormControl(''),
     count: new FormControl(''),
     nameVerified: new FormControl(''),
-    type: new FormControl(''),
+    type: new FormControl('Figur', Validators.required),
     startMove: new FormControl([]),
     endMove: new FormControl([]),
     relatedMoves: new FormControl([]),

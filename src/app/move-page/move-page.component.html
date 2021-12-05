@@ -16,12 +16,6 @@
             <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
-        <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
     <mat-form-field appearance="fill" class="half-width">
         <mat-label>Order</mat-label>
         <input type="number" matInput formControlName="order">
@@ -96,8 +90,8 @@
             </mat-form-field>
         </div>
         <button *ngIf="!readonly" mat-icon-button color="primary" type=button aria-label="Add"
-            (click)="addCourseDateForm()" matTooltip="Add">
-            <mat-icon>add_circle_outline</mat-icon>
+            (click)="addCourseDateForm()" matTooltip="Add Course Date">
+            <mat-icon>add_circle_outline</mat-icon>Add Course Date
         </button>
     </div>
     <mat-form-field appearance="fill" class="full-width-adaptive">
