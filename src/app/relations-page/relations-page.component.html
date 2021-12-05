@@ -17,4 +17,13 @@
         </mat-select>
     </mat-form-field>
 </form>
-<div #chart class="chart-container"></div>
+<div  [hidden]="showGoJs" #chart class="chart-container"></div>
+<gojs-diagram *ngIf="showGoJs"
+  [initDiagram]='initDiagram'
+  [divClassName]='diagramDivClassName'
+  [nodeDataArray]='state.diagramNodeData'
+  [linkDataArray]='state.diagramLinkData'
+  [modelData]='state.diagramModelData'
+  (modelChange)='diagramModelChange($event)'
+  [skipsDiagramUpdate]='state.skipsDiagramUpdate'
+></gojs-diagram>

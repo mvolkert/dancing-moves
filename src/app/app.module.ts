@@ -31,6 +31,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MarkdownModule } from 'ngx-markdown';
 import { RelationsPageComponent } from './relations-page/relations-page.component';
+import { GojsAngularModule } from 'gojs-angular';
 @NgModule({
   declarations: [
     AppComponent,
@@ -65,6 +66,7 @@ import { RelationsPageComponent } from './relations-page/relations-page.componen
     ClipboardModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    GojsAngularModule,
     MarkdownModule.forRoot(),
   ],
   providers: [CookieService, {provide: MAT_DATE_LOCALE, useValue: 'de-DE'}],

@@ -8,3 +8,9 @@
     width: 100%;
     max-width: 500px;
 }
+
+.myDiagramDiv {
+    width: 100%;
+    margin: 0 auto;
+    height:  100%;
+  }
