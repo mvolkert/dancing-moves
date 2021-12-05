@@ -8,5 +8,13 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Display Type</mat-label>
+        <mat-select formControlName="displayType">
+            <mat-option *ngFor="let displayType of displayTypes" [value]="displayType">
+                {{displayType}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 </form>
 <div #chart class="chart-container"></div>
