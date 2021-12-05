@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
+import { firstValueFrom, map, Observable, of, switchMap, tap } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
@@ -10,6 +10,7 @@ import { CourseDateDto } from '../model/course-date-dto';
 import { ResponseUpdate } from '../model/response-update';
 import { ResponseCreate } from '../model/response-create';
 import { ResponseGet } from '../model/response-get';
+import { ApiToken } from '../model/api-token';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,9 @@ import { ResponseGet } from '../model/response-get';
 export class ApiclientService {
   private movesKeys: string[] = new Array<string>();
   private courseDatesKeys: string[] = new Array<string>();
+  private lastUpdated!: number;
+  private writeToken!: ApiToken;
+
   constructor(private settingsService: SettingsService, private http: HttpClient) { }
 
   async getMoves(): Promise<MoveDto[]> {
@@ -89,12 +93,20 @@ export class ApiclientService {
     }));
   }
 
-  private loginWrite(): Observable<any> {
+  private loginWrite(): Observable<ApiToken> {
     if (!this.settingsService.secretWrite) {
-      return of({});
+      return of({} as ApiToken);
+    }
+    if (this.writeToken && this.lastUpdated && (this.nowInSec() - this.lastUpdated) < (this.writeToken.expires_in - 100)) {
+      return of(this.writeToken);
     }
     const token = this.createJwt();
-    return this.http.post<any>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token });
+    this.lastUpdated = this.nowInSec();
+    return this.http.post<ApiToken>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(tap(r => this.writeToken = r));
+  }
+
+  private nowInSec(): number {
+    return Date.now() / 1000;
   }
 
   private createJwt() {
