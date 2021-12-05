@@ -19,11 +19,11 @@
 </form>
 <div  [hidden]="showGoJs" #chart class="chart-container"></div>
 <gojs-diagram *ngIf="showGoJs"
-  [initDiagram]='initDiagram'
-  [divClassName]='diagramDivClassName'
-  [nodeDataArray]='state.diagramNodeData'
-  [linkDataArray]='state.diagramLinkData'
-  [modelData]='state.diagramModelData'
+  [initDiagram]='createGojsDiagram'
+  [divClassName]='gojsDivClassName'
+  [nodeDataArray]='gojsState.diagramNodeData'
+  [linkDataArray]='gojsState.diagramLinkData'
+  [modelData]='gojsState.diagramModelData'
   (modelChange)='diagramModelChange($event)'
-  [skipsDiagramUpdate]='state.skipsDiagramUpdate'
+  [skipsDiagramUpdate]='gojsState.skipsDiagramUpdate'
 ></gojs-diagram>

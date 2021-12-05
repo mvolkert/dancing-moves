@@ -48,6 +48,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
           this.createHighchart(pairs);
         } else {
           this.showGoJs = true;
+          this.updateGojsDiagram(pairs);
         }
       });
     this.route.queryParams.subscribe(params => {
@@ -124,7 +125,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is required of state for change detection
-  public state = {
+  public gojsState = {
     // Diagram state props
     diagramNodeData: [
       { id: 'Alpha', text: "Alpha", color: 'lightblue' },
@@ -135,19 +136,24 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     ],
     diagramModelData: { prop: 'value' },
     skipsDiagramUpdate: false,
-
-    // Palette state props
-    paletteNodeData: [
-      { key: 'PaletteNode1', color: 'firebrick' },
-      { key: 'PaletteNode2', color: 'blueviolet' }
-    ]
   }; // end state object
 
-  public diagramDivClassName: string = 'myDiagramDiv';
-  public paletteDivClassName = 'myPaletteDiv';
+  public gojsDivClassName: string = 'gojsDiv';
 
+  updateGojsDiagram(pairs: Array<Array<string>>) {
+    const nodes = Array.from(new Set(pairs.flatMap(m => m)).values()).map(m => { return { id: m, text: m } });
+    const links = pairs.map(pair => { return {  from: pair[1], to: pair[0] } });
+    this.gojsState = {
+      // Diagram state props
+      diagramNodeData: nodes as any,
+      diagramLinkData: links as any,
+      diagramModelData: { prop: 'value' },
+      skipsDiagramUpdate: false,
+    }; // end state object
+    console.log(this.gojsState);
+  }
   // initialize diagram / templates
-  public initDiagram(): go.Diagram {
+  public createGojsDiagram(): go.Diagram {
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
       'undoManager.isEnabled': true,
@@ -156,17 +162,48 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
           nodeKeyProperty: 'id',
           linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
         }
-      )
+      ),
+      initialAutoScale: go.Diagram.Uniform,  // an initial automatic zoom-to-fit
+      contentAlignment: go.Spot.Center,  // align document to the center of the viewport
+      layout:
+        $(go.ForceDirectedLayout,  // automatically spread nodes apart
+          { maxIterations: 200, defaultSpringLength: 30, defaultElectricalCharge: 100 })
     });
 
-    // define the Node template
+    // define each Node's appearance
     dia.nodeTemplate =
-      $(go.Node, 'Auto',
-        $(go.Shape, 'RoundedRectangle', { stroke: null },
-          new go.Binding('fill', 'color')
-        ),
-        $(go.TextBlock, { margin: 8, editable: true },
-          new go.Binding('text').makeTwoWay())
+      $(go.Node, "Auto",  // the whole node panel
+        { locationSpot: go.Spot.Center },
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, "Rectangle",
+          { fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }), stroke: "black" }),
+        $(go.TextBlock,
+          { font: "bold 10pt helvetica, bold arial, sans-serif", margin: 4 },
+          new go.Binding("text", "text"))
+      );
+
+    // replace the default Link template in the linkTemplateMap
+    dia.linkTemplate =
+      $(go.Link,  // the whole link panel
+        $(go.Shape,  // the link shape
+          { stroke: "black" }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "standard", stroke: null }),
+        $(go.Panel, "Auto",
+          $(go.Shape,  // the label background, which becomes transparent around the edges
+            {
+              fill: $(go.Brush, "Radial", { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
+              stroke: null
+            }),
+          $(go.TextBlock,  // the label text
+            {
+              textAlign: "center",
+              font: "10pt helvetica, arial, sans-serif",
+              stroke: "#555555",
+              margin: 4
+            },
+            new go.Binding("text", "text"))
+        )
       );
     return dia;
   }
