@@ -78,6 +78,18 @@ export class ApiclientService {
     const body = { values: [this.moveToLine(moveDto)] }
     return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
   }
+
+  appendCourseDate(courseDateDto: CourseDateDto): Observable<ResponseCreate> {
+    const sheetRange = 'Course Dates!A400:C400';
+    const body = { values: [this.courseDateToLine(courseDateDto)] }
+    return this.spreadsheetsPost(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body, ':append');
+  }
+
+  patchCourseDate(courseDateDto: CourseDateDto): Observable<ResponseUpdate> {
+    const sheetRange = `Course Dates!A${courseDateDto.row}:C${courseDateDto.row}`;
+    const body = { values: [this.courseDateToLine(courseDateDto)] }
+    return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
+  }
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
     return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
   }
@@ -170,5 +182,9 @@ export class ApiclientService {
     moveDto.order, moveDto.count, String(moveDto.nameVerified),
     moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
     moveDto.videoname, moveDto.links, moveDto.toDo]
+  }
+
+  private courseDateToLine(courseDateDto: CourseDateDto): string[] {
+    return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveName]
   }
 }

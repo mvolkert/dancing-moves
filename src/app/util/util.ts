@@ -1,6 +1,7 @@
 export const regexGermanDate = /([0-9]{2})\.([0-9]{2})\.([0-9]{4})/;
 export const regexIsoDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
 export const regexTable = /[A-Za-z0-9\s]+\![A-Z]+[0-9]+\:[A-Z]+([0-9]+)/;
+import { DatePipe } from '@angular/common';
 
 export const parseDate = (dateString: string): Date | null => {
     dateString = dateString?.trim();
@@ -20,12 +21,7 @@ export const toGermanDate = (date: Date | null): string => {
     if (!date || isNaN(date.getTime())) {
         return "";
     }
-    const isoString = date.toISOString();
-    const match = regexIsoDate.exec(isoString);
-    if (match) {
-        return `${match[3]}.${match[2]}.${match[1]}`
-    }
-    return isoString;
+    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
 }
 
 export const parseBoolean = (boolString: string): boolean => {

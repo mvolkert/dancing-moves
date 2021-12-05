@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, firstValueFrom, forkJoin, from, Observable, of, Subject } from 'rxjs';
+import { concatAll, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -10,6 +10,7 @@ import { SearchDto } from '../model/search-dto';
 import { delay, getRow, parseBoolean, parseDate } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { RelationType } from '../model/relation-type-enum';
+import { CourseDateDto } from '../model/course-date-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -143,7 +144,6 @@ export class DataManagerService {
   private tapRequest = tap({
     next: (response: any) => {
       console.log(response);
-      this.snackBar.open("saved", "OK");
     }, error: (response: any) => {
       console.log(response);
       this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
@@ -152,11 +152,25 @@ export class DataManagerService {
 
   saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
     if (moveDto.row) {
-      return this.apiclientService.patchData(moveDto).pipe(map(r => this.updateMoveData(moveDto)), this.tapRequest);
+      return this.apiclientService.patchData(moveDto).pipe(map(r => moveDto), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData));
     } else {
       return this.apiclientService.appendData(moveDto).pipe(map(r => {
         moveDto.row = getRow(r.updates.updatedRange);
-        return this.updateMoveData(moveDto);
+        return moveDto;
+      }), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData))
+    }
+  }
+  private saveOrCreateCourseDates = (moveDto: MoveDto): Observable<MoveDto> => {
+    return forkJoin(moveDto.courseDates.filter(c => c.course || c.date).map(c => { c.moveName = moveDto.name; return c; }).map(this.saveOrCreateCourseDate))
+      .pipe(map(courseDates => { moveDto.courseDates = courseDates; return moveDto; }));
+  }
+  private saveOrCreateCourseDate = (courseDateDto: CourseDateDto): Observable<CourseDateDto> => {
+    if (courseDateDto.row) {
+      return this.apiclientService.patchCourseDate(courseDateDto).pipe(map(r => courseDateDto), this.tapRequest);
+    } else {
+      return this.apiclientService.appendCourseDate(courseDateDto).pipe(map(r => {
+        courseDateDto.row = getRow(r.updates.updatedRange);
+        return courseDateDto;
       }), this.tapRequest)
     }
   }
