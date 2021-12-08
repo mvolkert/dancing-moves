@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as cytoscape from 'cytoscape';
 import * as go from 'gojs';
 import * as  Highcharts from 'highcharts';
 import { Subscription, switchMap, tap } from 'rxjs';
@@ -20,7 +21,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   loaded = false;
   showGoJs = false;
   relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance];
-  displayTypes: Array<string> = [RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsConceptMap]
+  displayTypes: Array<string> = [RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsConceptMap, RelationDisplayType.cytoscape]
   private valueChangesSubscription!: Subscription
 
   relationsForm = new FormGroup({
@@ -47,6 +48,9 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
         if (this.relationsForm.get("displayType")?.value === RelationDisplayType.highchartsNetworkgraph) {
           this.showGoJs = false;
           this.createHighchart(pairs);
+        } else if (this.relationsForm.get("displayType")?.value === RelationDisplayType.cytoscape) {
+          this.showGoJs = false;
+          this.createCytoscape(pairs);
         } else {
           this.showGoJs = true;
           this.updateGojsDiagram(pairs);
@@ -138,7 +142,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
       diagramLinkData: links as any,
       diagramModelData: { prop: 'value' },
       skipsDiagramUpdate: false,
-    }; 
+    };
     console.log(this.gojsState);
   }
   // initialize diagram / templates
@@ -202,6 +206,58 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     // see gojs-angular-basic for an example model changed handler that preserves immutability
     // when setting state, be sure to set skipsDiagramUpdate: true since GoJS already has this update
   };
+
+
+  createCytoscape(pairs: Array<Connection>) {
+    const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { data: { id: m, width: m.length * 10 } } });
+    const links = pairs.map(m => { return { data: { id: m.from + m.to, source: m.from, target: m.to } } });
+    var cy = cytoscape({
+
+      container: this.chartViewChild.nativeElement, // container to render in
+
+      elements: [ // list of graph elements to start with
+        ...nodes, ...links
+      ],
+
+      style: [ // the stylesheet for the graph
+        {
+          selector: 'node',
+          style: {
+            'label': 'data(id)',
+            'height': 30,
+            'width': 'data(width)',
+            'border-color': '#000',
+            'border-width': 3,
+            'border-opacity': 0.5,
+            'background-color': '#c2185b',
+            'color': '#ccc',
+            'text-wrap': 'wrap',
+            'text-halign': 'center',
+            'text-valign': 'center',
+            'shape': 'roundrectangle'
+          } as cytoscape.Css.Node | cytoscape.Css.Edge | cytoscape.Css.Core
+        },
+
+        {
+          selector: 'edge',
+          style: {
+            'width': 3,
+            'line-color': '#ccc',
+            'target-arrow-color': '#ccc',
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier'
+          }
+        }
+      ],
+
+      layout: {
+        name: 'cose',
+        nodeDimensionsIncludeLabels: true,
+        nodeRepulsion: function( node ){ return 10000000; },
+      }
+
+    });
+  }
 
   ngOnDestroy(): void {
     this.valueChangesSubscription?.unsubscribe();
