@@ -1,0 +1,34 @@
+<form [formGroup]="searchForm">
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Dance</mat-label>
+        <mat-select formControlName="dance">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Name</mat-label>
+        <input type="text" matInput formControlName="move" [matAutocomplete]="autoGroup">
+        <mat-autocomplete #autoGroup="matAutocomplete">
+            <mat-optgroup *ngFor="let group of movesGroupOptions | async" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-autocomplete>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Course</mat-label>
+        <mat-select formControlName="course">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let course of courseNames" [value]="course">{{course}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</form>

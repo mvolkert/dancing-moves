@@ -5,6 +5,9 @@ import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { DataManagerService } from '../services/data-manager.service';
 import { SettingsService } from '../services/settings.service';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MoveGroupDto } from '../model/move-group-dto';
+import { MoveDto } from '../model/move-dto';
 
 @Component({
   selector: 'app-nav',
@@ -12,7 +15,22 @@ import { SettingsService } from '../services/settings.service';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
+  moves: MoveDto[] = [];
+  allMoves: MoveDto[] = [];
+  dances = new Set<string>();
+  courseNames = new Set<string>();
+  types = new Set<string>();
+  movesGroup: MoveGroupDto[] = [];
+  loading = true;
 
+  movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
+  moveSearch = new FormControl("");
+  searchForm = new FormGroup({
+    dance: new FormControl(""),
+    move: new FormControl(""),
+    course: new FormControl(""),
+    type: new FormControl(""),
+  });
   devMode = !environment.production;
   readonly = true;
 

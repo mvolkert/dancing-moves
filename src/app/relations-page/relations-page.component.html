@@ -1,22 +1,4 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
-<form [formGroup]="relationsForm">
-    <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Relation Types</mat-label>
-        <mat-select formControlName="relationTypes" multiple>
-            <mat-option *ngFor="let relationType of relationTypes" [value]="relationType">
-                {{relationType}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Display Type</mat-label>
-        <mat-select formControlName="displayType">
-            <mat-option *ngFor="let displayType of displayTypes" [value]="displayType">
-                {{displayType}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</form>
 <div  [hidden]="showGoJs" #chart class="chart-container"></div>
 <gojs-diagram *ngIf="showGoJs"
   [initDiagram]='createGojsDiagram'

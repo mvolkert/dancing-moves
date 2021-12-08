@@ -29,9 +29,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MarkdownModule } from 'ngx-markdown';
 import { RelationsPageComponent } from './relations-page/relations-page.component';
 import { GojsAngularModule } from 'gojs-angular';
+import { RelationsSelectionComponent } from './nav/relations-selection/relations-selection.component';
+import { DanceMoveSelectionComponent } from './nav/dance-move-selection/dance-move-selection.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +44,9 @@ import { GojsAngularModule } from 'gojs-angular';
     MovePageComponent,
     SettingsPageComponent,
     DanceCardsPageComponent,
-    RelationsPageComponent
+    RelationsPageComponent,
+    RelationsSelectionComponent,
+    DanceMoveSelectionComponent
   ],
   imports: [
     BrowserModule,
@@ -66,10 +71,11 @@ import { GojsAngularModule } from 'gojs-angular';
     ClipboardModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    MatExpansionModule,
     GojsAngularModule,
     MarkdownModule.forRoot(),
   ],
-  providers: [CookieService, {provide: MAT_DATE_LOCALE, useValue: 'de-DE'}],
+  providers: [CookieService, { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -12,6 +12,8 @@ import { ApiclientService } from './apiclient.service';
 import { RelationType } from '../model/relation-type-enum';
 import { CourseDateDto } from '../model/course-date-dto';
 import { Connection } from '../model/connection';
+import { RelationParams } from '../model/relation-params';
+import { RelationDisplayType } from '../model/relation-display-type-enum';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +23,7 @@ export class DataManagerService {
   private movesSubject = new BehaviorSubject<MoveDto[]>(new Array<MoveDto>());
   movesObservable = this.movesSubject.asObservable();
   searchFilterObservable = new BehaviorSubject<SearchDto>({} as SearchDto);
+  relationsSelectionObservable = new BehaviorSubject<RelationParams>({} as RelationParams);
   isStarted = false;
   isStarting = new Subject<boolean>();
 
@@ -29,7 +32,19 @@ export class DataManagerService {
       if (params["dance"] || params["move"] || params["course"] || params["type"]) {
         this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], type: params["type"] });
       }
+      let relationTypeParams = params["relationTypes"];
+      if (!relationTypeParams) {
+        relationTypeParams = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance]
+      } else if (typeof relationTypeParams === 'string') {
+        relationTypeParams = [relationTypeParams];
+      }
+      let displayTypeParam = params["displayType"]?.trim();
+      if (!displayTypeParam) {
+        displayTypeParam = RelationDisplayType.cytoscape
+      }
+      this.relationsSelectionObservable.next({ relationTypes: relationTypeParams, displayType: displayTypeParam });
     })
+
   }
 
   start() {

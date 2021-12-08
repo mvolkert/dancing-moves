@@ -20,35 +20,24 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   loaded = false;
   showGoJs = false;
-  relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance];
-  displayTypes: Array<string> = [RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsConceptMap, RelationDisplayType.cytoscape]
   private valueChangesSubscription!: Subscription
-
-  relationsForm = new FormGroup({
-    relationTypes: new FormControl([]),
-    displayType: new FormControl("")
-  });
 
   @ViewChild('chart')
   chartViewChild!: ElementRef;
 
-  constructor(private dataManagerService: DataManagerService, private route: ActivatedRoute, private router: Router) {
+  constructor(private dataManagerService: DataManagerService, private router: Router) {
     require('highcharts/modules/networkgraph')(Highcharts);
   }
 
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
     this.loaded = true;
-    this.valueChangesSubscription = this.relationsForm.valueChanges.pipe(
-      tap(value => this.router.navigate([], {
-        queryParams: value,
-        queryParamsHandling: 'merge'
-      })),
+    this.valueChangesSubscription = this.dataManagerService.relationsSelectionObservable.pipe(
       switchMap((value: RelationParams) => this.dataManagerService.getRelationPairs(value.relationTypes))).subscribe((pairs: Array<Connection>) => {
-        if (this.relationsForm.get("displayType")?.value === RelationDisplayType.highchartsNetworkgraph) {
+        if (this.dataManagerService.relationsSelectionObservable.value.displayType === RelationDisplayType.highchartsNetworkgraph) {
           this.showGoJs = false;
           this.createHighchart(pairs);
-        } else if (this.relationsForm.get("displayType")?.value === RelationDisplayType.cytoscape) {
+        } else if (this.dataManagerService.relationsSelectionObservable.value.displayType === RelationDisplayType.cytoscape) {
           this.showGoJs = false;
           this.createCytoscape(pairs);
         } else {
@@ -56,20 +45,6 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
           this.updateGojsDiagram(pairs);
         }
       });
-    this.route.queryParams.subscribe(params => {
-      console.log(params);
-      let relationTypeParams = params["relationTypes"];
-      if (!relationTypeParams) {
-        relationTypeParams = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance]
-      } else if (typeof relationTypeParams === 'string') {
-        relationTypeParams = [relationTypeParams];
-      }
-      let displayTypeParam = params["displayType"]?.trim();
-      if (!displayTypeParam) {
-        displayTypeParam = RelationDisplayType.highchartsNetworkgraph
-      }
-      this.relationsForm.patchValue({ relationTypes: relationTypeParams, displayType: displayTypeParam });
-    })
   };
 
   private createHighchart(pairs: Connection[]) {
@@ -235,7 +210,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
             'text-halign': 'center',
             'text-valign': 'center',
             'shape': 'roundrectangle'
-          } as cytoscape.Css.Node | cytoscape.Css.Edge | cytoscape.Css.Core
+          }
         },
 
         {
