@@ -253,9 +253,14 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
       layout: {
         name: 'cose',
         nodeDimensionsIncludeLabels: true,
-        nodeRepulsion: function( node ){ return 10000000; },
+        nodeRepulsion: (node) => 10000000,
       }
 
+    });
+    cy.on('tap', 'node', (evt) => {
+      this.router.navigate(["move", evt.target.id()], {
+        queryParamsHandling: 'merge'
+      });
     });
   }
 
