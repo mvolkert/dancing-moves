@@ -20,7 +20,8 @@ export class MoveCardsPageComponent implements OnInit {
   constructor(private dataManagerService: DataManagerService) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.dataManagerService.loading();
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));

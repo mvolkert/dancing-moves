@@ -21,15 +21,16 @@ export class RelationsSelectionComponent implements OnInit {
   });
   constructor(private dataManagerService: DataManagerService, private route: ActivatedRoute, private router: Router) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.dataManagerService.loading();
+    this.dataManagerService.relationsSelectionObservable.subscribe(value => {
+      this.relationsForm.patchValue(value);
+    })
     this.relationsForm.valueChanges.subscribe(
       value => this.router.navigate([], {
         queryParams: value,
         queryParamsHandling: 'merge'
       }));
-    this.dataManagerService.relationsSelectionObservable.subscribe(value => {
-      this.relationsForm.patchValue(value);
-    })
   }
 
 }

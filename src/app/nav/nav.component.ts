@@ -15,22 +15,7 @@ import { MoveDto } from '../model/move-dto';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  moves: MoveDto[] = [];
-  allMoves: MoveDto[] = [];
-  dances = new Set<string>();
-  courseNames = new Set<string>();
-  types = new Set<string>();
-  movesGroup: MoveGroupDto[] = [];
-  loading = true;
-
-  movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
-  moveSearch = new FormControl("");
-  searchForm = new FormGroup({
-    dance: new FormControl(""),
-    move: new FormControl(""),
-    course: new FormControl(""),
-    type: new FormControl(""),
-  });
+  
   devMode = !environment.production;
   readonly = true;
 

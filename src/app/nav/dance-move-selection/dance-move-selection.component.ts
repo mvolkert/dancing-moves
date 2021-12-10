@@ -32,9 +32,9 @@ export class DanceMoveSelectionComponent implements OnInit {
   constructor(private dataManagerService: DataManagerService, private router: Router) {
   }
 
-  ngOnInit(): void {
-    this.searchForm.patchValue(this.dataManagerService.searchFilterObservable.value);
-    this.searchForm!.valueChanges.subscribe(value => this.dataManagerService.searchFilterObservable.next(value));
+  async ngOnInit(): Promise<void> {
+    await this.dataManagerService.loading();
+
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.dances = this.dataManagerService.getDances();
       this.courseNames = this.dataManagerService.getCourseNames();
@@ -50,15 +50,15 @@ export class DanceMoveSelectionComponent implements OnInit {
       );
     });
     this.dataManagerService.searchFilterObservable.subscribe(searchFilter => {
+      if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
+        this.searchForm.patchValue(searchFilter);
+      }
       this.router.navigate([], {
         queryParams: searchFilter,
         queryParamsHandling: 'merge'
       })
-      if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
-        this.searchForm.patchValue(searchFilter);
-      }
     });
-
+    this.searchForm!.valueChanges.subscribe(value => this.dataManagerService.searchFilterObservable.next(value));
   }
 
   private filterGroup(search: SearchDto): MoveGroupDto[] {
