@@ -39,11 +39,11 @@
       </button>
       <span class="headline">{{headline}}</span>
       <span class="spacer"></span>
-      <button *ngIf="devMode && !readonly" mat-mini-fab color="primary" aria-label="normalize" (click)="normalize()">
+      <button *ngIf="false" mat-mini-fab color="primary" aria-label="normalize" (click)="normalize()">
         <mat-icon>list</mat-icon>
       </button>
       <button *ngIf="!readonly" mat-mini-fab color="primary" aria-label="create new move">
-        <mat-icon routerLink="/move/new">add_circle_outline</mat-icon>
+        <mat-icon (click)="navigate('move/new')">add_circle_outline</mat-icon>
       </button>
     </mat-toolbar>
     <router-outlet></router-outlet>
