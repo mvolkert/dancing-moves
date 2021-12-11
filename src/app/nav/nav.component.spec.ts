@@ -1,4 +1,4 @@
-import { LayoutModule } from '@angular/cdk/layout';
+import { BreakpointObserver, LayoutModule } from '@angular/cdk/layout';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { NavComponent } from './nav.component';
+import { DataManagerService } from '../services/data-manager.service';
+import { SettingsService } from '../services/settings.service';
+import { NavService } from '../services/nav.service';
 
 describe('NavComponent', () => {
   let component: NavComponent;
@@ -24,6 +27,21 @@ describe('NavComponent', () => {
         MatListModule,
         MatSidenavModule,
         MatToolbarModule,
+      ],
+      providers: [
+        {
+          provide: DataManagerService,
+          useValue: {},
+        }, {
+          provide: SettingsService,
+          useValue: {},
+        }, {
+          provide: NavService,
+          useValue: {},
+        }, {
+          provide: BreakpointObserver,
+          useValue: {},
+        }
       ]
     }).compileComponents();
   }));

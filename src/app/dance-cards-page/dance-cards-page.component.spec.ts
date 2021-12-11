@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NavService } from '../services/nav.service';
 
 import { DanceCardsPageComponent } from './dance-cards-page.component';
 
@@ -8,9 +9,14 @@ describe('DanceCardsPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DanceCardsPageComponent ]
+      declarations: [DanceCardsPageComponent],
+      providers: [{
+        provide: NavService,
+        useValue: {},
+      }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -1,12 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { DataManagerService } from './services/data-manager.service';
+import { SettingsService } from './services/settings.service';
 
 describe('AppComponent', () => {
+
+  const settingsService: SettingsService = jasmine.createSpyObj('SettingsService', ['fetchSettings']);
+  const dataManagerService: DataManagerService = jasmine.createSpyObj('DataManagerService', ['start', 'loading']);
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         AppComponent
       ],
+      providers: [
+        {
+          provide: SettingsService,
+          useValue: settingsService,
+        }, {
+          provide: DataManagerService,
+          useValue: dataManagerService,
+        },
+      ]
     }).compileComponents();
   });
 
@@ -22,10 +37,4 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('dancing-moves');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('dancing-moves app is running!');
-  });
 });
