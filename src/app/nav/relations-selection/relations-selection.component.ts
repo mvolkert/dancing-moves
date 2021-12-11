@@ -12,8 +12,8 @@ import { DataManagerService } from 'src/app/services/data-manager.service';
   styleUrls: ['./relations-selection.component.css']
 })
 export class RelationsSelectionComponent implements OnInit {
-  relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance];
-  displayTypes: Array<string> = [RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsConceptMap, RelationDisplayType.cytoscape]
+  relationTypes: Array<string> = [RelationType.start, RelationType.end];
+  displayTypes: Array<string> = [RelationDisplayType.cytoscape, RelationDisplayType.highchartsNetworkgraph, RelationDisplayType.gojsConceptMap]
 
   relationsForm = new FormGroup({
     relationTypes: new FormControl([]),

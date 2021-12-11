@@ -19,11 +19,16 @@ import { DataManagerService } from '../services/data-manager.service';
 export class RelationsPageComponent implements OnInit, OnDestroy {
 
   loaded = false;
-  showGoJs = false;
+  show = "";
   private valueChangesSubscription!: Subscription
+  cy!: cytoscape.Core;
 
-  @ViewChild('chart')
-  chartViewChild!: ElementRef;
+  
+  @ViewChild('chartHighchart')
+  chartViewChildHighchart!: ElementRef;
+
+  @ViewChild('chartCytoscape')
+  chartViewChildCytoscape!: ElementRef;
 
   constructor(private dataManagerService: DataManagerService, private router: Router) {
     require('highcharts/modules/networkgraph')(Highcharts);
@@ -35,20 +40,20 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     this.valueChangesSubscription = this.dataManagerService.relationsSelectionObservable.pipe(
       switchMap((value: RelationParams) => this.dataManagerService.getRelationPairs(value.relationTypes))).subscribe((pairs: Array<Connection>) => {
         if (this.dataManagerService.relationsSelectionObservable.value.displayType === RelationDisplayType.highchartsNetworkgraph) {
-          this.showGoJs = false;
+          this.show = "Highchart";
           this.createHighchart(pairs);
         } else if (this.dataManagerService.relationsSelectionObservable.value.displayType === RelationDisplayType.cytoscape) {
-          this.showGoJs = false;
+          this.show = "Cytoscape";
           this.createCytoscape(pairs);
         } else {
-          this.showGoJs = true;
+          this.show = "Gojs";
           this.updateGojsDiagram(pairs);
         }
       });
   };
 
   private createHighchart(pairs: Connection[]) {
-    Highcharts.chart(this.chartViewChild.nativeElement, {
+    Highcharts.chart(this.chartViewChildHighchart.nativeElement, {
       chart: {
         type: 'networkgraph',
         plotBorderWidth: 0,
@@ -186,15 +191,14 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   createCytoscape(pairs: Array<Connection>) {
     const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { data: { id: m, width: m.length * 10 } } });
     const links = pairs.map(m => { return { data: { id: m.from + m.to, source: m.from, target: m.to } } });
-    var cy = cytoscape({
+    const options: cytoscape.CytoscapeOptions = {
+      container: this.chartViewChildCytoscape.nativeElement,
 
-      container: this.chartViewChild.nativeElement, // container to render in
-
-      elements: [ // list of graph elements to start with
+      elements: [
         ...nodes, ...links
       ],
 
-      style: [ // the stylesheet for the graph
+      style: [
         {
           selector: 'node',
           style: {
@@ -230,9 +234,14 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
         nodeDimensionsIncludeLabels: true,
         nodeRepulsion: (node) => 10000000,
       }
-
-    });
-    cy.on('tap', 'node', (evt) => {
+    };
+    if (this.cy) {
+      this.cy.json(options);
+      this.cy.layout(options.layout as cytoscape.LayoutOptions).run();
+      return;
+    }
+    this.cy = cytoscape(options);
+    this.cy.on('tap', 'node', (evt) => {
       this.router.navigate(["move", evt.target.id()], {
         queryParamsHandling: 'merge'
       });
