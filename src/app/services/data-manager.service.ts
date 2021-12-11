@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, firstValueFrom, forkJoin, from, Observable, of, Subject } from 'rxjs';
-import { concatAll, map, switchMap, tap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Connection } from '../model/connection';
+import { CourseDateDto } from '../model/course-date-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
+import { RelationDisplayType } from '../model/relation-display-type-enum';
+import { RelationParams } from '../model/relation-params';
+import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { delay, getRow, parseBoolean, parseDate } from '../util/util';
 import { ApiclientService } from './apiclient.service';
-import { RelationType } from '../model/relation-type-enum';
-import { CourseDateDto } from '../model/course-date-dto';
-import { Connection } from '../model/connection';
-import { RelationParams } from '../model/relation-params';
-import { RelationDisplayType } from '../model/relation-display-type-enum';
+import { NavService } from './nav.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class DataManagerService {
   isStarted = false;
   isStarting = new Subject<boolean>();
 
-  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private router: Router) {
+  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService) {
     this.route.queryParams.subscribe(params => {
       if (params["dance"] || params["move"] || params["course"] || params["type"]) {
         this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], type: params["type"] });
@@ -196,7 +197,7 @@ export class DataManagerService {
     moves = moves.filter(m => m.name != moveDto.name);
     moves.push(moveDto)
     this.movesSubject.next(moves);
-    this.router.navigate(["move", moveDto.name], { queryParamsHandling: 'merge' });
+    this.navService.navigate(["move", moveDto.name]);
     return moveDto;
   }
 

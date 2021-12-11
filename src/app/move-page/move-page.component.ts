@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { DataManagerService } from '../services/data-manager.service';
+import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
@@ -43,32 +44,25 @@ export class MovePageComponent implements OnInit {
   readonly = false;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
-    private settings: SettingsService) { }
-
-  ngOnInit(): void {
+    private settings: SettingsService, private navService: NavService) {
     this.route.paramMap.subscribe(params => {
-      this.init(params);
+      this.readParams(params);
     });
+  }
+
+  async ngOnInit(): Promise<void> {
     this.moveForm.valueChanges.subscribe(value => {
       console.log(value);
     });
     this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
     });
-  }
-
-  async init(params: ParamMap) {
     await this.dataManager.loading();
     this.dances = this.dataManager.getDances();
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
     this.otherMovesNames = this.dataManager.getMovesNames();
     this.otherMovesNames.add("new");
-    if (!params.has('name')) {
-      return;
-    }
-    this.nameParam = params.get('name') as string;
-    this.nameParam = decodeURI(this.nameParam);
 
     if (this.nameParam == "new") {
       if (this.move) {
@@ -99,6 +93,15 @@ export class MovePageComponent implements OnInit {
       this.readonly = true;
     }
     this.loaded = true;
+  }
+
+  private readParams(params: ParamMap) {
+    if (!params.has('name')) {
+      return;
+    }
+    this.nameParam = params.get('name') as string;
+    this.nameParam = decodeURI(this.nameParam);
+    this.navService.headlineObservable.next(this.nameParam);
   }
 
   private createCourseDateForm = () => {

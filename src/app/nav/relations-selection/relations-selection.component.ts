@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { RelationDisplayType } from 'src/app/model/relation-display-type-enum';
 import { RelationType } from 'src/app/model/relation-type-enum';
 import { DataManagerService } from 'src/app/services/data-manager.service';
+import { NavService } from 'src/app/services/nav.service';
 
 @Component({
   selector: 'app-relations-selection',
@@ -19,7 +18,7 @@ export class RelationsSelectionComponent implements OnInit {
     relationTypes: new FormControl([]),
     displayType: new FormControl("")
   });
-  constructor(private dataManagerService: DataManagerService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private dataManagerService: DataManagerService, private navService: NavService) { }
 
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
@@ -27,10 +26,7 @@ export class RelationsSelectionComponent implements OnInit {
       this.relationsForm.patchValue(value);
     })
     this.relationsForm.valueChanges.subscribe(
-      value => this.router.navigate([], {
-        queryParams: value,
-        queryParamsHandling: 'merge'
-      }));
+      value => this.navService.navigate([], value));
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CourseDateDto } from 'src/app/model/course-date-dto';
+import { NavService } from 'src/app/services/nav.service';
 
 @Component({
   selector: 'app-move-card',
@@ -11,13 +11,13 @@ export class MoveCardComponent implements OnInit {
 
   @Input("move-dto") moveDto: any
 
-  constructor(private router: Router) { }
+  constructor(private navService: NavService) { }
 
   ngOnInit(): void {
   }
 
-  openDetails() {
-    this.router.navigate(["move", encodeURI(this.moveDto.name)]);
+  openDetails(): Promise<boolean> {
+    return this.navService.navigate(["move", encodeURI(this.moveDto.name)]);
   }
 
   isDateValid(courseDate: CourseDateDto) {

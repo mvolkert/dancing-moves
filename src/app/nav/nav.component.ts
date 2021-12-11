@@ -8,6 +8,7 @@ import { SettingsService } from '../services/settings.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { MoveDto } from '../model/move-dto';
+import { NavService } from '../services/nav.service';
 
 @Component({
   selector: 'app-nav',
@@ -28,10 +29,11 @@ export class NavComponent implements OnInit {
 
   constructor(private breakpointObserver: BreakpointObserver,
     private dataManager: DataManagerService,
-    private settingsService: SettingsService) {
+    private settingsService: SettingsService, private navService: NavService) {
 
   }
   async ngOnInit() {
+    this.navService.headlineObservable.subscribe(headline => this.headline = headline);
     await this.settingsService.loading();
     this.readonly = !this.settingsService.secretWriteString;
   }
@@ -40,7 +42,7 @@ export class NavComponent implements OnInit {
     this.dataManager.normalize();
   }
 
-  setHeadline(headline: string) {
-    this.headline = headline;
+  navigate(path: string): Promise<boolean> {
+    return this.navService.navigate([path]);
   }
 }

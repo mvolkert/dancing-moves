@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
@@ -13,7 +13,9 @@ export class SettingsPageComponent implements OnInit {
     secretWrite: new FormControl(''),
   });
   url: string = this.createUrl();
-  constructor(private settings: SettingsService, private router: Router) { }
+  constructor(private settings: SettingsService, private navService: NavService) {
+    this.navService.headlineObservable.next("Settings");
+  }
 
   ngOnInit(): void {
     this.settingsForm.patchValue({
@@ -21,10 +23,7 @@ export class SettingsPageComponent implements OnInit {
       secretWrite: this.settings.secretWriteString
     });
     this.settingsForm.valueChanges.subscribe(value => {
-      this.router.navigate([], {
-        queryParams: { 'secret': value.secretRead, 'secret-write': value.secretWrite },
-        queryParamsHandling: 'merge'
-      })
+      this.navService.navigate([], { 'secret': value.secretRead, 'secret-write': value.secretWrite })
       this.url = this.createUrl();
     });
   }

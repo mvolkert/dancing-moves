@@ -8,13 +8,10 @@
             Pages
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <a mat-list-item routerLink="dances" queryParamsHandling="merge" (click)="setHeadline('Dances')">Dances</a>
-        <a mat-list-item routerLink="moves" queryParamsHandling="merge" 
-          (click)="setHeadline('Dancing Moves')">Dancing Moves</a>
-        <a mat-list-item routerLink="relations" queryParamsHandling="merge"
-          (click)="setHeadline('Relations')">Relations</a>
-        <a mat-list-item routerLink="settings" queryParamsHandling="merge"
-          (click)="setHeadline('Settings')">Settings</a>
+        <a mat-list-item (click)="navigate('dances')">Dances</a>
+        <a mat-list-item (click)="navigate('moves')">Dancing Moves</a>
+        <a mat-list-item (click)="navigate('relations')">Relations</a>
+        <a mat-list-item (click)="navigate('settings')">Settings</a>
       </mat-expansion-panel>
       <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
@@ -40,7 +37,7 @@
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>{{headline}}</span>
+      <span class="headline">{{headline}}</span>
       <span class="spacer"></span>
       <button *ngIf="devMode && !readonly" mat-mini-fab color="primary" aria-label="normalize" (click)="normalize()">
         <mat-icon>list</mat-icon>

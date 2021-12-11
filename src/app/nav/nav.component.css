@@ -19,3 +19,7 @@
 .spacer {
   flex: 1 1 auto;
 }
+
+.headline {
+  max-width: 50%;
+}

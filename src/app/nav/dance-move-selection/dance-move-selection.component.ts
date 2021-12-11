@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
 import { SearchDto } from 'src/app/model/search-dto';
 import { DataManagerService } from 'src/app/services/data-manager.service';
+import { NavService } from 'src/app/services/nav.service';
 
 @Component({
   selector: 'app-dance-move-selection',
@@ -29,7 +29,7 @@ export class DanceMoveSelectionComponent implements OnInit {
     type: new FormControl(""),
   });
 
-  constructor(private dataManagerService: DataManagerService, private router: Router) {
+  constructor(private dataManagerService: DataManagerService, private navService: NavService) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -53,10 +53,7 @@ export class DanceMoveSelectionComponent implements OnInit {
       if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
         this.searchForm.patchValue(searchFilter);
       }
-      this.router.navigate([], {
-        queryParams: searchFilter,
-        queryParamsHandling: 'merge'
-      })
+      this.navService.navigate([], searchFilter);
     });
     this.searchForm!.valueChanges.subscribe(value => this.dataManagerService.searchFilterObservable.next(value));
   }

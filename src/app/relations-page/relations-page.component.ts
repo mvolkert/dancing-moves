@@ -1,15 +1,13 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import * as cytoscape from 'cytoscape';
 import * as go from 'gojs';
-import * as  Highcharts from 'highcharts';
-import { Subscription, switchMap, tap } from 'rxjs';
+import * as Highcharts from 'highcharts';
+import { Subscription, switchMap } from 'rxjs';
 import { Connection } from '../model/connection';
 import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
-import { RelationType } from '../model/relation-type-enum';
 import { DataManagerService } from '../services/data-manager.service';
+import { NavService } from '../services/nav.service';
 
 @Component({
   templateUrl: './relations-page.component.html',
@@ -23,14 +21,15 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   private valueChangesSubscription!: Subscription
   cy!: cytoscape.Core;
 
-  
+
   @ViewChild('chartHighchart')
   chartViewChildHighchart!: ElementRef;
 
   @ViewChild('chartCytoscape')
   chartViewChildCytoscape!: ElementRef;
 
-  constructor(private dataManagerService: DataManagerService, private router: Router) {
+  constructor(private dataManagerService: DataManagerService, private navService: NavService) {
+    this.navService.headlineObservable.next("Relations");
     require('highcharts/modules/networkgraph')(Highcharts);
   }
 
@@ -242,9 +241,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
     }
     this.cy = cytoscape(options);
     this.cy.on('tap', 'node', (evt) => {
-      this.router.navigate(["move", evt.target.id()], {
-        queryParamsHandling: 'merge'
-      });
+      this.navService.navigate(["move", evt.target.id()]);
     });
   }
 

@@ -1,11 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, startWith, switchMap, tap } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { MoveDto } from '../model/move-dto';
-import { MoveGroupDto } from '../model/move-group-dto';
 import { SearchDto } from '../model/search-dto';
 import { DataManagerService } from '../services/data-manager.service';
+import { NavService } from '../services/nav.service';
 @Component({
   selector: 'app-move-cards-page',
   templateUrl: './move-cards-page.component.html',
@@ -17,7 +14,8 @@ export class MoveCardsPageComponent implements OnInit {
   allMoves: MoveDto[] = [];
   loaded = false;
 
-  constructor(private dataManagerService: DataManagerService) {
+  constructor(private dataManagerService: DataManagerService, private navService: NavService) {
+    this.navService.headlineObservable.next("Dancing Moves");
   }
 
   async ngOnInit(): Promise<void> {
