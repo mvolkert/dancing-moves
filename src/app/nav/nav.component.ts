@@ -15,9 +15,10 @@ import { MoveDto } from '../model/move-dto';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  
+
   devMode = !environment.production;
   readonly = true;
+  headline = "Dancing Moves"
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -39,4 +40,7 @@ export class NavComponent implements OnInit {
     this.dataManager.normalize();
   }
 
+  setHeadline(headline: string) {
+    this.headline = headline;
+  }
 }

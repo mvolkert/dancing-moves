@@ -1,31 +1,37 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="dances" queryParamsHandling="merge">Dances</a>
-      <a mat-list-item routerLink="moves" queryParamsHandling="merge">Dance Moves</a>
-      <a mat-list-item routerLink="relations" queryParamsHandling="merge">Relations</a>
-      <a mat-list-item routerLink="settings" queryParamsHandling="merge">Settings</a>
-      <mat-accordion>
-        <mat-expansion-panel hideToggle>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Dance Move Selection
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <app-dance-move-selection></app-dance-move-selection>
-        </mat-expansion-panel>
-        <mat-expansion-panel hideToggle>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Relations Selection
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <app-relations-selection></app-relations-selection>
-        </mat-expansion-panel>
-      </mat-accordion>
-
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Pages
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <a mat-list-item routerLink="dances" queryParamsHandling="merge" (click)="setHeadline('Dances')">Dances</a>
+        <a mat-list-item routerLink="moves" queryParamsHandling="merge" 
+          (click)="setHeadline('Dancing Moves')">Dancing Moves</a>
+        <a mat-list-item routerLink="relations" queryParamsHandling="merge"
+          (click)="setHeadline('Relations')">Relations</a>
+        <a mat-list-item routerLink="settings" queryParamsHandling="merge"
+          (click)="setHeadline('Settings')">Settings</a>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Dance Move Selection
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-dance-move-selection></app-dance-move-selection>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Relations Selection
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-relations-selection></app-relations-selection>
+      </mat-expansion-panel>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -34,7 +40,7 @@
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>Dancing Moves</span>
+      <span>{{headline}}</span>
       <span class="spacer"></span>
       <button *ngIf="devMode && !readonly" mat-mini-fab color="primary" aria-label="normalize" (click)="normalize()">
         <mat-icon>list</mat-icon>
