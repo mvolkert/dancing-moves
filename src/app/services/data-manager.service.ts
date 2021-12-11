@@ -34,7 +34,7 @@ export class DataManagerService {
       }
       let relationTypeParams = params["relationTypes"];
       if (!relationTypeParams) {
-        relationTypeParams = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance]
+        relationTypeParams = [RelationType.start, RelationType.end]
       } else if (typeof relationTypeParams === 'string') {
         relationTypeParams = [relationTypeParams];
       }
