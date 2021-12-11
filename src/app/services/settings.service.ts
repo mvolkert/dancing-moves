@@ -1,11 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+import CryptoES from 'crypto-es';
 import { CookieService } from 'ngx-cookie-service';
-import { SecretDto } from '../model/secret-dto';
-import * as CryptoJS from 'crypto-js';
-import { SecretWriteDto } from '../model/secret-write-dto';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Subject } from 'rxjs';
+import { SecretDto } from '../model/secret-dto';
+import { SecretWriteDto } from '../model/secret-write-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +39,8 @@ export class SettingsService {
 
     if (this.secretReadString) {
       this.http.get<string>('assets/secret-read.txt', { responseType: 'text' as 'json' }).subscribe(data => {
-        const decrypted = CryptoJS.AES.decrypt(data, this.secretReadString as string);
-        this.secret = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+        const decrypted = CryptoES.AES.decrypt(data, this.secretReadString as string);
+        this.secret = JSON.parse(decrypted.toString(CryptoES.enc.Utf8));
         this.isStarting.next(false);
         this.isStarted = true;
       });
@@ -48,8 +48,8 @@ export class SettingsService {
 
     if (this.secretWriteString) {
       this.http.get<string>('assets/secret-write.txt', { responseType: 'text' as 'json' }).subscribe(data => {
-        const decrypted = CryptoJS.AES.decrypt(data, this.secretWriteString as string);
-        this.secretWrite = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+        const decrypted = CryptoES.AES.decrypt(data, this.secretWriteString as string);
+        this.secretWrite = JSON.parse(decrypted.toString(CryptoES.enc.Utf8));
       });
     }
   }
