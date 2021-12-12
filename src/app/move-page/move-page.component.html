@@ -114,3 +114,4 @@
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="moveForm.invalid">Save</button>
 </form>
+<iframe *ngIf="videoLink" width="640" height="360" frameborder="0" [src]="videoLink" allowfullscreen></iframe>

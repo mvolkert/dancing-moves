@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
+import { SecretDto } from '../model/secret-dto';
 import { UserMode } from '../model/user-mode';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
@@ -43,9 +45,10 @@ export class MovePageComponent implements OnInit {
   loaded = false;
   nameParam = ""
   readonly = false;
+  videoLink!: SafeResourceUrl;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
-    private settings: SettingsService, private navService: NavService) {
+    private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
     this.route.paramMap.subscribe(params => {
       this.readParams(params);
     });
@@ -93,6 +96,8 @@ export class MovePageComponent implements OnInit {
       if (userMode === UserMode.read) {
         this.moveForm.disable();
         this.readonly = true;
+      } else {
+        this.videoLink = this.sanitizer.bypassSecurityTrustResourceUrl(`https://mega.nz/embed/${this.settings.secret?.videoLink}`);
       }
     });
     this.loaded = true;

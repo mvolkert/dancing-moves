@@ -66,11 +66,18 @@ export class SettingsService {
     }
     try {
       const decrypted = CryptoES.AES.decrypt(data, key);
-      return JSON.parse(decrypted.toString(CryptoES.enc.Utf8));
+      const decryptedString = decrypted.toString(CryptoES.enc.Utf8);
+      return JSON.parse(decryptedString);
     } catch (e) {
       console.log('incorrect secret', key, e);
       return undefined;
     }
+  }
+
+  encrypt(data: string, key: string) {
+    const encrypted = CryptoES.AES.encrypt(data, key);
+    const encryptedString = encrypted.toString();
+    console.log(encryptedString);
   }
 
   private getSetting(params: Params, key: string): string {
