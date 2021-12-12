@@ -12,13 +12,13 @@ import { ResponseCreate } from '../model/response-create';
 import { ResponseGet } from '../model/response-get';
 import { ApiToken } from '../model/api-token';
 import { UserMode } from '../model/user-mode';
+import { CourseDto } from '../model/course-dto';
+import { DanceDto } from '../model/dance-dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiclientService {
-  private movesKeys: string[] = new Array<string>();
-  private courseDatesKeys: string[] = new Array<string>();
   private lastUpdated!: number;
   private writeToken!: ApiToken;
   private userMode!: UserMode;
@@ -72,48 +72,51 @@ export class ApiclientService {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
   }
 
-  async getMoves(): Promise<MoveDto[]> {
+  async getMoves(): Promise<Array<MoveDto>> {
     await this.settingsService.loading();
-    const moves = new Array<MoveDto>();
-    const sheetRange = 'Tanzfiguren!A1:S500'
     return firstValueFrom(this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
-      sheetRange
-    ).pipe(map((result: ResponseGet) => {
-      const values = result?.values;
-      if (values?.length > 0) {
-        this.movesKeys = values[0];
-        for (let i = 1; i < values.length; i++) {
-          var row = values[i];
-          if (row[0]) {
-            moves.push(this.createMovesDto(row, i));
-          }
-        }
-      }
-      return moves;
-    })));
+      'Tanzfiguren!A1:S500'
+      ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto))));
   }
 
   async getCourseDates(): Promise<Array<CourseDateDto>> {
     await this.settingsService.loading();
-    const courseDates = new Array<CourseDateDto>();
-    const sheetRange = 'Course Dates!A1:C1000'
     return firstValueFrom(this.spreadsheetsGet(
       this.settingsService.secret?.courseDatesSheetId as string,
-      sheetRange
-    ).pipe(map((result: ResponseGet) => {
-      const values = result?.values;
-      if (values?.length > 0) {
-        this.courseDatesKeys = values[0];
-        for (let i = 1; i < values.length; i++) {
-          var row = values[i];
-          if (row[2]) {
-            courseDates.push(this.createCourseDateDto(row, i));
-          }
+      'Course Dates!A1:C1000'
+    ).pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto))));
+  }
+
+  async getCourses(): Promise<Array<CourseDto>> {
+    await this.settingsService.loading();
+    return firstValueFrom(this.spreadsheetsGet(
+      this.settingsService.secret?.movesSheetId as string,
+      'Courses!A1:D1000'
+    ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto))));
+  }
+
+  async getDances(): Promise<Array<DanceDto>> {
+    await this.settingsService.loading();
+    return firstValueFrom(this.spreadsheetsGet(
+      this.settingsService.secret?.movesSheetId as string,
+      'Tänze!A1:H100'
+    ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto))));
+  }
+
+
+  private mapRows<T>(response: ResponseGet, mapfunc: (row: string[], i: number) => T): Array<T> {
+    const result = new Array<T>();
+    const values = response?.values;
+    if (values?.length > 0) {
+      for (let i = 1; i < values.length; i++) {
+        var row = values[i];
+        if (row[0]) {
+          result.push(mapfunc(row, i));
         }
       }
-      return courseDates;
-    })));
+    }
+    return result;
   }
 
   appendData(moveDto: MoveDto): Observable<ResponseCreate> {
@@ -147,7 +150,7 @@ export class ApiclientService {
   }
   private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {
     if (this.userMode !== UserMode.write) {
-      return of({updates: {updatedRange: 'T!A42:S42'}} as ResponseCreate);
+      return of({ updates: { updatedRange: 'T!A42:S42' } } as ResponseCreate);
     }
     return this.loginWrite().pipe(switchMap(r => {
       return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
@@ -193,7 +196,7 @@ export class ApiclientService {
     return token;
   }
 
-  private createCourseDateDto(row: any, i: number): CourseDateDto {
+  private createCourseDateDto = (row: any, i: number): CourseDateDto => {
     return {
       date: parseDate(row[0]),
       course: row[1],
@@ -203,7 +206,7 @@ export class ApiclientService {
   }
 
 
-  private createMovesDto(row: any, i: number): MoveDto {
+  private createMoveDto = (row: any, i: number): MoveDto => {
     return {
       name: row[0],
       dance: row[1],
@@ -222,6 +225,30 @@ export class ApiclientService {
       toDo: row[14],
       row: i + 1,
       courseDates: []
+    };
+  }
+
+  private createCourseDto = (row: any, i: number): CourseDto => {
+    return {
+      course: row[0],
+      dances: this.stringToArray(row[1]),
+      school: row[0],
+      description: row[0],
+      row: i + 1
+    };
+  }
+
+  private createDanceDto = (row: any, i: number): DanceDto => {
+    return {
+      name: row[0],
+      type: row[1],
+      music: row[2],
+      rhythm: row[3],
+      school: row[4],
+      level: row[5],
+      description: row[6],
+      links: row[7],
+      row: i + 1
     };
   }
 

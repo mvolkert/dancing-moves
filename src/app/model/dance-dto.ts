@@ -1,4 +1,4 @@
-export interface CourseDateDto {
+export interface DanceDto {
     name: string,
     type: string,
     music: string,
