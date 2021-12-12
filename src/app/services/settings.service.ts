@@ -19,6 +19,11 @@ export class SettingsService {
   isStarted = false;
   isStarting = new Subject<boolean>();
   userMode = new BehaviorSubject<UserMode>(UserMode.test);
+  specialRightsString!: string;
+  specialRights!: Array<string>;
+  specialRightsMap = {
+    '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': 'admin'
+  } as { [key: string]: string };
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
@@ -54,6 +59,15 @@ export class SettingsService {
         this.isStarted = true;
       });;
     }
+
+    this.specialRightsString = this.getSetting(params, 'special-rights');
+    this.specialRights = new Array<string>();
+    this.specialRightsString?.split(",").forEach((key: string) => {
+      const hash = this.hash(key);
+      if (this.specialRightsMap[hash]) {
+        this.specialRights.push(this.specialRightsMap[hash]);
+      }
+    });
   }
 
   private getFile(filename: string) {
@@ -78,6 +92,16 @@ export class SettingsService {
     const encrypted = CryptoES.AES.encrypt(data, key);
     const encryptedString = encrypted.toString();
     console.log(encryptedString);
+  }
+
+  hash(key: string) {
+    const hash = CryptoES.SHA256(key).toString();
+    console.log(hash);
+    return hash;
+  }
+
+  hasSpecialRight(key: string) {
+    return this.specialRights.includes(key);
   }
 
   private getSetting(params: Params, key: string): string {

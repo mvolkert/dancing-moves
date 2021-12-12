@@ -114,6 +114,6 @@
 </form>
 <div markdown [data]="moveForm.value.description">
 </div>
-<div class="video-container" #content>
-    <iframe *ngIf="videoLink" scrolling="no" frameborder="0" [src]="videoLink" allowfullscreen></iframe>
+<div class="video-container" *ngIf="videoLink">
+    <iframe scrolling="no" frameborder="0" [src]="videoLink" allowfullscreen></iframe>
 </div>

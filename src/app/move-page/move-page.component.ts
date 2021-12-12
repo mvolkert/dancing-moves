@@ -96,7 +96,7 @@ export class MovePageComponent implements OnInit {
       if (userMode === UserMode.read) {
         this.moveForm.disable();
         this.readonly = true;
-      } else {
+      } else if (this.settings.hasSpecialRight('admin')) {
         this.videoLink = this.sanitizer.bypassSecurityTrustResourceUrl(`https://mega.nz/embed/${this.settings.secret?.videoLink}`);
       }
     });

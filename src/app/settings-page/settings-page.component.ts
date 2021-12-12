@@ -11,6 +11,7 @@ export class SettingsPageComponent implements OnInit {
   settingsForm = new FormGroup({
     secretRead: new FormControl(''),
     secretWrite: new FormControl(''),
+    specialRights: new FormControl(''),
   });
   url: string = this.createUrl();
   constructor(private settings: SettingsService, private navService: NavService) {
@@ -20,10 +21,11 @@ export class SettingsPageComponent implements OnInit {
   ngOnInit(): void {
     this.settingsForm.patchValue({
       secretRead: this.settings.secretReadString,
-      secretWrite: this.settings.secretWriteString
+      secretWrite: this.settings.secretWriteString,
+      specialRights: this.settings.specialRightsString
     });
     this.settingsForm.valueChanges.subscribe(value => {
-      this.navService.navigate([], { 'secret': value.secretRead, 'secret-write': value.secretWrite })
+      this.navService.navigate([], { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights })
       this.url = this.createUrl();
     });
   }
