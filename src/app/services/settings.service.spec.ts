@@ -8,15 +8,13 @@ import { SettingsService } from './settings.service';
 
 describe('SettingsService', () => {
   let service: SettingsService;
-
+  const activatedRoute: jasmine.SpyObj<ActivatedRoute> = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', [], { params: of() });
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: {
-            params: of(),
-          },
+          useValue: activatedRoute,
         }, {
           provide: CookieService,
           useValue: {},

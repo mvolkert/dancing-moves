@@ -11,11 +11,21 @@ import { NavComponent } from './nav.component';
 import { DataManagerService } from '../services/data-manager.service';
 import { SettingsService } from '../services/settings.service';
 import { NavService } from '../services/nav.service';
+import { BehaviorSubject, of } from 'rxjs';
+import { RelationParams } from '../model/relation-params';
 
 describe('NavComponent', () => {
   let component: NavComponent;
   let fixture: ComponentFixture<NavComponent>;
-
+  const dataManagerService: jasmine.SpyObj<DataManagerService> = jasmine.createSpyObj<DataManagerService>('DataManagerService',
+    {
+      start: undefined, loading: undefined, getMove: undefined, getGroupedMoveNames: undefined, getMovesNamesOf: undefined, getMovesNames: undefined,
+      getDances: undefined, getCourseNames: undefined, getTypes: undefined, getRelationPairs: of(), saveOrCreate: undefined
+    }, { relationsSelectionObservable: new BehaviorSubject<RelationParams>({} as RelationParams) });
+  const navService: jasmine.SpyObj<NavService> = jasmine.createSpyObj<NavService>('NavService',
+    ['navigate', 'openWebsiteIfEasterEggFound'], { headlineObservable: new BehaviorSubject<string>("Dancing Moves") });
+  const breakpointObserver: jasmine.SpyObj<BreakpointObserver> = jasmine.createSpyObj<BreakpointObserver>('BreakpointObserver',
+    { observe: of() });
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [NavComponent],
@@ -31,16 +41,16 @@ describe('NavComponent', () => {
       providers: [
         {
           provide: DataManagerService,
-          useValue: {},
+          useValue: dataManagerService,
         }, {
           provide: SettingsService,
           useValue: {},
         }, {
           provide: NavService,
-          useValue: {},
+          useValue: navService,
         }, {
           provide: BreakpointObserver,
-          useValue: {},
+          useValue: breakpointObserver,
         }
       ]
     }).compileComponents();

@@ -5,8 +5,11 @@ import { SettingsService } from './services/settings.service';
 
 describe('AppComponent', () => {
 
-  const settingsService: SettingsService = jasmine.createSpyObj('SettingsService', ['fetchSettings']);
-  const dataManagerService: DataManagerService = jasmine.createSpyObj('DataManagerService', ['start', 'loading']);
+  const settingsService: jasmine.SpyObj<SettingsService> = jasmine.createSpyObj<SettingsService>('SettingsService',
+    ['fetchSettings', 'loading', 'initSettings']);
+  const dataManagerService: jasmine.SpyObj<DataManagerService> = jasmine.createSpyObj<DataManagerService>('DataManagerService',
+    ['start', 'loading', 'getMove', 'getGroupedMoveNames', 'getMovesNamesOf', 'getMovesNames', 'getDances', 'getCourseNames', 
+    'getTypes', 'getRelationPairs', 'saveOrCreate']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

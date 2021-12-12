@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -9,16 +9,19 @@ import { SettingsPageComponent } from './settings-page.component';
 describe('SettingsPageComponent', () => {
   let component: SettingsPageComponent;
   let fixture: ComponentFixture<SettingsPageComponent>;
-
+  const settingsService: jasmine.SpyObj<SettingsService> = jasmine.createSpyObj<SettingsService>('SettingsService',
+    ['fetchSettings', 'loading', 'initSettings']);
+  const navService: jasmine.SpyObj<NavService> = jasmine.createSpyObj<NavService>('NavService',
+    ['navigate', 'openWebsiteIfEasterEggFound'], { headlineObservable: new BehaviorSubject<string>("Dancing Moves") });
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SettingsPageComponent], providers: [
         {
           provide: SettingsService,
-          useValue: {},
+          useValue: settingsService,
         }, {
           provide: NavService,
-          useValue: {},
+          useValue: navService,
         },
       ]
     })
