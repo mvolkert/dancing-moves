@@ -38,6 +38,9 @@ export class SettingsPageComponent implements OnInit {
     if (this.settings.secretWriteString) {
       options.push(`secret-write=${this.settings.secretWriteString}`)
     }
+    if (this.settings.specialRightsString) {
+      options.push(`special-rights=${this.settings.specialRightsString}`)
+    }
     if (options.length > 0) {
       return `${document.baseURI}?${options.join('&')}`
     }
