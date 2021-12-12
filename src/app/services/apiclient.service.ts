@@ -107,7 +107,7 @@ export class ApiclientService {
         this.courseDatesKeys = values[0];
         for (let i = 1; i < values.length; i++) {
           var row = values[i];
-          if (row[0]) {
+          if (row[2]) {
             courseDates.push(this.createCourseDateDto(row, i));
           }
         }

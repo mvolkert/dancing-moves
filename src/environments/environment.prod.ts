@@ -1,4 +1,3 @@
 export const environment = {
-  production: true,
-  sheetsApiActive: true
+  production: true
 };

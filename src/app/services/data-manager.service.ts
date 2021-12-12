@@ -48,22 +48,7 @@ export class DataManagerService {
 
   }
 
-  start() {
-    if (!environment.sheetsApiActive) {
-      this.movesSubject.next([{
-        name: "Basico (B)",
-        dance: "Bachata",
-        date: parseDate("04.11.2021"),
-        order: "0",
-        count: "8",
-        nameVerified: parseBoolean("FALSE"),
-        type: "Figur"
-      } as MoveDto])
-    }
-    this.refresh();
-  }
-
-  async refresh() {
+  async start() {
     const moves = await this.apiclientService.getMoves();
     const courseDates = await this.apiclientService.getCourseDates();
 
@@ -76,7 +61,7 @@ export class DataManagerService {
   }
 
   async loading() {
-    if (!this.isStarted && environment.sheetsApiActive) {
+    if (!this.isStarted) {
       await firstValueFrom(this.isStarting);
     }
   }
