@@ -25,7 +25,7 @@ export class MoveCardsPageComponent implements OnInit {
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
     });
     this.dataManagerService.searchFilterObservable.subscribe(
-      (value: SearchDto) => this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDances(), value));
+      (value: SearchDto) => this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDanceNames(), value));
     this.loaded = true;
   }
 

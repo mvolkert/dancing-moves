@@ -36,7 +36,7 @@ export class DanceMoveSelectionComponent implements OnInit {
     await this.dataManagerService.loading();
 
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
-      this.dances = this.dataManagerService.getDances();
+      this.dances = this.dataManagerService.getDanceNames();
       this.courseNames = this.dataManagerService.getCourseNames();
       this.types = this.dataManagerService.getTypes();
       if (moves?.length > 0) {

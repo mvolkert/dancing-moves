@@ -6,6 +6,7 @@ import { defaultIfEmpty, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
+import { DanceDto } from '../model/dance-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { RelationDisplayType } from '../model/relation-display-type-enum';
@@ -25,6 +26,7 @@ export class DataManagerService {
   movesObservable = this.movesSubject.asObservable();
   searchFilterObservable = new BehaviorSubject<SearchDto>({} as SearchDto);
   relationsSelectionObservable = new BehaviorSubject<RelationParams>({} as RelationParams);
+  dances!: Array<DanceDto>;
   isStarted = false;
   isStarting = new Subject<boolean>();
 
@@ -51,6 +53,7 @@ export class DataManagerService {
   async start() {
     const moves = await this.apiclientService.getMoves();
     const courseDates = await this.apiclientService.getCourseDates();
+    this.dances = await this.apiclientService.getDances();
 
     for (const move of moves) {
       move.courseDates = courseDates.filter(c => c.moveName == move.name);
@@ -91,8 +94,12 @@ export class DataManagerService {
     return new Set(this.movesSubject.value.map(move => move.name));
   }
 
-  getDances(): Set<string> {
+  getDanceNames(): Set<string> {
     return new Set(this.movesSubject.value.map(move => move.dance));
+  }
+
+  getDances(): Array<DanceDto> {
+    return this.dances;
   }
 
   getCourseNames(): Set<string> {
@@ -115,7 +122,7 @@ export class DataManagerService {
   getRelationPairs(types: Array<string>): Observable<Array<Connection>> {
     return this.searchFilterObservable.pipe(map(searchFilter => {
       const pairs = new Array<Connection>();
-      const moves = this.selectMoves(this.movesSubject.value, this.getDances(), searchFilter);
+      const moves = this.selectMoves(this.movesSubject.value, this.getDanceNames(), searchFilter);
       for (const move of moves) {
         if (types.includes(RelationType.start)) {
           move.startMove.filter(name => name).forEach(name => pairs.push({ to: move.name, from: name }));

@@ -62,7 +62,7 @@ export class MovePageComponent implements OnInit {
       this.movesGroup = groupedMoveNames;
     });
     await this.dataManager.loading();
-    this.dances = this.dataManager.getDances();
+    this.dances = this.dataManager.getDanceNames();
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
     this.otherMovesNames = this.dataManager.getMovesNames();

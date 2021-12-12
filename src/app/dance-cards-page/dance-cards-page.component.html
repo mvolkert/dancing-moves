@@ -1,1 +1,12 @@
-<p>dance-cards-page works!</p>
+<mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+<ng-container *ngFor="let dance of dances">
+    <mat-card>
+        <mat-card-title>{{dance.name}}</mat-card-title>
+        <mat-card-subtitle>{{dance.type}}, Takt: {{dance.rhythm}}</mat-card-subtitle>
+        <mat-card-content>
+          <div>{{dance.description}}</div>
+          <a *ngIf="dance.music" [href]="dance.music">Playlist</a>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+</ng-container>
