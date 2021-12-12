@@ -16,4 +16,15 @@ export class NavService {
     return this.router.navigate(route, { queryParamsHandling: 'merge' });
   }
 
+
+  openWebsiteIfEasterEggFound(name: string) {
+    const nameNormalized = name?.toLocaleLowerCase().replace(/\s/g, '').replace(/-/g, '');
+    console.log(nameNormalized);
+    if (nameNormalized === "supersecretmoves") {
+      document.location.href = 'https://www.super-secret-moves.com/';
+    } else if (nameNormalized === "tanzstudioschlegl") {
+      document.location.href = 'https://tanzstudio-schlegl.de/';
+    }
+  }
+
 }

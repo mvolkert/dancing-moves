@@ -55,7 +55,10 @@ export class DanceMoveSelectionComponent implements OnInit {
       }
       this.navService.navigate([], searchFilter);
     });
-    this.searchForm!.valueChanges.subscribe(value => this.dataManagerService.searchFilterObservable.next(value));
+    this.searchForm!.valueChanges.subscribe((value: SearchDto) => {
+      this.navService.openWebsiteIfEasterEggFound(value.move);
+      this.dataManagerService.searchFilterObservable.next(value);
+    });
   }
 
   private filterGroup(search: SearchDto): MoveGroupDto[] {
