@@ -109,9 +109,11 @@
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
             formControlName="description"></textarea>
     </mat-form-field>
-    <div markdown [data]="moveForm.value.description">
-    </div>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="moveForm.invalid">Save</button>
 </form>
-<iframe *ngIf="videoLink" width="640" height="360" frameborder="0" [src]="videoLink" allowfullscreen></iframe>
+<div markdown [data]="moveForm.value.description">
+</div>
+<div class="video-container" #content>
+    <iframe *ngIf="videoLink" scrolling="no" frameborder="0" [src]="videoLink" allowfullscreen></iframe>
+</div>
