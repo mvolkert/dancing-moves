@@ -9,6 +9,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { MoveDto } from '../model/move-dto';
 import { NavService } from '../services/nav.service';
+import { UserMode } from '../model/user-mode';
 
 @Component({
   selector: 'app-nav',
@@ -35,7 +36,7 @@ export class NavComponent implements OnInit {
   async ngOnInit() {
     this.navService.headlineObservable.subscribe(headline => this.headline = headline);
     await this.settingsService.loading();
-    this.readonly = !this.settingsService.secretWriteString;
+    this.settingsService.userMode.subscribe(userMode => this.readonly = userMode === UserMode.read);
   }
 
   normalize() {

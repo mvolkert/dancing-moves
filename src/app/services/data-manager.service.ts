@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { defaultIfEmpty, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
@@ -179,7 +179,7 @@ export class DataManagerService {
   }
   private saveOrCreateCourseDates = (moveDto: MoveDto): Observable<MoveDto> => {
     return forkJoin(moveDto.courseDates.filter(c => c.course || c.date).map(c => { c.moveName = moveDto.name; return c; }).map(this.saveOrCreateCourseDate))
-      .pipe(map(courseDates => { moveDto.courseDates = courseDates; return moveDto; }));
+      .pipe(defaultIfEmpty([]), map(courseDates => { moveDto.courseDates = courseDates; return moveDto; }));
   }
   private saveOrCreateCourseDate = (courseDateDto: CourseDateDto): Observable<CourseDateDto> => {
     if (courseDateDto.row) {

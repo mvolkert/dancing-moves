@@ -23,12 +23,10 @@ export class MoveCardsPageComponent implements OnInit {
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
-      if (moves?.length > 0) {
-        this.loaded = true;
-      }
     });
     this.dataManagerService.searchFilterObservable.subscribe(
       (value: SearchDto) => this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDances(), value));
+    this.loaded = true;
   }
 
   generateSortFn(props: any) {

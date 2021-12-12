@@ -3,6 +3,7 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, V
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
+import { UserMode } from '../model/user-mode';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
@@ -88,10 +89,12 @@ export class MovePageComponent implements OnInit {
     }
 
     this.moveForm.updateValueAndValidity();
-    if (!this.settings.secretWrite) {
-      this.moveForm.disable();
-      this.readonly = true;
-    }
+    this.settings.userMode.subscribe(userMode => {
+      if (userMode === UserMode.read) {
+        this.moveForm.disable();
+        this.readonly = true;
+      }
+    });
     this.loaded = true;
   }
 
@@ -136,6 +139,7 @@ export class MovePageComponent implements OnInit {
       this.readonly = true;
       this.moveForm.disable();
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
+        console.log(m);
         this.moveForm.patchValue(m);
         this.loaded = true;
         this.readonly = false;

@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import CryptoES from 'crypto-es';
 import { CookieService } from 'ngx-cookie-service';
-import { firstValueFrom, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, of, Subject, switchMap, tap } from 'rxjs';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
+import { UserMode } from '../model/user-mode';
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +14,15 @@ import { SecretWriteDto } from '../model/secret-write-dto';
 export class SettingsService {
   secret: SecretDto | undefined;
   secretWrite: SecretWriteDto | undefined;
-  secretReadString: string | undefined;
-  secretWriteString: string | undefined;
+  secretReadString!: string;
+  secretWriteString!: string;
   isStarted = false;
   isStarting = new Subject<boolean>();
+  userMode = new BehaviorSubject<UserMode>(UserMode.test);
 
   constructor(private route: ActivatedRoute, private cookies: CookieService, private http: HttpClient) { }
 
   fetchSettings() {
-    this.http.get('assets/secret-write.txt')
     this.route.queryParams.subscribe(params => {
       this.initSettings(params);
     })
@@ -38,19 +39,37 @@ export class SettingsService {
     this.secretWriteString = this.getSetting(params, 'secret-write');
 
     if (this.secretReadString) {
-      this.http.get<string>('assets/secret-read.txt', { responseType: 'text' as 'json' }).subscribe(data => {
-        const decrypted = CryptoES.AES.decrypt(data, this.secretReadString as string);
-        this.secret = JSON.parse(decrypted.toString(CryptoES.enc.Utf8));
+      this.getFile('secret-read.txt').pipe(tap(data => {
+        this.secret = this.decrypt(data, this.secretReadString);
+      }), switchMap(() => this.getFile('secret-write.txt'))).subscribe(data => {
+        this.secretWrite = this.decrypt(data, this.secretWriteString);
+        if (this.secret && this.secretWrite) {
+          this.userMode.next(UserMode.write)
+        } else if (this.secret) {
+          this.userMode.next(UserMode.read)
+        } else {
+          this.userMode.next(UserMode.test)
+        }
         this.isStarting.next(false);
         this.isStarted = true;
-      });
+      });;
     }
+  }
 
-    if (this.secretWriteString) {
-      this.http.get<string>('assets/secret-write.txt', { responseType: 'text' as 'json' }).subscribe(data => {
-        const decrypted = CryptoES.AES.decrypt(data, this.secretWriteString as string);
-        this.secretWrite = JSON.parse(decrypted.toString(CryptoES.enc.Utf8));
-      });
+  private getFile(filename: string) {
+    return this.http.get<string>(`assets/${filename}`, { responseType: 'text' as 'json' });
+  }
+
+  private decrypt(data: string, key: string): any {
+    if (!key) {
+      return undefined;
+    }
+    try {
+      const decrypted = CryptoES.AES.decrypt(data, key);
+      return JSON.parse(decrypted.toString(CryptoES.enc.Utf8));
+    } catch (e) {
+      console.log('incorrect secret', key, e);
+      return undefined;
     }
   }
 

@@ -11,6 +11,7 @@ import { ResponseUpdate } from '../model/response-update';
 import { ResponseCreate } from '../model/response-create';
 import { ResponseGet } from '../model/response-get';
 import { ApiToken } from '../model/api-token';
+import { UserMode } from '../model/user-mode';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +21,56 @@ export class ApiclientService {
   private courseDatesKeys: string[] = new Array<string>();
   private lastUpdated!: number;
   private writeToken!: ApiToken;
+  private userMode!: UserMode;
+  private testData = {
+    "range": "Tanzfiguren!A1:R500",
+    "majorDimension": "ROWS",
+    "values": [
+      [
+        "Name",
+        "Tanz",
+        "Beschreibung",
+        "Lerndatum",
+        "Lernreihenfolge",
+        "Count",
+        "Name gesichert",
+        "Typ",
+        "Eingang",
+        "Ausgang",
+        "Ähnliche Tanzfiguren",
+        "In anderen Tänzen",
+        "Videoname",
+        "Links",
+        "ToDo",
+        "Benutzer",
+        "test",
+        "__id"
+      ],
+      [
+        "Basico (B)",
+        "Bachata",
+        "",
+        "04.11.2021",
+        "0",
+        "8",
+        "TRUE",
+        "Figur",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "mvolkert",
+        "",
+        "TTtVY2FVb0AoK0VJVjR2OUtPV0U"
+      ]]
+  } as ResponseGet;
 
-  constructor(private settingsService: SettingsService, private http: HttpClient) { }
+  constructor(private settingsService: SettingsService, private http: HttpClient) {
+    this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
+  }
 
   async getMoves(): Promise<MoveDto[]> {
     await this.settingsService.loading();
@@ -32,7 +81,7 @@ export class ApiclientService {
       sheetRange
     ).pipe(map((result: ResponseGet) => {
       const values = result?.values;
-      if (values.length > 0) {
+      if (values?.length > 0) {
         this.movesKeys = values[0];
         for (let i = 1; i < values.length; i++) {
           var row = values[i];
@@ -54,7 +103,7 @@ export class ApiclientService {
       sheetRange
     ).pipe(map((result: ResponseGet) => {
       const values = result?.values;
-      if (values.length > 0) {
+      if (values?.length > 0) {
         this.courseDatesKeys = values[0];
         for (let i = 1; i < values.length; i++) {
           var row = values[i];
@@ -91,15 +140,24 @@ export class ApiclientService {
     return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
   }
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
+    if (this.userMode === UserMode.test) {
+      return of(this.testData);
+    }
     return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
   }
   private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {
+    if (this.userMode !== UserMode.write) {
+      return of({updates: {updatedRange: 'T!A42:S42'}} as ResponseCreate);
+    }
     return this.loginWrite().pipe(switchMap(r => {
       return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
     }));
   }
 
   private spreadsheetsPut(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseUpdate> {
+    if (this.userMode !== UserMode.write) {
+      return of({} as ResponseUpdate);
+    }
     return this.loginWrite().pipe(switchMap(r => {
       return this.http.put<ResponseUpdate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
     }));
