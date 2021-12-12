@@ -20,7 +20,7 @@ export class SettingsService {
   isStarting = new Subject<boolean>();
   userMode = new BehaviorSubject<UserMode>(UserMode.test);
 
-  constructor(private route: ActivatedRoute, private cookies: CookieService, private http: HttpClient) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
   fetchSettings() {
     this.route.queryParams.subscribe(params => {
@@ -74,12 +74,6 @@ export class SettingsService {
   }
 
   private getSetting(params: Params, key: string): string {
-    let settingString = params[key];
-    if (settingString) {
-      this.cookies.set(key, settingString, new Date(Date.now() + 1000 * 3600 * 24 * 10));
-    } else {
-      settingString = this.cookies.get(key);
-    }
-    return settingString;
+    return params[key];
   }
 }
