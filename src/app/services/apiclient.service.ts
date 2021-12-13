@@ -77,7 +77,7 @@ export class ApiclientService {
     return firstValueFrom(this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
       'Tanzfiguren!A1:S500'
-      ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto))));
+    ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto))));
   }
 
   async getCourseDates(): Promise<Array<CourseDateDto>> {
@@ -111,7 +111,7 @@ export class ApiclientService {
     if (values?.length > 0) {
       for (let i = 1; i < values.length; i++) {
         var row = values[i];
-        if (row[0]) {
+        if (row[0] || row[1]) {
           result.push(mapfunc(row, i));
         }
       }
