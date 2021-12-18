@@ -21,24 +21,31 @@ export class MoveCardsPageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
-      this.moves = moves.sort(this.generateSortFn([{ name: 'dance' }, { name: 'order' }]));
+      this.moves = moves.sort(this.generateSortFn([m => m.dance, m => Number(m.order)]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
     });
     this.dataManagerService.searchFilterObservable.subscribe(
-      (value: SearchDto) => this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDanceNames(), value));
+      (value: SearchDto) => {
+        this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDanceNames(), value)
+        if (value.course) {
+          this.moves.sort(this.generateSortFn([m => m.dance, m => m.courseDates.filter(c => c.course === value.course).map(c => c.date).pop(), m => Number(m.order)]));
+        } else {
+          this.moves.sort(this.generateSortFn([m => m.dance, m => Number(m.order)]));
+        }
+      });
     this.loaded = true;
   }
 
-  generateSortFn(props: any) {
-    return (a: any, b: any) => {
-      for (var i = 0; i < props.length; i++) {
-        var prop = props[i];
-        var name = prop.name;
-        var reverse = prop.reverse;
-        if (a[name] < b[name])
-          return reverse ? 1 : -1;
-        if (a[name] > b[name])
-          return reverse ? -1 : 1;
+  generateSortFn<T>(getters: Array<(x: T) => any>) {
+    return (a: T, b: T) => {
+      for (let getter of getters) {
+        if (!getter(a) || !getter(b)) {
+          continue;
+        }
+        if (getter(a) < getter(b))
+          return -1;
+        if (getter(a) > getter(b))
+          return 1;
       }
       return 0;
     };
