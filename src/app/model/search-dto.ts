@@ -4,5 +4,7 @@ export interface SearchDto {
     course: string,
     notcourse: string,
     type: string,
-    todo: string
+    todo: string,
+    video: string,
+    script: string
 }

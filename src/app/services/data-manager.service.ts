@@ -34,8 +34,8 @@ export class DataManagerService {
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe(params => {
-      if (params["dance"] || params["move"] || params["course"] || params["type"] || params["notcourse"] || params["todo"]) {
-        this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], notcourse: params["notcourse"], type: params["type"], todo: params["todo"] });
+      if (params["dance"] || params["move"] || params["course"] || params["type"] || params["notcourse"] || params["todo"] || params["video"] || params["script"]) {
+        this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], notcourse: params["notcourse"], type: params["type"], todo: params["todo"], video: params["video"], script: params["script"] });
       }
       let relationTypeParams = params["relationTypes"];
       if (!relationTypeParams) {
@@ -185,7 +185,9 @@ export class DataManagerService {
       .filter(move => !search.course || move.courseDates.map(c => c.course).includes(search.course))
       .filter(move => !search.notcourse || !move.courseDates.map(c => c.course).includes(search.notcourse))
       .filter(move => !search.type || move.type.includes(search.type))
-      .filter(move => !search.todo || move.toDo.includes(search.todo));
+      .filter(move => !search.todo || move.toDo.includes(search.todo))
+      .filter(move => !search.video || move.toDo.includes(search.video))
+      .filter(move => !search.script || eval(search.script));
   }
 
   private tapRequest = tap({

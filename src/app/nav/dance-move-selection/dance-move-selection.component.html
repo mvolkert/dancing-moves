@@ -42,4 +42,12 @@
         <mat-label>ToDo</mat-label>
         <input type="text" matInput formControlName="todo">
     </mat-form-field>
+    <mat-form-field *ngIf="isAdmin" appearance="fill" class="full-width">
+        <mat-label>Video</mat-label>
+        <input type="text" matInput formControlName="video">
+    </mat-form-field>
+    <mat-form-field *ngIf="isAdmin" appearance="fill" class="full-width">
+        <mat-label>Script</mat-label>
+        <input type="text" matInput formControlName="script">
+    </mat-form-field>
 </form>

@@ -31,7 +31,9 @@ export class DanceMoveSelectionComponent implements OnInit {
     course: new FormControl(""),
     notcourse: new FormControl(""),
     type: new FormControl(""),
-    todo: new FormControl("")
+    todo: new FormControl(""),
+    video: new FormControl(""),
+    script: new FormControl("")
   });
 
   constructor(private dataManagerService: DataManagerService, private navService: NavService, private settingsService: SettingsService) {
