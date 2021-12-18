@@ -101,10 +101,10 @@ export class ApiclientService {
     ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto)));
   }
 
-  getVideos(): Observable<Array<VideoDto>> {
+  getVideos(name: string): Observable<Array<VideoDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.courseDatesSheetId as string,
-      'Videos SSM!A1:B1000'
+      `Videos ${name}!A1:B1000`
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
   }
 

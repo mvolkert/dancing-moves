@@ -6,6 +6,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, firstValueFrom, of, Subject, switchMap, tap } from 'rxjs';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
+import { SpecialRight } from '../model/special-right';
 import { UserMode } from '../model/user-mode';
 
 @Injectable({
@@ -22,8 +23,11 @@ export class SettingsService {
   specialRightsString!: string;
   specialRights!: Array<string>;
   specialRightsMap = {
-    '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': 'admin',
-    'e9a03c9d033097130b229c2044eae02c80fd47dd2214952a6558c656b5386640': 'video-ssm'
+    '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': SpecialRight.admin,
+    'e9a03c9d033097130b229c2044eae02c80fd47dd2214952a6558c656b5386640': SpecialRight.video_ssm,
+    '2a81a551f614d45c8a87fd178d4a135d37fb79280fd108183cb17393d354d66c': SpecialRight.video_fau,
+    'cca543992247230ebe41022d5e14ba0e8337c97b98c1fc1118bc30d07b672ca4': SpecialRight.video_tsm,
+    '28c48b8eb4d51ab963b42acb377ab809b8bd15c0977ca6325439bff6ea5e61be': SpecialRight.video_tsc
   } as { [key: string]: string };
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }

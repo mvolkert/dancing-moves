@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, forkJoin, Observable, of, Subject } from 'rxjs';
-import { defaultIfEmpty, map, switchMap, tap } from 'rxjs/operators';
+import { defaultIfEmpty, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
@@ -14,6 +14,7 @@ import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
+import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
 import { VideoNameDto } from '../model/video-name-dto';
 import { delay, getRow, parseBoolean, parseDate } from '../util/util';
@@ -85,10 +86,20 @@ export class DataManagerService {
 
 
   private getVideos(): Observable<VideoDto[]> {
-    if (this.settingsService.hasSpecialRight('video-ssm')) {
-      return this.apiclientService.getVideos();
+    const observables = new Array<Observable<VideoDto[]>>()
+    if (this.settingsService.hasSpecialRight(SpecialRight.video_ssm) || this.settingsService.hasSpecialRight(SpecialRight.admin)) {
+      observables.push(this.apiclientService.getVideos("SSM"));
     }
-    return of([]);
+    if (this.settingsService.hasSpecialRight(SpecialRight.video_fau) || this.settingsService.hasSpecialRight(SpecialRight.admin)) {
+      observables.push(this.apiclientService.getVideos("FAU"));
+    }
+    if (this.settingsService.hasSpecialRight(SpecialRight.video_tsm) || this.settingsService.hasSpecialRight(SpecialRight.admin)) {
+      observables.push(this.apiclientService.getVideos("TSM"));
+    }
+    if (this.settingsService.hasSpecialRight(SpecialRight.video_tsc) || this.settingsService.hasSpecialRight(SpecialRight.admin)) {
+      observables.push(this.apiclientService.getVideos("TSC"));
+    }
+    return forkJoin(observables).pipe(defaultIfEmpty([]), map(x => x.flatMap(y => y)));
   }
 
   async loading() {
