@@ -15,6 +15,7 @@ import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { VideoDto } from '../model/video-dto';
+import { VideoNameDto } from '../model/video-name-dto';
 import { delay, getRow, parseBoolean, parseDate } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
@@ -60,17 +61,26 @@ export class DataManagerService {
       for (const move of results.moves) {
         move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
         if (move.videoname) {
-          const videonames = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v);
+          const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) } });
 
-          move.videos = results.videos.filter(v => videonames.includes(v.name));
-          move.videos.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
-          console.log(move.videoname, videonames, move.videos);
+          // deep copy for different options in each move
+          move.videos = JSON.parse(JSON.stringify(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name))));
+          move.videos.forEach(videoDto => videoDto.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? ''));
         }
       }
       this.movesSubject.next(results.moves);
       this.isStarting.next(false);
       this.isStarted = true;
     })
+  }
+
+  private getOptions(videoname: string) {
+
+    if (videoname.includes('!')) {
+      console.log('getOptions')
+      return '!' + videoname.split('!')[1];
+    }
+    return '';
   }
 
 
