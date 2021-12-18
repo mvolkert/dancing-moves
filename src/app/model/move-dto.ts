@@ -5,7 +5,7 @@ export interface MoveDto {
     name: string,
     dance: string,
     date: Date | null,
-    order: string,
+    order: number,
     count: string,
     nameVerified: boolean,
     type: string,

@@ -65,7 +65,7 @@ export class DataManagerService {
 
           // deep copy for different options in each move
           move.videos = JSON.parse(JSON.stringify(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name))));
-          move.videos.forEach(videoDto => videoDto.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? ''));
+          move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
         }
       }
       this.movesSubject.next(results.moves);
@@ -215,7 +215,7 @@ export class DataManagerService {
   private updateMoveData = (moveDto: MoveDto): MoveDto => {
     let moves = JSON.parse(JSON.stringify(this.movesSubject.value)) as Array<MoveDto>;
     moves = moves.filter(m => m.name != moveDto.name);
-    moves.push(moveDto)
+    moves.push(moveDto);
     this.movesSubject.next(moves);
     this.navService.navigate(["move", moveDto.name]);
     return moveDto;

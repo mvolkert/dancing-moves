@@ -18,7 +18,7 @@ export const parseDate = (dateString: string): Date | null => {
 
 export const toGermanDate = (date: Date | null): string => {
     console.log(date);
-    if (typeof Date === 'string') {
+    if (typeof date === 'string') {
         console.log('date is string');
         date = parseDate(date as unknown as string);
     }

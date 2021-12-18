@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -22,7 +23,7 @@ export class MovePageComponent implements OnInit {
     name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
     dance: new FormControl('', Validators.required),
     date: new FormControl(null),
-    order: new FormControl(''),
+    order: new FormControl(),
     count: new FormControl(''),
     nameVerified: new FormControl(''),
     type: new FormControl('Figur', Validators.required),
@@ -45,7 +46,7 @@ export class MovePageComponent implements OnInit {
   readonly = false;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
-    private settings: SettingsService, private navService: NavService) {
+    private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
     this.route.paramMap.subscribe(params => {
       this.readParams(params);
     });
@@ -85,7 +86,7 @@ export class MovePageComponent implements OnInit {
         this.move.name = value.name;
         this.move.dance = value.dance;
         this.move.description = value.description;
-        this.move.order = value.order;
+        this.move.order = Number(value.order);
         this.move.count = value.count;
         this.move.nameVerified = value.nameVerified;
         this.move.type = value.type;
@@ -111,6 +112,7 @@ export class MovePageComponent implements OnInit {
         this.readonly = true;
       }
     });
+    this.move?.videos.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
     this.loaded = true;
   }
 
