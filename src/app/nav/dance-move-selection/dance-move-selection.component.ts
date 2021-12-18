@@ -4,8 +4,10 @@ import { map, Observable } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
 import { SearchDto } from 'src/app/model/search-dto';
+import { SpecialRight } from 'src/app/model/special-right';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { NavService } from 'src/app/services/nav.service';
+import { SettingsService } from 'src/app/services/settings.service';
 
 @Component({
   selector: 'app-dance-move-selection',
@@ -19,6 +21,7 @@ export class DanceMoveSelectionComponent implements OnInit {
   types = new Set<string>();
   movesGroup: MoveGroupDto[] = [];
   loading = true;
+  isAdmin = false;
 
   movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
   moveSearch = new FormControl("");
@@ -26,10 +29,12 @@ export class DanceMoveSelectionComponent implements OnInit {
     dance: new FormControl(""),
     move: new FormControl(""),
     course: new FormControl(""),
+    notcourse: new FormControl(""),
     type: new FormControl(""),
+    todo: new FormControl("")
   });
 
-  constructor(private dataManagerService: DataManagerService, private navService: NavService) {
+  constructor(private dataManagerService: DataManagerService, private navService: NavService, private settingsService: SettingsService) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -59,6 +64,7 @@ export class DanceMoveSelectionComponent implements OnInit {
       this.navService.openWebsiteIfEasterEggFound(value.move);
       this.dataManagerService.searchFilterObservable.next(value);
     });
+    this.isAdmin = this.settingsService.hasSpecialRight(SpecialRight.admin);
   }
 
   private filterGroup(search: SearchDto): MoveGroupDto[] {

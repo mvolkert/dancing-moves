@@ -25,10 +25,21 @@
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Course not included</mat-label>
+        <mat-select formControlName="notcourse">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let course of courseNames" [value]="course">{{course}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
         <mat-label>Type</mat-label>
         <mat-select formControlName="type">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
         </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="isAdmin" appearance="fill" class="full-width">
+        <mat-label>ToDo</mat-label>
+        <input type="text" matInput formControlName="todo">
     </mat-form-field>
 </form>

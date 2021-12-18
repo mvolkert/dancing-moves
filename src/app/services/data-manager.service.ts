@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, firstValueFrom, forkJoin, Observable, of, Subject } from 'rxjs';
-import { defaultIfEmpty, map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from 'rxjs';
+import { defaultIfEmpty, map, switchMap, tap } from 'rxjs/operators';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
 import { DanceDto } from '../model/dance-dto';
@@ -16,8 +14,7 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
-import { VideoNameDto } from '../model/video-name-dto';
-import { delay, getRow, parseBoolean, parseDate } from '../util/util';
+import { delay, getRow } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
@@ -35,10 +32,10 @@ export class DataManagerService {
   isStarted = false;
   isStarting = new Subject<boolean>();
 
-  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private sanitizer: DomSanitizer, private settingsService: SettingsService) {
+  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe(params => {
-      if (params["dance"] || params["move"] || params["course"] || params["type"]) {
-        this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], type: params["type"] });
+      if (params["dance"] || params["move"] || params["course"] || params["type"] || params["notcourse"] || params["todo"]) {
+        this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], notcourse: params["notcourse"], type: params["type"], todo: params["todo"] });
       }
       let relationTypeParams = params["relationTypes"];
       if (!relationTypeParams) {
@@ -186,7 +183,9 @@ export class DataManagerService {
       .filter(move => !dances.has(search.dance) || move.dance == search.dance)
       .filter(move => !search.move || move.name.includes(search.move))
       .filter(move => !search.course || move.courseDates.map(c => c.course).includes(search.course))
-      .filter(move => !search.type || move.type.includes(search.type));
+      .filter(move => !search.notcourse || !move.courseDates.map(c => c.course).includes(search.notcourse))
+      .filter(move => !search.type || move.type.includes(search.type))
+      .filter(move => !search.todo || move.toDo.includes(search.todo));
   }
 
   private tapRequest = tap({
