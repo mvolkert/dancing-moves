@@ -1,4 +1,5 @@
 import { CourseDateDto } from "./course-date-dto";
+import { VideoDto } from "./video-dto";
 
 export interface MoveDto {
     name: string,
@@ -18,4 +19,5 @@ export interface MoveDto {
     links: string,
     row: number,
     courseDates: CourseDateDto[]
+    videos: VideoDto[]
 }

@@ -94,7 +94,7 @@
             <mat-icon>add_circle_outline</mat-icon>Add Course Date
         </button>
     </div>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
         <mat-label>videoname</mat-label>
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
             formControlName="videoname">
@@ -114,6 +114,8 @@
 </form>
 <div markdown [data]="moveForm.value.description">
 </div>
-<div class="video-container" *ngIf="videoLink">
-    <iframe scrolling="no" frameborder="0" [src]="videoLink" allowfullscreen></iframe>
-</div>
+<ng-container *ngFor="let video of move?.videos">
+    <div class="video-container">
+        <iframe scrolling="no" frameborder="0" [src]="video.safeUrl" allowfullscreen></iframe>
+    </div>
+</ng-container>

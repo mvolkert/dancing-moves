@@ -14,6 +14,7 @@ import { ApiToken } from '../model/api-token';
 import { UserMode } from '../model/user-mode';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
+import { VideoDto } from '../model/video-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -72,36 +73,39 @@ export class ApiclientService {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
   }
 
-  async getMoves(): Promise<Array<MoveDto>> {
-    await this.settingsService.loading();
-    return firstValueFrom(this.spreadsheetsGet(
+  getMoves(): Observable<Array<MoveDto>> {
+    return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
       'Tanzfiguren!A1:S500'
-    ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto))));
+    ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
   }
 
-  async getCourseDates(): Promise<Array<CourseDateDto>> {
-    await this.settingsService.loading();
-    return firstValueFrom(this.spreadsheetsGet(
+  getCourseDates(): Observable<Array<CourseDateDto>> {
+    return this.spreadsheetsGet(
       this.settingsService.secret?.courseDatesSheetId as string,
       'Course Dates!A1:C1000'
-    ).pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto))));
+    ).pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
   }
 
-  async getCourses(): Promise<Array<CourseDto>> {
-    await this.settingsService.loading();
-    return firstValueFrom(this.spreadsheetsGet(
+  getCourses(): Observable<Array<CourseDto>> {
+    return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
       'Courses!A1:D1000'
-    ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto))));
+    ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 
-  async getDances(): Promise<Array<DanceDto>> {
-    await this.settingsService.loading();
-    return firstValueFrom(this.spreadsheetsGet(
+  getDances(): Observable<Array<DanceDto>> {
+    return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
       'Tänze!A1:H100'
-    ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto))));
+    ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto)));
+  }
+
+  getVideos(): Observable<Array<VideoDto>> {
+    return this.spreadsheetsGet(
+      this.settingsService.secret?.courseDatesSheetId as string,
+      'Videos SSM!A1:B1000'
+    ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
   }
 
 
@@ -224,7 +228,8 @@ export class ApiclientService {
       links: row[13],
       toDo: row[14],
       row: i + 1,
-      courseDates: []
+      courseDates: [],
+      videos: []
     };
   }
 
@@ -248,6 +253,14 @@ export class ApiclientService {
       level: row[5],
       description: row[6],
       links: row[7],
+      row: i + 1
+    };
+  }
+
+  private createVideoDto = (row: any, i: number): VideoDto => {
+    return {
+      name: row[0],
+      link: row[1],
       row: i + 1
     };
   }

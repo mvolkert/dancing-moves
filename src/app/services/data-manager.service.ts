@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable, of, Subject } from 'rxjs';
 import { defaultIfEmpty, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Connection } from '../model/connection';
@@ -13,9 +14,11 @@ import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
+import { VideoDto } from '../model/video-dto';
 import { delay, getRow, parseBoolean, parseDate } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +33,7 @@ export class DataManagerService {
   isStarted = false;
   isStarting = new Subject<boolean>();
 
-  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService) {
+  constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private sanitizer: DomSanitizer, private settingsService: SettingsService) {
     this.route.queryParams.subscribe(params => {
       if (params["dance"] || params["move"] || params["course"] || params["type"]) {
         this.searchFilterObservable.next({ dance: params["dance"], move: params["move"], course: params["course"], type: params["type"] });
@@ -51,16 +54,31 @@ export class DataManagerService {
   }
 
   async start() {
-    const moves = await this.apiclientService.getMoves();
-    const courseDates = await this.apiclientService.getCourseDates();
-    this.dances = await this.apiclientService.getDances();
+    await this.settingsService.loading();
+    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos() }).subscribe(results => {
+      this.dances = results.dances;
+      for (const move of results.moves) {
+        move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
+        if (move.videoname) {
+          const videonames = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v);
 
-    for (const move of moves) {
-      move.courseDates = courseDates.filter(c => c.moveName == move.name);
+          move.videos = results.videos.filter(v => videonames.includes(v.name));
+          move.videos.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
+          console.log(move.videoname, videonames, move.videos);
+        }
+      }
+      this.movesSubject.next(results.moves);
+      this.isStarting.next(false);
+      this.isStarted = true;
+    })
+  }
+
+
+  private getVideos(): Observable<VideoDto[]> {
+    if (this.settingsService.hasSpecialRight('video-ssm')) {
+      return this.apiclientService.getVideos();
     }
-    this.movesSubject.next(moves);
-    this.isStarting.next(false);
-    this.isStarted = true;
+    return of([]);
   }
 
   async loading() {

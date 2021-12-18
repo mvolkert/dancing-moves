@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
-import { SecretDto } from '../model/secret-dto';
 import { UserMode } from '../model/user-mode';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
@@ -45,10 +43,9 @@ export class MovePageComponent implements OnInit {
   loaded = false;
   nameParam = ""
   readonly = false;
-  videoLink!: SafeResourceUrl;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
-    private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
+    private settings: SettingsService, private navService: NavService) {
     this.route.paramMap.subscribe(params => {
       this.readParams(params);
     });
@@ -84,7 +81,23 @@ export class MovePageComponent implements OnInit {
       }
     }
     this.moveForm.valueChanges.subscribe(value => {
-      this.move = value;
+      if (this.move) {
+        this.move.name = value.name;
+        this.move.dance = value.dance;
+        this.move.description = value.description;
+        this.move.order = value.order;
+        this.move.count = value.count;
+        this.move.nameVerified = value.nameVerified;
+        this.move.type = value.type;
+        this.move.startMove = value.startMove;
+        this.move.endMove = value.endMove;
+        this.move.relatedMoves = value.relatedMoves;
+        this.move.relatedMovesOtherDances = value.relatedMovesOtherDances;
+        this.move.videoname = value.videoname;
+        this.move.links = value.links;
+        this.move.toDo = value.toDo;
+        this.move.courseDates = value.courseDates;
+      }
       this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
     });
     if (this.move) {
@@ -96,8 +109,6 @@ export class MovePageComponent implements OnInit {
       if (userMode === UserMode.read) {
         this.moveForm.disable();
         this.readonly = true;
-      } else if (this.settings.hasSpecialRight('admin')) {
-        this.videoLink = this.sanitizer.bypassSecurityTrustResourceUrl(`https://mega.nz/embed/${this.settings.secret?.videoLink}`);
       }
     });
     this.loaded = true;

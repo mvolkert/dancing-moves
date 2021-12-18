@@ -22,7 +22,8 @@ export class SettingsService {
   specialRightsString!: string;
   specialRights!: Array<string>;
   specialRightsMap = {
-    '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': 'admin'
+    '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': 'admin',
+    'e9a03c9d033097130b229c2044eae02c80fd47dd2214952a6558c656b5386640': 'video-ssm'
   } as { [key: string]: string };
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
