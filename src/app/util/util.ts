@@ -18,7 +18,14 @@ export const parseDate = (dateString: string): Date | null => {
 
 export const toGermanDate = (date: Date | null): string => {
     console.log(date);
-    if (!date || isNaN(date.getTime())) {
+    if (typeof Date === 'string') {
+        console.log('date is string');
+        date = parseDate(date as unknown as string);
+    }
+    if (!date) {
+        return "";
+    }
+    if (isNaN(date.getTime())) {
         return "";
     }
     return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
