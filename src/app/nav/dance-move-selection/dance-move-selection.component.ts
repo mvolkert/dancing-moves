@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
 import { SearchDto } from 'src/app/model/search-dto';
@@ -22,6 +22,8 @@ export class DanceMoveSelectionComponent implements OnInit {
   movesGroup: MoveGroupDto[] = [];
   loading = true;
   isAdmin = false;
+  codeSnippets!: Observable<Array<string>>;
+  initalCodeSnippets = new Array<string>("move.name", "move.dance", "move.date", "move.order", "move.count", "move.nameVerified", "move.type", "move.startMove", "move.endMove", "move.relatedMoves", "move.relatedMovesOtherDances", "move.videoname", "move.description", "move.toDo", "move.links", "move.row", "move.courseDates", "move.videos", "move.courseDates.filter(c=>c.date).length==0", "move.courseDates.filter(c=>c.date&&c.date>'2021-01-01').length>0");
 
   movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
   moveSearch = new FormControl("");
@@ -56,6 +58,7 @@ export class DanceMoveSelectionComponent implements OnInit {
         map((value: SearchDto) => this.filterGroup(value)),
       );
     });
+    this.codeSnippets = this.dataManagerService.searchFilterObservable.pipe(map(this.filterCodeSnippets));
     this.dataManagerService.searchFilterObservable.subscribe(searchFilter => {
       if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
         this.searchForm.patchValue(searchFilter);
@@ -80,4 +83,7 @@ export class DanceMoveSelectionComponent implements OnInit {
     return this.movesGroup;
   }
 
+  private filterCodeSnippets = (search: SearchDto): string[] => {
+    return this.initalCodeSnippets.filter(snip => snip.includes(search.script));
+  }
 }

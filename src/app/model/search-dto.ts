@@ -5,6 +5,5 @@ export interface SearchDto {
     notcourse: string,
     type: string,
     todo: string,
-    video: string,
     script: string
 }

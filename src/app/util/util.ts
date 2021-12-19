@@ -1,7 +1,6 @@
 export const regexGermanDate = /([0-9]{2})\.([0-9]{2})\.([0-9]{4})/;
 export const regexIsoDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
 export const regexTable = /[A-Za-z0-9\s]+\![A-Z]+[0-9]+\:[A-Z]+([0-9]+)/;
-import { DatePipe } from '@angular/common';
 
 export const parseDate = (dateString: string): Date | null => {
     dateString = dateString?.trim();
