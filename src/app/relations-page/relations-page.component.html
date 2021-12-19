@@ -1,12 +1,2 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
-<div  [hidden]="show!='Highchart'" #chartHighchart class="chart-container"></div>
 <div  [hidden]="show!='Cytoscape'" #chartCytoscape class="chart-container"></div>
-<gojs-diagram *ngIf="show=='Gojs'"
-  [initDiagram]='createGojsDiagram'
-  divClassName='gojsDiv'
-  [nodeDataArray]='gojsState.diagramNodeData'
-  [linkDataArray]='gojsState.diagramLinkData'
-  [modelData]='gojsState.diagramModelData'
-  (modelChange)='diagramModelChange($event)'
-  [skipsDiagramUpdate]='gojsState.skipsDiagramUpdate'
-></gojs-diagram>

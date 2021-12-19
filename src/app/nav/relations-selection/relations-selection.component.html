@@ -7,7 +7,7 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width">
+    <mat-form-field *ngIf="false" appearance="fill" class="full-width">
         <mat-label>Display Type</mat-label>
         <mat-select formControlName="displayType">
             <mat-option *ngFor="let displayType of displayTypes" [value]="displayType">
