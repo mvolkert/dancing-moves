@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { of } from 'rxjs';
 
 import { SettingsService } from './settings.service';
@@ -15,9 +14,6 @@ describe('SettingsService', () => {
         {
           provide: ActivatedRoute,
           useValue: activatedRoute,
-        }, {
-          provide: CookieService,
-          useValue: {},
         }, {
           provide: HttpClient,
           useValue: {},
