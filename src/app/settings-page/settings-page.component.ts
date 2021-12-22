@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -13,34 +14,28 @@ export class SettingsPageComponent implements OnInit {
     secretWrite: new FormControl(''),
     specialRights: new FormControl(''),
   });
-  url: string = this.createUrl();
+  url!: string;
   constructor(private settings: SettingsService, private navService: NavService) {
     this.navService.headlineObservable.next("Settings");
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.settings.loading();
+    this.settingsForm.valueChanges.subscribe(value => {
+      console.log(value);
+      const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights }
+      this.navService.navigate([], queryJson)
+      this.url = this.createUrl(queryJson);
+    });
     this.settingsForm.patchValue({
       secretRead: this.settings.secretReadString,
       secretWrite: this.settings.secretWriteString,
       specialRights: this.settings.specialRightsString
     });
-    this.settingsForm.valueChanges.subscribe(value => {
-      this.navService.navigate([], { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights })
-      this.url = this.createUrl();
-    });
   }
 
-  private createUrl() {
-    const options = []
-    if (this.settings.secretReadString) {
-      options.push(`secret=${this.settings.secretReadString}`)
-    }
-    if (this.settings.secretWriteString) {
-      options.push(`secret-write=${this.settings.secretWriteString}`)
-    }
-    if (this.settings.specialRightsString) {
-      options.push(`special-rights=${this.settings.specialRightsString}`)
-    }
+  private createUrl(queryJson: Params): string {
+    const options = Object.entries(queryJson).filter(value => value[1]).map(value => `${value[0]}=${value[1]}`);
     if (options.length > 0) {
       return `${document.baseURI}?${options.join('&')}`
     }
