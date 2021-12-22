@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-title>{{moveDto.name}}</mat-card-title>
-  <mat-card-subtitle>{{moveDto.dance}}</mat-card-subtitle>
+  <mat-card-subtitle>{{moveDto.dance}} {{moveDto.type}}</mat-card-subtitle>
   <mat-card-content>
     <div *ngFor="let courseDate of moveDto.courseDates">
       <span *ngIf="isDateValid(courseDate)">{{courseDate.date | date: 'dd.MM.yyyy'}}&nbsp;</span>
