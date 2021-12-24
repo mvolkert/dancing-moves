@@ -24,6 +24,7 @@ export class SettingsService {
   specialRightsMap = {
     '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': SpecialRight.admin,
     'e9a03c9d033097130b229c2044eae02c80fd47dd2214952a6558c656b5386640': SpecialRight.video_ssm,
+    'e0644e066bfe48ac317a8073b017af01e67506ad3d28144ec5a9f98f928aad0f': SpecialRight.video_ssm_sc,
     '2a81a551f614d45c8a87fd178d4a135d37fb79280fd108183cb17393d354d66c': SpecialRight.video_fau,
     'cca543992247230ebe41022d5e14ba0e8337c97b98c1fc1118bc30d07b672ca4': SpecialRight.video_tsm,
     '28c48b8eb4d51ab963b42acb377ab809b8bd15c0977ca6325439bff6ea5e61be': SpecialRight.video_tsc
@@ -104,8 +105,12 @@ export class SettingsService {
     return hash;
   }
 
-  hasSpecialRight(key: string) {
+  hasSpecialRight = (key: string) => {
     return this.specialRights.includes(key);
+  }
+
+  hasOneSpecialRight(keys: Array<string>) {
+    return keys.filter(this.hasSpecialRight).length > 0;
   }
 
   private getSetting(params: Params, key: string): string {

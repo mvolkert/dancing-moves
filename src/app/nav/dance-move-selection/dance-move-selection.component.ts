@@ -63,7 +63,9 @@ export class DanceMoveSelectionComponent implements OnInit {
       if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
         this.searchForm.patchValue(searchFilter);
       }
-      this.navService.navigate([], searchFilter);
+      // map empty to undefined for clean url paths
+      const params = Object.entries(searchFilter).reduce((a: any, x) => { a[x[0]] = (x[1]?.length > 0) ? x[1] : undefined; return a }, {});
+      this.navService.navigate([], params);
     });
     this.searchForm!.valueChanges.subscribe((value: SearchDto) => {
       this.navService.openWebsiteIfEasterEggFound(value.move);
