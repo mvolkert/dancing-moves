@@ -66,9 +66,9 @@ export class DanceMoveSelectionComponent implements OnInit {
       // map empty to undefined for clean url paths
       const params = Object.entries(searchFilter).reduce((a: any, x) => { a[x[0]] = (x[1]?.length > 0) ? x[1] : undefined; return a }, {});
       this.navService.navigate([], params);
+      this.handleEasterEggs(searchFilter);
     });
     this.searchForm!.valueChanges.subscribe((value: SearchDto) => {
-      this.navService.openWebsiteIfEasterEggFound(value.move);
       this.dataManagerService.searchFilterObservable.next(value);
     });
     this.isAdmin = this.settingsService.hasSpecialRight(SpecialRight.admin);
@@ -87,5 +87,12 @@ export class DanceMoveSelectionComponent implements OnInit {
 
   private filterCodeSnippets = (search: SearchDto): string[] => {
     return this.initalCodeSnippets.filter(snip => snip.includes(search.script));
+  }
+
+  private handleEasterEggs(value: SearchDto){
+    if (value.move?.toLowerCase() === "konami" || value.move?.toLowerCase() === "++--<><>ab") {
+      this.navService.navigate(["move", "Konami"]);
+    }
+    this.navService.openWebsiteIfEasterEggFound(value.move);
   }
 }

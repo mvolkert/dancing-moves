@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { CourseDateDto } from '../model/course-date-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { UserMode } from '../model/user-mode';
+import { VideoDto } from '../model/video-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
@@ -45,6 +47,19 @@ export class MovePageComponent implements OnInit {
   nameParam = ""
   readonly = false;
 
+  konami = {
+    dance: "Westcoast Swing",
+    name: "Konami",
+    count: "10",
+    startMove: [] as string[],
+    endMove: [] as string[],
+    relatedMoves: [] as string[],
+    relatedMovesOtherDances: [] as string[],
+    courseDates: [] as CourseDateDto[],
+    videos: [] as VideoDto[],
+    description: "# Ablauf \n## Leader\n- 1 links vor\n- 2 rechts vor\n- 3 links zurück\n- 4 rechts zurück\n- 5 links Gewichtsverlagerung\n- 6 rechts Gewichtsverlagerung\n- 7 links Gewichtsverlagerung\n- 8 rechts Gewichtsverlagerung\n- 9 Bauch raus\n- 10 Arsch raus\n\n## Follower\ngespiegelt\n# Bemerkung\nSchalted extra Power beim Follower frei"
+  } as MoveDto;
+
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
     this.route.paramMap.subscribe(params => {
@@ -74,6 +89,8 @@ export class MovePageComponent implements OnInit {
           this.move.row = NaN;
         }
       }
+    } else if (this.nameParam == this.konami.name) {
+      this.move = JSON.parse(JSON.stringify(this.konami));
     } else {
       this.move = this.dataManager.getMove(this.nameParam);
       if (this.move) {
