@@ -165,6 +165,9 @@ export class DataManagerService {
         if (types.includes(RelationType.end)) {
           move.endMove.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
         }
+        if (types.includes(RelationType.contained)) {
+          move.containedMoves.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
+        }
         if (types.includes(RelationType.related)) {
           move.relatedMoves.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
         }

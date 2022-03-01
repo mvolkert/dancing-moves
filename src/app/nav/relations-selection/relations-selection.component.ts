@@ -11,7 +11,7 @@ import { NavService } from 'src/app/services/nav.service';
   styleUrls: ['./relations-selection.component.css']
 })
 export class RelationsSelectionComponent implements OnInit {
-  relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.related, RelationType.otherDance];
+  relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.contained, RelationType.related, RelationType.otherDance];
   displayTypes: Array<string> = [RelationDisplayType.cytoscape]
 
   relationsForm = new FormGroup({

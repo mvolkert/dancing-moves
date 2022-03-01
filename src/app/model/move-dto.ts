@@ -11,6 +11,7 @@ export interface MoveDto {
     type: string,
     startMove: string[],
     endMove: string[],
+    containedMoves: string[],
     relatedMoves: string[],
     relatedMovesOtherDances: string[],
     videoname: string,
