@@ -21,26 +21,7 @@ export class MovePageComponent implements OnInit {
   dances = new Set<string>();
   types = new Set<string>();
   courseNames = new Set<string>();
-  moveForm = new FormGroup({
-    name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
-    dance: new FormControl('', Validators.required),
-    date: new FormControl(null),
-    order: new FormControl(),
-    count: new FormControl(''),
-    nameVerified: new FormControl(''),
-    type: new FormControl('Figur', Validators.required),
-    startMove: new FormControl([]),
-    endMove: new FormControl([]),
-    containedMoves: new FormControl([]),
-    relatedMoves: new FormControl([]),
-    relatedMovesOtherDances: new FormControl([]),
-    videoname: new FormControl(''),
-    description: new FormControl(''),
-    toDo: new FormControl(''),
-    links: new FormControl(''),
-    row: new FormControl(''),
-    courseDates: new FormArray([])
-  });
+  moveForm = this.create_form();
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
   danceMovesNames: Set<string> = new Set<string>();
@@ -76,7 +57,17 @@ export class MovePageComponent implements OnInit {
     this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
     });
-    await this.dataManager.loading();
+    this.dataManager.isStarting.subscribe(starting => {
+      if (!starting) {
+        this.moveForm = this.create_form();
+        this.start();
+      }
+      this.loaded = !starting;
+    });
+  }
+
+  private start() {
+
     this.dances = this.dataManager.getDanceNames();
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
@@ -132,7 +123,29 @@ export class MovePageComponent implements OnInit {
       }
     });
     this.move?.videos.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
-    this.loaded = true;
+  }
+
+  private create_form() {
+    return new FormGroup({
+      name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
+      dance: new FormControl('', Validators.required),
+      date: new FormControl(null),
+      order: new FormControl(),
+      count: new FormControl(''),
+      nameVerified: new FormControl(''),
+      type: new FormControl('Figur', Validators.required),
+      startMove: new FormControl([]),
+      endMove: new FormControl([]),
+      containedMoves: new FormControl([]),
+      relatedMoves: new FormControl([]),
+      relatedMovesOtherDances: new FormControl([]),
+      videoname: new FormControl(''),
+      description: new FormControl(''),
+      toDo: new FormControl(''),
+      links: new FormControl(''),
+      row: new FormControl(''),
+      courseDates: new FormArray([])
+    });
   }
 
   private readParams(params: ParamMap) {

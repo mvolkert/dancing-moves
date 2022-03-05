@@ -15,9 +15,16 @@ export class DanceCardsPageComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.dataManagerService.loading();
+    this.dataManagerService.isStarting.subscribe(starting => {
+      if (!starting) {
+        this.start();
+      }
+      this.loaded = !starting;
+    });
+  }
+
+  private start() {
     this.dances = this.dataManagerService.getDances();
-    this.loaded = true;
   }
 
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from 'rxjs';
-import { defaultIfEmpty, map, switchMap, tap } from 'rxjs/operators';
+import { defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
 import { DanceDto } from '../model/dance-dto';
@@ -29,8 +29,8 @@ export class DataManagerService {
   searchFilterObservable = new BehaviorSubject<SearchDto>({} as SearchDto);
   relationsSelectionObservable = new BehaviorSubject<RelationParams>({} as RelationParams);
   dances!: Array<DanceDto>;
-  isStarted = false;
-  isStarting = new Subject<boolean>();
+  moves!: Array<MoveDto>;
+  isStarting = new BehaviorSubject<boolean>(true);
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe(params => {
@@ -52,8 +52,17 @@ export class DataManagerService {
 
   async start() {
     await this.settingsService.loading();
+    this.local_get();
+    if (this.moves.length == 0 || this.dances.length == 0) {
+      this.api_get();
+    }
+  }
+
+  api_get() {
+    this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos() }).subscribe(results => {
       this.dances = results.dances;
+      localStorage.setItem("dances", JSON.stringify(this.dances));
       for (const move of results.moves) {
         move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
         if (move.videoname) {
@@ -65,10 +74,18 @@ export class DataManagerService {
           videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: v.name } as VideoDto }).forEach(v => move.videos.push(v));
         }
       }
+      this.moves = results.moves;
+      localStorage.setItem("moves", JSON.stringify(this.moves));
       this.movesSubject.next(results.moves);
       this.isStarting.next(false);
-      this.isStarted = true;
     })
+  }
+
+  local_get() {
+    this.dances = JSON.parse(localStorage.getItem("dances") ?? "[]");
+    this.moves = JSON.parse(localStorage.getItem("moves") ?? "[]");
+    this.movesSubject.next(this.moves);
+    this.isStarting.next(false);
   }
 
   private getOptions(videoname: string) {
@@ -99,8 +116,8 @@ export class DataManagerService {
   }
 
   async loading() {
-    if (!this.isStarted) {
-      await firstValueFrom(this.isStarting);
+    if (this.isStarting.getValue()) {
+      await firstValueFrom(this.isStarting.pipe(filter(starting => !starting)));
     }
   }
 

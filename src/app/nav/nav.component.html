@@ -45,6 +45,9 @@
       <button *ngIf="!readonly" mat-mini-fab color="primary" aria-label="create new move">
         <mat-icon (click)="navigate('move/new')">add_circle_outline</mat-icon>
       </button>
+      <button mat-mini-fab color="primary" aria-label="sync data">
+        <mat-icon (click)="syncData()">cached</mat-icon>
+      </button>
     </mat-toolbar>
     <router-outlet></router-outlet>
   </mat-sidenav-content>

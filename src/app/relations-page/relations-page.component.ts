@@ -28,7 +28,15 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
-    this.loaded = true;
+    this.dataManagerService.isStarting.subscribe(starting => {
+      this.loaded = !starting;
+      if (!starting) {
+        this.start();
+      }
+    });
+  }
+
+  private start() {
     this.valueChangesSubscription = this.dataManagerService.relationsSelectionObservable.pipe(
       switchMap((value: RelationParams) => this.dataManagerService.getRelationPairs(value.relationTypes))).subscribe((pairs: Array<Connection>) => {
         if (this.dataManagerService.relationsSelectionObservable.value.displayType === RelationDisplayType.cytoscape) {

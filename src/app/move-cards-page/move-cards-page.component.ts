@@ -19,7 +19,15 @@ export class MoveCardsPageComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.dataManagerService.loading();
+    this.dataManagerService.isStarting.subscribe(starting => {
+      if (!starting) {
+        this.start();
+      }
+      this.loaded = !starting;
+    });
+  }
+
+  private start() {
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = moves.sort(this.generateSortFn([m => m.dance, m => m.order, m => m.name]));
       this.allMoves = JSON.parse(JSON.stringify(this.moves));
@@ -33,7 +41,6 @@ export class MoveCardsPageComponent implements OnInit {
           this.moves.sort(this.generateSortFn([m => m.dance, m => m.order, m => m.name]));
         }
       });
-    this.loaded = true;
   }
 
   generateSortFn<T>(getters: Array<(x: T) => any>) {

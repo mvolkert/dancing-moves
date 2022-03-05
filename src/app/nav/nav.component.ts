@@ -46,4 +46,8 @@ export class NavComponent implements OnInit {
   navigate(path: string): Promise<boolean> {
     return this.navService.navigate([path]);
   }
+
+  syncData() {
+    this.dataManager.api_get();
+  }
 }
