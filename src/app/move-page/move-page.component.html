@@ -81,6 +81,16 @@
         <mat-label>links</mat-label>
         <input matInput formControlName="links">
     </mat-form-field>
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
+        <mat-label>videoname</mat-label>
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="videoname">
+    </mat-form-field>
+   
+    <mat-form-field *ngIf="!readonly">
+        <mat-label>the field that nobody sees</mat-label>
+        <textarea></textarea>
+    </mat-form-field>
     <div formArrayName="courseDates">
         <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i" class="full-width">
             <mat-form-field appearance="fill" class="half-width">
@@ -102,16 +112,6 @@
             <mat-icon>add_circle_outline</mat-icon>Add Course Date
         </button>
     </div>
-    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
-        <mat-label>videoname</mat-label>
-        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-            formControlName="videoname">
-    </mat-form-field>
-   
-    <mat-form-field *ngIf="!readonly">
-        <mat-label>the field that nobody sees</mat-label>
-        <textarea></textarea>
-    </mat-form-field>
     <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width">
         <mat-label>Description</mat-label>
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
@@ -120,7 +120,7 @@
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="moveForm.invalid">Save</button>
 </form>
-<div markdown [data]="moveForm.value.description">
+<div class="description" markdown [data]="moveForm.value.description">
 </div>
 <ng-container *ngFor="let video of move?.videos">
     <div class="video-container">
