@@ -1,7 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as cytoscape from 'cytoscape';
-// @ts-ignore
-import * as coseBilkent from 'cytoscape-cose-bilkent';
 import { Subscription, switchMap } from 'rxjs';
 import { Connection } from '../model/connection';
 import { RelationDisplayType } from '../model/relation-display-type-enum';
@@ -49,7 +47,6 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   };
 
   createCytoscape(pairs: Array<Connection>) {
-    cytoscape.use( coseBilkent );
     const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { data: { id: m, width: m.length * 10 } } });
     const links = pairs.map(m => { return { data: { id: m.from + m.to, source: m.from, target: m.to } } });
     const options: cytoscape.CytoscapeOptions = {
