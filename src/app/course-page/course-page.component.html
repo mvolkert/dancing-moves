@@ -1,0 +1,37 @@
+<mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+<form *ngIf="loaded||course" [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Course</mat-label>
+        <input matInput formControlName="course">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Dances</mat-label>
+        <input matInput formControlName="dances">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>School</mat-label>
+        <input matInput formControlName="school">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Teacher</mat-label>
+        <input matInput formControlName="teacher">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Level</mat-label>
+        <input matInput formControlName="level">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Start</mat-label>
+        <input matInput formControlName="start">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>End</mat-label>
+        <input matInput formControlName="end">
+    </mat-form-field>
+    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
+        [disabled]="courseForm.invalid">Save</button>
+</form>

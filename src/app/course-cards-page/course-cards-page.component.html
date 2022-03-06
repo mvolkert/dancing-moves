@@ -11,6 +11,9 @@
           <div>Start Date: {{course.start}}</div>
           <div>End Date: {{course.end}}</div>
         </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button (click)="openDetails(course.course)">Details</button>
+        </mat-card-actions>
       </mat-card>
       <mat-divider></mat-divider>
 </ng-container>

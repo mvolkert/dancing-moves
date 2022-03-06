@@ -272,6 +272,17 @@ export class DataManagerService {
       }
     }
   }
+
+  saveOrCreateCourse(courseDto: CourseDto): Observable<MoveDto> {
+    if (courseDto.row) {
+      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData));
+    } else {
+      return this.apiclientService.appendDataCourse(courseDto).pipe(map(r => {
+        courseDto.row = getRow(r.updates.updatedRange);
+        return courseDto;
+      }), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData))
+    }
+  }
 }
 
 

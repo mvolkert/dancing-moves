@@ -27,4 +27,8 @@ export class CourseCardsPageComponent implements OnInit {
   private start() {
     this.courses = this.dataManagerService.getCourses();
   }
+
+  openDetails(name: string): Promise<boolean> {
+    return this.navService.navigate(["course", encodeURI(name)]);
+  }
 }

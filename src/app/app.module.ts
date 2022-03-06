@@ -34,6 +34,7 @@ import { RelationsSelectionComponent } from './nav/relations-selection/relations
 import { RelationsPageComponent } from './relations-page/relations-page.component';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
 import { CourseCardsPageComponent } from './course-cards-page/course-cards-page.component';
+import { CoursePageComponent } from './course-page/course-page.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +47,8 @@ import { CourseCardsPageComponent } from './course-cards-page/course-cards-page.
     RelationsPageComponent,
     RelationsSelectionComponent,
     DanceMoveSelectionComponent,
-    CourseCardsPageComponent
+    CourseCardsPageComponent,
+    CoursePageComponent
   ],
   imports: [
     BrowserModule,

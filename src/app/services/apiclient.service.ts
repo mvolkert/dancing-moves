@@ -137,6 +137,18 @@ export class ApiclientService {
     return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
   }
 
+  appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
+    const sheetRange = 'Courses!A26:H26';
+    const body = { values: [this.courseToLine(courseDto)] }
+    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+  }
+
+  patchDataCourse(courseDto: CourseDto): Observable<ResponseUpdate> {
+    const sheetRange = `Courses!A${courseDto.row}:H${courseDto.row}`;
+    const body = { values: [this.courseToLine(courseDto)] }
+    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+  }
+
   appendCourseDate(courseDateDto: CourseDateDto): Observable<ResponseCreate> {
     const sheetRange = 'Course Dates!A400:C400';
     const body = { values: [this.courseDateToLine(courseDateDto)] }
@@ -291,5 +303,9 @@ export class ApiclientService {
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {
     return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveName]
+  }
+
+  private courseToLine(courseDto: CourseDto): string[] {
+    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, courseDto.start, courseDto.end]
   }
 }

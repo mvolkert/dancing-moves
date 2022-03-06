@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CourseCardsPageComponent } from '../course-cards-page/course-cards-page.component';
+import { CoursePageComponent } from '../course-page/course-page.component';
 import { DanceCardsPageComponent } from '../dance-cards-page/dance-cards-page.component';
 import { MoveCardsPageComponent } from '../move-cards-page/move-cards-page.component';
 import { MovePageComponent } from '../move-page/move-page.component';
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'settings', component: SettingsPageComponent },
   { path: 'dances', component: DanceCardsPageComponent },
   { path: 'courses', component: CourseCardsPageComponent },
+  { path: 'course/:name', component: CoursePageComponent },
   { path: 'moves', component: MoveCardsPageComponent },
   { path: 'move/:name', component: MovePageComponent },
   { path: 'relations', component: RelationsPageComponent }];
