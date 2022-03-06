@@ -48,3 +48,7 @@ export const getRow = (tableString: string): number => {
     }
     return NaN;
 }
+
+export const olderThanADay = (date: Date): boolean => {
+    return ((new Date().getTime()) - date.getTime()) > 24 * 60 * 60 * 1000;
+}

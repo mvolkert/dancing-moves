@@ -15,7 +15,7 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
-import { delay, getRow } from '../util/util';
+import { delay, getRow, olderThanADay } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
@@ -55,7 +55,8 @@ export class DataManagerService {
   async start() {
     await this.settingsService.loading();
     this.local_get();
-    if (this.moves.length == 0 || this.dances.length == 0) {
+    const date = new Date(localStorage.getItem("date") ?? "2022-03-04");
+    if (this.moves.length == 0 || this.dances.length == 0 || this.courses.length == 0 || olderThanADay(date)) {
       this.api_get();
     }
   }
@@ -80,6 +81,7 @@ export class DataManagerService {
       }
       this.moves = results.moves;
       localStorage.setItem("moves", JSON.stringify(this.moves));
+      localStorage.setItem("date", JSON.stringify(new Date()));
       this.movesSubject.next(results.moves);
       this.isStarting.next(false);
     })
