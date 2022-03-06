@@ -5,7 +5,7 @@
         <mat-card-subtitle>{{dance.type}}, Takt: {{dance.rhythm}}</mat-card-subtitle>
         <mat-card-content>
           <div>{{dance.description}}</div>
-          <a *ngIf="dance.music" [href]="dance.music">Playlist</a>
+          <a mat-raised-button *ngIf="dance.music" [href]="dance.music">Playlist</a>
         </mat-card-content>
       </mat-card>
       <mat-divider></mat-divider>
