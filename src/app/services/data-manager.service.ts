@@ -5,6 +5,7 @@ import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from '
 import { defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
+import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -30,10 +31,11 @@ export class DataManagerService {
   relationsSelectionObservable = new BehaviorSubject<RelationParams>({} as RelationParams);
   dances!: Array<DanceDto>;
   moves!: Array<MoveDto>;
+  courses!: Array<CourseDto>;
   isStarting = new BehaviorSubject<boolean>(true);
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params: any) => {
       this.searchFilterObservable.next(params as SearchDto);
       let relationTypeParams = params["relationTypes"];
       if (!relationTypeParams) {
@@ -60,9 +62,11 @@ export class DataManagerService {
 
   api_get() {
     this.isStarting.next(true);
-    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos() }).subscribe(results => {
+    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
       this.dances = results.dances;
       localStorage.setItem("dances", JSON.stringify(this.dances));
+      this.courses = results.courses;
+      localStorage.setItem("courses", JSON.stringify(this.courses));
       for (const move of results.moves) {
         move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
         if (move.videoname) {
@@ -84,6 +88,7 @@ export class DataManagerService {
   local_get() {
     this.dances = JSON.parse(localStorage.getItem("dances") ?? "[]");
     this.moves = JSON.parse(localStorage.getItem("moves") ?? "[]");
+    this.courses = JSON.parse(localStorage.getItem("courses") ?? "[]");
     this.movesSubject.next(this.moves);
     this.isStarting.next(false);
   }
@@ -156,6 +161,10 @@ export class DataManagerService {
 
   getCourseNames(): Set<string> {
     return new Set(this.movesSubject.value.flatMap(move => move.courseDates.map(c => c.course)));
+  }
+
+  getCourses(): Array<CourseDto> {
+    return this.courses;
   }
 
   getTypes(): Set<string> {

@@ -240,8 +240,12 @@ export class ApiclientService {
     return {
       course: row[0],
       dances: this.stringToArray(row[1]),
-      school: row[0],
-      description: row[0],
+      school: row[2],
+      description: row[3],
+      teacher: row[4],
+      level: row[5],
+      start: row[6],
+      end: row[7],
       row: i + 1
     };
   }

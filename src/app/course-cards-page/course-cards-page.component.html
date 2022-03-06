@@ -1,0 +1,16 @@
+<mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+<ng-container *ngFor="let course of courses">
+    <mat-card>
+        <mat-card-title>{{course.course}}</mat-card-title>
+        <mat-card-subtitle>{{course.school}}</mat-card-subtitle>
+        <mat-card-content>
+          <div>Dances: {{course.dances}}</div>
+          <div>Description: {{course.description}}</div>
+          <div>Teacher: {{course.teacher}}</div>
+          <div>Level: {{course.level}}</div>
+          <div>Start Date: {{course.start}}</div>
+          <div>End Date: {{course.end}}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+</ng-container>
