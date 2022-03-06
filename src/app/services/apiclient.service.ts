@@ -92,7 +92,7 @@ export class ApiclientService {
   getCourses(): Observable<Array<CourseDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
-      'Courses!A1:D1000'
+      'Courses!A1:H1000'
     ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 

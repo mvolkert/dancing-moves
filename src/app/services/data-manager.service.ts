@@ -262,6 +262,14 @@ export class DataManagerService {
     return moveDto;
   }
 
+  private updateCourseData = (courseDto: CourseDto): CourseDto => {
+    let courses = JSON.parse(JSON.stringify(this.courses)) as Array<CourseDto>;
+    courses = courses.filter(m => m.course != courseDto.course);
+    courses.push(courseDto);
+    this.navService.navigate(["course", courseDto.course]);
+    return courseDto;
+  }
+
   async normalize() {
     console.log('normalize');
     for (const move of this.movesSubject.value) {
@@ -273,14 +281,14 @@ export class DataManagerService {
     }
   }
 
-  saveOrCreateCourse(courseDto: CourseDto): Observable<MoveDto> {
+  saveOrCreateCourse(courseDto: CourseDto): Observable<CourseDto> {
     if (courseDto.row) {
-      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData));
+      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), map(this.updateCourseData));
     } else {
       return this.apiclientService.appendDataCourse(courseDto).pipe(map(r => {
         courseDto.row = getRow(r.updates.updatedRange);
         return courseDto;
-      }), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData))
+      }), map(this.updateCourseData))
     }
   }
 }

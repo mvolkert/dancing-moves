@@ -41,7 +41,18 @@ export class CoursePageComponent implements OnInit {
     if(this.course){
       this.courseForm.patchValue(this.course);
     }
-    
+    this.courseForm.valueChanges.subscribe(value => {
+      if (this.course) {
+        this.course.course = value.course;
+        this.course.dances = value.dances;
+        this.course.school = value.school;
+        this.course.description = value.description;
+        this.course.teacher = value.teacher;
+        this.course.level = value.level;
+        this.course.start = value.start;
+        this.course.end = value.end;
+      }
+    });
     this.courseForm.updateValueAndValidity();
     this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
