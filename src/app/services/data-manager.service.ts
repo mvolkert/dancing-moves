@@ -239,7 +239,7 @@ export class DataManagerService {
     }
   }
   private saveOrCreateCourseDates = (moveDto: MoveDto): Observable<MoveDto> => {
-    return forkJoin(moveDto.courseDates.filter(c => c.course || c.date).map(c => { c.moveName = moveDto.name; return c; }).map(this.saveOrCreateCourseDate))
+    return forkJoin(moveDto.courseDates.filter(c => c.course && c.date).map(c => { c.moveName = moveDto.name; return c; }).map(this.saveOrCreateCourseDate))
       .pipe(defaultIfEmpty([]), map(courseDates => { moveDto.courseDates = courseDates; return moveDto; }));
   }
   private saveOrCreateCourseDate = (courseDateDto: CourseDateDto): Observable<CourseDateDto> => {

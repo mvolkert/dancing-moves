@@ -64,6 +64,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       }
     }
     this.valueChangesSubscription = this.courseForm.valueChanges.subscribe(value => {
+      console.log(value);
       if (!this.course) {
         this.course = {} as CourseDto;
       }
@@ -97,8 +98,8 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       description: new FormControl(''),
       teacher: new FormControl(''),
       level: new FormControl(''),
-      start: new FormControl(''),
-      end: new FormControl(''),
+      start: new FormControl(null),
+      end: new FormControl(null),
       row: new FormControl(''),
     });
   }

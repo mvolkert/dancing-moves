@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
-export const regexGermanDate = /([0-9]{2})\.([0-9]{2})\.([0-9]{4})/;
+export const regexGermanDate = /([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})/;
 export const regexIsoDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
 export const regexTable = /[A-Za-z0-9\s]+\![A-Z]+[0-9]+\:[A-Z]+([0-9]+)/;
 
@@ -29,7 +29,9 @@ export const toGermanDate = (date: Date | null): string => {
     if (isNaN(date.getTime())) {
         return "";
     }
-    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+    const day = `${date.getDate()}`.padStart(2, '0');
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    return `${day}.${month}.${date.getFullYear()}`;
 }
 
 export const parseBoolean = (boolString: string): boolean => {
