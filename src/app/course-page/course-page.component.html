@@ -12,15 +12,18 @@
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Dances</mat-label>
-        <input matInput formControlName="dances">
+        <mat-select formControlName="dances" multiple>
+            <mat-option *ngFor="let name of dances" [value]="name">
+                {{name}}
+            </mat-option>
+        </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>School</mat-label>
-        <input matInput formControlName="school">
-    </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Description</mat-label>
-        <input matInput formControlName="description">
+        <input type="text" matInput formControlName="school" [matAutocomplete]="autoSchool">
+        <mat-autocomplete #autoSchool="matAutocomplete">
+            <mat-option *ngFor="let school of schools" [value]="school">{{school}}</mat-option>
+        </mat-autocomplete>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Teacher</mat-label>
@@ -28,15 +31,26 @@
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Level</mat-label>
-        <input matInput formControlName="level">
+        <input type="text" matInput formControlName="level" [matAutocomplete]="autoLevel">
+        <mat-autocomplete #autoLevel="matAutocomplete">
+            <mat-option *ngFor="let level of levels" [value]="level">{{level}}</mat-option>
+        </mat-autocomplete>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Start</mat-label>
-        <input matInput formControlName="start">
+        <input matInput [matDatepicker]="pickerStart" formControlName="start">
+        <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+        <mat-datepicker #pickerStart></mat-datepicker>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>End</mat-label>
-        <input matInput formControlName="end">
+        <input matInput [matDatepicker]="pickerEnd" formControlName="end">
+        <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+        <mat-datepicker #pickerEnd></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description">
     </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="courseForm.invalid">Save</button>

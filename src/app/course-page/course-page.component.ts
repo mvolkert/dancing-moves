@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CourseDto } from '../model/course-dto';
 import { UserMode } from '../model/user-mode';
 import { DataManagerService } from '../services/data-manager.service';
@@ -16,6 +16,9 @@ import { deepCopy, nameExistsValidator } from '../util/util';
 export class CoursePageComponent implements OnInit, OnDestroy {
   course: CourseDto | undefined;
   otherNames: Set<string> = new Set<string>();
+  dances = new Set<string>();
+  schools = new Set<string>();
+  levels = new Set<string>();
   loaded = false;
   nameParam = "";
   readonly = false;
@@ -43,6 +46,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     this.valueChangesSubscription?.unsubscribe();
     this.userModeSubscription?.unsubscribe();
     this.courseForm = this.create_form();
+    this.dances = new Set(this.dataManager.getDances().map(dance => dance.name));
     const courses = this.dataManager.getCourses();
     this.otherNames = new Set(courses.map(course => course.course));
     this.otherNames.add("new");
@@ -71,6 +75,8 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.course.level = value.level;
       this.course.start = value.start;
       this.course.end = value.end;
+      this.schools = new Set(courses.map(course => course.school));
+      this.levels = new Set(courses.map(course => course.level));
     });
     if (this.course) {
       this.courseForm.patchValue(this.course);

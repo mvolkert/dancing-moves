@@ -5,7 +5,7 @@ export interface CourseDto {
     description: string,
     teacher: string,
     level: string,
-    start: string,
-    end: string,
+    start: Date | null,
+    end: Date | null,
     row: number
 }

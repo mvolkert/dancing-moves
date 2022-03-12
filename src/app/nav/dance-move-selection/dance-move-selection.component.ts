@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
 import { SearchDto } from 'src/app/model/search-dto';
@@ -86,7 +86,10 @@ export class DanceMoveSelectionComponent implements OnInit {
   }
 
   private filterCodeSnippets = (search: SearchDto): string[] => {
-    return this.initalCodeSnippets.filter(snip => snip.includes(search.script));
+    if(search.script){
+      return this.initalCodeSnippets.filter(snip => snip.includes(search.script));
+    }
+    return this.initalCodeSnippets;
   }
 
   private handleEasterEggs(value: SearchDto){

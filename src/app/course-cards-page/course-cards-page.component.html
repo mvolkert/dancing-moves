@@ -5,11 +5,11 @@
         <mat-card-subtitle>{{course.school}}</mat-card-subtitle>
         <mat-card-content>
           <div>Dances: {{course.dances}}</div>
-          <div>Description: {{course.description}}</div>
           <div>Teacher: {{course.teacher}}</div>
           <div>Level: {{course.level}}</div>
-          <div>Start Date: {{course.start}}</div>
-          <div>End Date: {{course.end}}</div>
+          <div *ngIf="course.start">Start Date: {{course.start | date: 'dd.MM.yyyy'}}</div>
+          <div *ngIf="course.end">End Date: {{course.end | date: 'dd.MM.yyyy'}}</div>
+          <div>Description: {{course.description}}</div>
         </mat-card-content>
         <mat-card-actions align="end">
           <button mat-button (click)="openDetails(course.course)">Details</button>

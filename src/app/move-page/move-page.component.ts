@@ -71,7 +71,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.valueChangesSubscription?.unsubscribe();
     this.userModeSubscription?.unsubscribe();
     this.moveForm = this.create_form();
-    this.dances = this.dataManager.getDanceNames();
+    this.dances = new Set(this.dataManager.getDances().map(dance => dance.name));
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
     this.otherMovesNames = this.dataManager.getMovesNames();

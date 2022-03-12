@@ -256,8 +256,8 @@ export class ApiclientService {
       description: row[3],
       teacher: row[4],
       level: row[5],
-      start: row[6],
-      end: row[7],
+      start: parseDate(row[6]),
+      end: parseDate(row[7]),
       row: i + 1
     };
   }
@@ -306,6 +306,6 @@ export class ApiclientService {
   }
 
   private courseToLine(courseDto: CourseDto): string[] {
-    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, courseDto.start, courseDto.end]
+    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end)]
   }
 }
