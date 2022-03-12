@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CourseDto } from '../model/course-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
+import { generateSortFn } from '../util/util';
 
 @Component({
   templateUrl: './course-cards-page.component.html',
@@ -25,7 +26,7 @@ export class CourseCardsPageComponent implements OnInit {
   }
 
   private start() {
-    this.courses = this.dataManagerService.getCourses();
+    this.courses = this.dataManagerService.getCourses().sort(generateSortFn([c => c.course]));
   }
 
   openDetails(name: string): Promise<boolean> {

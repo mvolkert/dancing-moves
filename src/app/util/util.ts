@@ -59,9 +59,21 @@ export const deepCopy = <T>(obj: T): T => {
     return JSON.parse(JSON.stringify(obj));
 }
 
-export const nameExistsValidator = (getOtherNames: ()=>Set<string>): ValidatorFn => {
+export const nameExistsValidator = (getOtherNames: () => Set<string>): ValidatorFn => {
     return (control: AbstractControl): ValidationErrors | null => {
         const forbidden = getOtherNames()?.has(control.value);
         return forbidden ? { nameExists: { value: control.value } } : null;
     };
 }
+
+export const generateSortFn = <T>(getters: Array<(x: T) => any>) => {
+    return (a: T, b: T) => {
+        for (let getter of getters) {
+            if (getter(a) < getter(b))
+                return -1;
+            if (getter(a) > getter(b))
+                return 1;
+        }
+        return 0;
+    };
+};

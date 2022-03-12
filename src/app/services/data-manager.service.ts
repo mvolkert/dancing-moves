@@ -266,6 +266,7 @@ export class DataManagerService {
     let courses = deepCopy(this.courses) as Array<CourseDto>;
     courses = courses.filter(m => m.course != courseDto.course);
     courses.push(courseDto);
+    this.courses = courses;
     this.navService.navigate(["course", courseDto.course]);
     return courseDto;
   }
@@ -283,12 +284,12 @@ export class DataManagerService {
 
   saveOrCreateCourse(courseDto: CourseDto): Observable<CourseDto> {
     if (courseDto.row) {
-      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), map(this.updateCourseData));
+      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, map(this.updateCourseData));
     } else {
       return this.apiclientService.appendDataCourse(courseDto).pipe(map(r => {
         courseDto.row = getRow(r.updates.updatedRange);
         return courseDto;
-      }), map(this.updateCourseData))
+      }), this.tapRequest, map(this.updateCourseData))
     }
   }
 }
