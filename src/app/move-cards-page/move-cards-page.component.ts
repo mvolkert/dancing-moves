@@ -3,6 +3,7 @@ import { MoveDto } from '../model/move-dto';
 import { SearchDto } from '../model/search-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
+import { deepCopy } from '../util/util';
 @Component({
   selector: 'app-move-cards-page',
   templateUrl: './move-cards-page.component.html',
@@ -30,7 +31,7 @@ export class MoveCardsPageComponent implements OnInit {
   private start() {
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = moves.sort(this.generateSortFn([m => m.dance, m => m.order, m => m.name]));
-      this.allMoves = JSON.parse(JSON.stringify(this.moves));
+      this.allMoves = deepCopy(this.moves);
     });
     this.dataManagerService.searchFilterObservable.subscribe(
       (value: SearchDto) => {

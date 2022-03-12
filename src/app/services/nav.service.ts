@@ -16,6 +16,10 @@ export class NavService {
     return this.router.navigate(route, { queryParamsHandling: 'merge' });
   }
 
+  getUrl(): string {
+    return this.router.url;
+  }
+
 
   openWebsiteIfEasterEggFound(name: string) {
     const nameNormalized = name?.toLocaleLowerCase().replace(/\s/g, '').replace(/-/g, '');

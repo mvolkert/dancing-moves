@@ -15,7 +15,7 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
-import { delay, getRow, olderThanADay } from '../util/util';
+import { deepCopy, delay, getRow, olderThanADay } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
@@ -74,7 +74,7 @@ export class DataManagerService {
           const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) } });
 
           // deep copy for different options in each move
-          move.videos = JSON.parse(JSON.stringify(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name))));
+          move.videos = deepCopy(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name)));
           move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
           videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: v.name } as VideoDto }).forEach(v => move.videos.push(v));
         }
@@ -254,7 +254,7 @@ export class DataManagerService {
   }
 
   private updateMoveData = (moveDto: MoveDto): MoveDto => {
-    let moves = JSON.parse(JSON.stringify(this.movesSubject.value)) as Array<MoveDto>;
+    let moves = deepCopy(this.movesSubject.value) as Array<MoveDto>;
     moves = moves.filter(m => m.name != moveDto.name);
     moves.push(moveDto);
     this.movesSubject.next(moves);
@@ -263,7 +263,7 @@ export class DataManagerService {
   }
 
   private updateCourseData = (courseDto: CourseDto): CourseDto => {
-    let courses = JSON.parse(JSON.stringify(this.courses)) as Array<CourseDto>;
+    let courses = deepCopy(this.courses) as Array<CourseDto>;
     courses = courses.filter(m => m.course != courseDto.course);
     courses.push(courseDto);
     this.navService.navigate(["course", courseDto.course]);

@@ -43,8 +43,8 @@
       <button *ngIf="false" mat-mini-fab color="primary" aria-label="normalize" (click)="normalize()">
         <mat-icon>list</mat-icon>
       </button>
-      <button *ngIf="!readonly" mat-mini-fab color="primary" aria-label="create new move">
-        <mat-icon (click)="navigate('move/new')">add_circle_outline</mat-icon>
+      <button *ngIf="!readonly" mat-mini-fab color="primary" aria-label="create new">
+        <mat-icon (click)="createNew()">add_circle_outline</mat-icon>
       </button>
       <button mat-mini-fab color="primary" aria-label="sync data">
         <mat-icon (click)="syncData()">cached</mat-icon>

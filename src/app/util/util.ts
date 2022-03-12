@@ -1,3 +1,5 @@
+import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+
 export const regexGermanDate = /([0-9]{2})\.([0-9]{2})\.([0-9]{4})/;
 export const regexIsoDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
 export const regexTable = /[A-Za-z0-9\s]+\![A-Z]+[0-9]+\:[A-Z]+([0-9]+)/;
@@ -51,4 +53,15 @@ export const getRow = (tableString: string): number => {
 
 export const olderThanADay = (date: Date): boolean => {
     return ((new Date().getTime()) - date.getTime()) > 24 * 60 * 60 * 1000;
+}
+
+export const deepCopy = <T>(obj: T): T => {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+export const nameExistsValidator = (getOtherNames: ()=>Set<string>): ValidatorFn => {
+    return (control: AbstractControl): ValidationErrors | null => {
+        const forbidden = getOtherNames()?.has(control.value);
+        return forbidden ? { nameExists: { value: control.value } } : null;
+    };
 }

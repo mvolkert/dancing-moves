@@ -1,8 +1,14 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
 <form *ngIf="loaded||course" [formGroup]="courseForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Course</mat-label>
+        <mat-label>Name</mat-label>
         <input matInput formControlName="course">
+        <mat-error *ngIf="courseForm.get('course')?.hasError('nameExists') && !courseForm.get('course')?.hasError('required')">
+            Name must be unique
+        </mat-error>
+        <mat-error *ngIf="courseForm.get('course')?.hasError('required')">
+            Name is <strong>required</strong>
+        </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Dances</mat-label>

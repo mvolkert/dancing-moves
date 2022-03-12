@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { CourseDateDto } from '../model/course-date-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
@@ -10,13 +11,14 @@ import { VideoDto } from '../model/video-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
+import { deepCopy, nameExistsValidator } from '../util/util';
 
 @Component({
   selector: 'app-move-page',
   templateUrl: './move-page.component.html',
   styleUrls: ['./move-page.component.css']
 })
-export class MovePageComponent implements OnInit {
+export class MovePageComponent implements OnInit, OnDestroy {
   move: MoveDto | undefined;
   dances = new Set<string>();
   types = new Set<string>();
@@ -28,6 +30,9 @@ export class MovePageComponent implements OnInit {
   loaded = false;
   nameParam = ""
   readonly = false;
+  valueChangesSubscription: Subscription | undefined;
+  userModeSubscription: Subscription | undefined;
+
 
   konami = {
     dance: "Westcoast Swing",
@@ -51,15 +56,11 @@ export class MovePageComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.moveForm.valueChanges.subscribe(value => {
-      console.log(value);
-    });
     this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
     });
     this.dataManager.isStarting.subscribe(starting => {
       if (!starting) {
-        this.moveForm = this.create_form();
         this.start();
       }
       this.loaded = !starting;
@@ -67,7 +68,9 @@ export class MovePageComponent implements OnInit {
   }
 
   private start() {
-
+    this.valueChangesSubscription?.unsubscribe();
+    this.userModeSubscription?.unsubscribe();
+    this.moveForm = this.create_form();
     this.dances = this.dataManager.getDanceNames();
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
@@ -76,14 +79,12 @@ export class MovePageComponent implements OnInit {
 
     if (this.nameParam == "new") {
       if (this.move) {
-        this.moveForm.reset();
-        this.move = JSON.parse(JSON.stringify(this.move));
-        if (this.move) {
-          this.move.row = NaN;
-        }
+        this.move = deepCopy(this.move);
+        this.move.row = NaN;
+        this.moveForm?.markAllAsTouched();
       }
     } else if (this.nameParam == this.konami.name) {
-      this.move = JSON.parse(JSON.stringify(this.konami));
+      this.move = deepCopy(this.konami);
     } else {
       this.move = this.dataManager.getMove(this.nameParam);
       if (this.move) {
@@ -91,43 +92,43 @@ export class MovePageComponent implements OnInit {
         this.otherMovesNames.delete(this.move.name);
       }
     }
-    this.moveForm.valueChanges.subscribe(value => {
-      if (this.move) {
-        this.move.name = value.name;
-        this.move.dance = value.dance;
-        this.move.description = value.description;
-        this.move.order = Number(value.order);
-        this.move.count = value.count;
-        this.move.nameVerified = value.nameVerified;
-        this.move.type = value.type;
-        this.move.startMove = value.startMove;
-        this.move.endMove = value.endMove;
-        this.move.relatedMoves = value.relatedMoves;
-        this.move.relatedMovesOtherDances = value.relatedMovesOtherDances;
-        this.move.videoname = value.videoname;
-        this.move.links = value.links;
-        this.move.toDo = value.toDo;
-        this.move.courseDates = value.courseDates;
+    this.valueChangesSubscription = this.moveForm.valueChanges.subscribe(value => {
+      console.log(value);
+      if (!this.move) {
+        this.move = {} as MoveDto;
       }
+      this.move.name = value.name;
+      this.move.dance = value.dance;
+      this.move.description = value.description;
+      this.move.order = Number(value.order);
+      this.move.count = value.count;
+      this.move.nameVerified = value.nameVerified;
+      this.move.type = value.type;
+      this.move.startMove = value.startMove;
+      this.move.endMove = value.endMove;
+      this.move.relatedMoves = value.relatedMoves;
+      this.move.relatedMovesOtherDances = value.relatedMovesOtherDances;
+      this.move.videoname = value.videoname;
+      this.move.links = value.links;
+      this.move.toDo = value.toDo;
+      this.move.courseDates = value.courseDates;
       this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
     }
-
-    this.moveForm.updateValueAndValidity();
-    this.settings.userMode.subscribe(userMode => {
+    this.userModeSubscription = this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
         this.moveForm.disable();
         this.readonly = true;
       }
     });
-    this.move?.videos.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
+    this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
   }
 
-  private create_form() {
+  private create_form(): FormGroup {
     return new FormGroup({
-      name: new FormControl('', [Validators.required, this.nameExistsValidator()]),
+      name: new FormControl('', [Validators.required, nameExistsValidator(() => this.otherMovesNames)]),
       dance: new FormControl('', Validators.required),
       date: new FormControl(null),
       order: new FormControl(),
@@ -155,6 +156,9 @@ export class MovePageComponent implements OnInit {
     this.nameParam = params.get('name') as string;
     this.nameParam = decodeURI(this.nameParam);
     this.navService.headlineObservable.next(this.nameParam);
+    if (this.loaded) {
+      this.start();
+    }
   }
 
   private createCourseDateForm = () => {
@@ -198,10 +202,8 @@ export class MovePageComponent implements OnInit {
     }
   }
 
-  private nameExistsValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const forbidden = this.otherMovesNames?.has(control.value);
-      return forbidden ? { nameExists: { value: control.value } } : null;
-    };
+  ngOnDestroy(): void {
+    this.valueChangesSubscription?.unsubscribe();
+    this.userModeSubscription?.unsubscribe();
   }
 }

@@ -5,11 +5,9 @@ import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { DataManagerService } from '../services/data-manager.service';
 import { SettingsService } from '../services/settings.service';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MoveGroupDto } from '../model/move-group-dto';
-import { MoveDto } from '../model/move-dto';
 import { NavService } from '../services/nav.service';
 import { UserMode } from '../model/user-mode';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -41,6 +39,13 @@ export class NavComponent implements OnInit {
 
   normalize() {
     this.dataManager.normalize();
+  }
+
+  createNew(): Promise<boolean> {
+    if (this.navService.getUrl().includes('course')) {
+      return this.navService.navigate(['course/new']);
+    }
+    return this.navService.navigate(['move/new']);
   }
 
   navigate(path: string): Promise<boolean> {
