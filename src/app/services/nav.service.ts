@@ -10,15 +10,17 @@ export class NavService {
   constructor(private router: Router) { }
 
   navigate(route: string[] = [], queryParams: Params | undefined = undefined): Promise<boolean> {
+    console.log(route);
     if (queryParams) {
       return this.router.navigate(route, { queryParams: queryParams, queryParamsHandling: 'merge' });
     }
     return this.router.navigate(route, { queryParamsHandling: 'merge' });
   }
 
-  getUrl(): string {
-    return this.router.url;
+  getPath(): string {
+    return document.location.pathname;
   }
+
 
 
   openWebsiteIfEasterEggFound(name: string) {

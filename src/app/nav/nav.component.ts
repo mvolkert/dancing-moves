@@ -42,7 +42,7 @@ export class NavComponent implements OnInit {
   }
 
   createNew(): Promise<boolean> {
-    if (this.navService.getUrl().includes('course')) {
+    if (this.navService.getPath().includes('course')) {
       return this.navService.navigate(['course/new']);
     }
     return this.navService.navigate(['move/new']);

@@ -7,6 +7,7 @@ import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { SpecialRight } from '../model/special-right';
 import { UserMode } from '../model/user-mode';
+import { NavService } from './nav.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class SettingsService {
     '28c48b8eb4d51ab963b42acb377ab809b8bd15c0977ca6325439bff6ea5e61be': SpecialRight.video_tsc
   } as { [key: string]: string };
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient, private navService: NavService) { }
 
   fetchSettings() {
     this.route.queryParams.subscribe(params => {
@@ -65,7 +66,7 @@ export class SettingsService {
       });;
     }
 
-    this.specialRightsString = this.getSetting(params, 'special-rights');
+    this.specialRightsString = this.getArraySetting(params, 'special-rights');
     this.specialRights = new Array<string>();
     this.specialRightsString?.split(",").forEach((key: string) => {
       const hash = this.hash(key);
@@ -73,6 +74,8 @@ export class SettingsService {
         this.specialRights.push(this.specialRightsMap[hash]);
       }
     });
+    const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
+    this.navService.navigate([this.navService.getPath()], queryJson);
   }
 
   private getFile(filename: string) {
@@ -114,6 +117,19 @@ export class SettingsService {
   }
 
   private getSetting(params: Params, key: string): string {
-    return params[key];
+    if (params[key]) {
+      const value = params[key];
+      localStorage.setItem(key, value);
+      return value;
+    }
+    return localStorage.getItem(key) ?? '';
+  }
+
+  private getArraySetting(params: Params, key: string): string {
+    const localEntries = (localStorage.getItem(key) ?? '').split(',');
+    const queryEntries = (params[key] ?? '').split(',');
+    const mergedString = Array.from(new Set([...localEntries, ...queryEntries].filter(e => e))).join(',');
+    localStorage.setItem(key, mergedString);
+    return mergedString;
   }
 }
