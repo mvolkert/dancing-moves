@@ -11,6 +11,7 @@ import { VideoDto } from '../model/video-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
+import { easterEggMoves } from '../util/data';
 import { deepCopy, nameExistsValidator } from '../util/util';
 
 @Component({
@@ -32,21 +33,6 @@ export class MovePageComponent implements OnInit, OnDestroy {
   readonly = false;
   valueChangesSubscription: Subscription | undefined;
   userModeSubscription: Subscription | undefined;
-
-
-  konami = {
-    dance: "Westcoast Swing",
-    name: "Konami",
-    count: "10",
-    startMove: [] as string[],
-    endMove: [] as string[],
-    containedMoves: [] as string[],
-    relatedMoves: [] as string[],
-    relatedMovesOtherDances: [] as string[],
-    courseDates: [] as CourseDateDto[],
-    videos: [] as VideoDto[],
-    description: "# Ablauf \n## Leader\n- 1 links vor\n- 2 rechts vor\n- 3 links zurück\n- 4 rechts zurück\n- 5 links Gewichtsverlagerung\n- 6 rechts Gewichtsverlagerung\n- 7 links Gewichtsverlagerung\n- 8 rechts Gewichtsverlagerung\n- 9 Bauch raus\n- 10 Anker\n\n## Follower\ngespiegelt\n# Bemerkung\nSchalted extra Power beim Follower frei"
-  } as MoveDto;
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
@@ -83,8 +69,8 @@ export class MovePageComponent implements OnInit, OnDestroy {
         this.move.row = NaN;
         this.moveForm?.markAllAsTouched();
       }
-    } else if (this.nameParam == this.konami.name) {
-      this.move = deepCopy(this.konami);
+    } else if (Object.keys(easterEggMoves).includes(this.nameParam)) {
+      this.move = deepCopy(easterEggMoves[this.nameParam]);
     } else {
       this.move = this.dataManager.getMove(this.nameParam);
       if (this.move) {

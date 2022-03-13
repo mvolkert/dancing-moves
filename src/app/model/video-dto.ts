@@ -4,5 +4,6 @@ export interface VideoDto {
     name: string,
     link: string,
     safeUrl?: SafeResourceUrl,
+    groupName: string,
     row: number
 }

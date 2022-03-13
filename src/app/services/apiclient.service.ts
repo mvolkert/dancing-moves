@@ -15,6 +15,7 @@ import { UserMode } from '../model/user-mode';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
 import { VideoDto } from '../model/video-dto';
+import { apiTestData } from '../util/data';
 
 @Injectable({
   providedIn: 'root'
@@ -23,53 +24,6 @@ export class ApiclientService {
   private lastUpdated!: number;
   private writeToken!: ApiToken;
   private userMode!: UserMode;
-  private testData = {
-    "range": "Tanzfiguren!A1:R500",
-    "majorDimension": "ROWS",
-    "values": [
-      [
-        "Name",
-        "Tanz",
-        "Beschreibung",
-        "Lerndatum",
-        "Lernreihenfolge",
-        "Count",
-        "Name gesichert",
-        "Typ",
-        "Eingang",
-        "Ausgang",
-        "Enthält",
-        "Ähnliche Tanzfiguren",
-        "In anderen Tänzen",
-        "Videoname",
-        "Links",
-        "ToDo",
-        "Benutzer",
-        "test",
-        "__id"
-      ],
-      [
-        "Basico (B)",
-        "Bachata",
-        "",
-        "04.11.2021",
-        "0",
-        "8",
-        "TRUE",
-        "Figur",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "mvolkert",
-        "",
-        "TTtVY2FVb0AoK0VJVjR2OUtPV0U"
-      ]]
-  } as ResponseGet;
 
   constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
@@ -107,7 +61,7 @@ export class ApiclientService {
     return this.spreadsheetsGet(
       this.settingsService.secret?.courseDatesSheetId as string,
       `Videos ${name}!A1:B1000`
-    ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
+    ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDtoFunc(name))));
   }
 
 
@@ -162,7 +116,7 @@ export class ApiclientService {
   }
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
     if (this.userMode === UserMode.test) {
-      return of(this.testData);
+      return of(apiTestData);
     }
     return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
   }
@@ -276,10 +230,15 @@ export class ApiclientService {
     };
   }
 
-  private createVideoDto = (row: any, i: number): VideoDto => {
+  private createVideoDtoFunc = (groupName: string): (row: any, i: number) => VideoDto => {
+    return (row, i) => this.createVideoDto(row, i, groupName);
+  }
+
+  private createVideoDto = (row: any, i: number, groupName: string): VideoDto => {
     return {
       name: row[0],
       link: row[1],
+      groupName: groupName,
       row: i + 1
     };
   }
