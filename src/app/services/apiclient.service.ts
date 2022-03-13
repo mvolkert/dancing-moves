@@ -297,7 +297,7 @@ export class ApiclientService {
   private moveToLine(moveDto: MoveDto): string[] {
     return [moveDto.name, moveDto.dance, moveDto.description, toGermanDate(moveDto.date),
     String(moveDto.order), moveDto.count, String(moveDto.nameVerified),
-    moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
+    moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.containedMoves?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
     moveDto.videoname, moveDto.links, moveDto.toDo]
   }
 

@@ -64,10 +64,8 @@ export class DataManagerService {
   api_get() {
     this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
-      this.dances = results.dances;
-      localStorage.setItem("dances", JSON.stringify(this.dances));
-      this.courses = results.courses;
-      localStorage.setItem("courses", JSON.stringify(this.courses));
+      this.setDances(results.dances);
+      this.setCourses(results.courses);
       for (const move of results.moves) {
         move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
         if (move.videoname) {
@@ -79,12 +77,26 @@ export class DataManagerService {
           videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: v.name } as VideoDto }).forEach(v => move.videos.push(v));
         }
       }
-      this.moves = results.moves;
-      localStorage.setItem("moves", JSON.stringify(this.moves));
+      this.setMoves(results.moves);
       localStorage.setItem("date", JSON.stringify(new Date()));
-      this.movesSubject.next(results.moves);
       this.isStarting.next(false);
     })
+  }
+
+  private setCourses(courses: CourseDto[]) {
+    this.courses = courses;
+    localStorage.setItem("courses", JSON.stringify(this.courses));
+  }
+
+  private setDances(dances: DanceDto[]) {
+    this.dances = dances;
+    localStorage.setItem("dances", JSON.stringify(this.dances));
+  }
+
+  private setMoves(moves: MoveDto[]) {
+    this.moves = moves;
+    localStorage.setItem("moves", JSON.stringify(this.moves));
+    this.movesSubject.next(this.moves);
   }
 
   local_get() {
@@ -254,19 +266,17 @@ export class DataManagerService {
   }
 
   private updateMoveData = (moveDto: MoveDto): MoveDto => {
-    let moves = deepCopy(this.movesSubject.value) as Array<MoveDto>;
-    moves = moves.filter(m => m.name != moveDto.name);
+    const moves = deepCopy(this.movesSubject.value).filter(m => m.name != moveDto.name);
     moves.push(moveDto);
-    this.movesSubject.next(moves);
+    this.setMoves(moves);
     this.navService.navigate(["move", moveDto.name]);
     return moveDto;
   }
 
   private updateCourseData = (courseDto: CourseDto): CourseDto => {
-    let courses = deepCopy(this.courses) as Array<CourseDto>;
-    courses = courses.filter(m => m.course != courseDto.course);
+    const courses = deepCopy(this.courses).filter(m => m.course != courseDto.course);
     courses.push(courseDto);
-    this.courses = courses;
+    this.setCourses(courses);
     this.navService.navigate(["course", courseDto.course]);
     return courseDto;
   }
