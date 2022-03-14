@@ -65,6 +65,9 @@ export class DataManagerService {
     this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
       this.setDances(results.dances);
+      for (const course of results.courses) {
+        course.contents = results.videos.filter(content => course.course == content.courseName);
+      }
       this.setCourses(results.courses);
       for (const move of results.moves) {
         move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
@@ -120,16 +123,16 @@ export class DataManagerService {
   private getVideos(): Observable<VideoDto[]> {
     const observables = new Array<Observable<VideoDto[]>>()
     if (this.settingsService.hasOneSpecialRight([SpecialRight.video_ssm, SpecialRight.video_ssm_sc, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("SSM"));
+      observables.push(this.apiclientService.getVideos("Videos SSM"));
     }
     if (this.settingsService.hasOneSpecialRight([SpecialRight.video_fau, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("FAU"));
+      observables.push(this.apiclientService.getVideos("Videos FAU"));
     }
     if (this.settingsService.hasOneSpecialRight([SpecialRight.video_tsm, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("TSM"));
+      observables.push(this.apiclientService.getVideos("Videos TSM"));
     }
     if (this.settingsService.hasOneSpecialRight([SpecialRight.video_tsc, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("TSC"));
+      observables.push(this.apiclientService.getVideos("Videos TSC"));
     }
     return forkJoin(observables).pipe(defaultIfEmpty([]), map(x => x.flatMap(y => y)));
   }
@@ -229,6 +232,12 @@ export class DataManagerService {
       .filter(move => !search.type || move.type.includes(search.type))
       .filter(move => !search.todo || move.toDo.includes(search.todo))
       .filter(move => !search.script || Boolean(eval(search.script)));
+  }
+
+  selectCourses(course: CourseDto[], search: SearchDto): CourseDto[] {
+    return course
+      .filter(course => !search.dance || course.dances.includes(search.dance))
+      .filter(course => !search.script || Boolean(eval(search.script)));
   }
 
   private tapRequest = tap({

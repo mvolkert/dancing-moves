@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { CourseDto } from '../model/course-dto';
@@ -60,6 +60,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     } else {
       this.course = courses.find(course => course.course == this.nameParam);
       if (this.course) {
+        this.course.contents?.forEach(this.addContentForm);
         this.otherNames.delete(this.course.course);
       }
     }
@@ -100,6 +101,9 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       level: new FormControl(''),
       start: new FormControl(null),
       end: new FormControl(null),
+      time: new FormControl(''),
+      groupName: new FormControl(''),
+      contents: new FormArray([]),
       row: new FormControl(''),
     });
   }
@@ -115,16 +119,31 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     }
   }
 
+  private createContentForm = () => {
+    return new FormGroup({
+      name: new FormControl(''),
+      link: new FormControl(null),
+      row: new FormControl('')
+    });
+  }
+
+  addContentForm = () => {
+    const formArray = this.courseForm.get("contents") as FormArray;
+    formArray.push(this.createContentForm());
+  }
+
+  getContentControls() {
+    return (this.courseForm.get('contents') as FormArray).controls;
+  }
+
   onSubmit() {
     if (this.courseForm.valid && this.course) {
       this.loaded = false;
-      this.readonly = true;
       this.courseForm.disable();
       this.dataManager.saveOrCreateCourse(this.course).subscribe(m => {
         console.log(m);
         this.courseForm.patchValue(m);
         this.loaded = true;
-        this.readonly = false;
         this.courseForm.enable();
       });
     }

@@ -3,7 +3,8 @@
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Name</mat-label>
         <input matInput formControlName="course">
-        <mat-error *ngIf="courseForm.get('course')?.hasError('nameExists') && !courseForm.get('course')?.hasError('required')">
+        <mat-error
+            *ngIf="courseForm.get('course')?.hasError('nameExists') && !courseForm.get('course')?.hasError('required')">
             Name must be unique
         </mat-error>
         <mat-error *ngIf="courseForm.get('course')?.hasError('required')">
@@ -52,6 +53,30 @@
         <mat-label>Description</mat-label>
         <input matInput formControlName="description">
     </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Time</mat-label>
+        <input matInput formControlName="time">
+    </mat-form-field>
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width">
+        <mat-label>Groupname</mat-label>
+        <input matInput formControlName="groupName">
+    </mat-form-field>
+    <div formArrayName="contents">
+        <div *ngFor="let content of getContentControls(); let i = index" [formGroupName]="i" class="full-width">
+            <mat-form-field appearance="fill" class="half-width">
+                <mat-label>Name {{i}}</mat-label>
+                <input matInput formControlName="name">
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="half-width">
+                <mat-label>Link {{i}}</mat-label>
+                <input matInput formControlName="link">
+            </mat-form-field>
+        </div>
+        <button *ngIf="!readonly" [disabled]="courseForm.disabled" mat-icon-button color="primary" type=button
+            aria-label="Add" (click)="addContentForm()" matTooltip="Add Content">
+            <mat-icon>add_circle_outline</mat-icon>Add Content
+        </button>
+    </div>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="courseForm.invalid">Save</button>
 </form>

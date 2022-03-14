@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CourseDto } from '../model/course-dto';
+import { SearchDto } from '../model/search-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
-import { generateSortFn } from '../util/util';
+import { deepCopy, generateSortFn } from '../util/util';
 
 @Component({
   templateUrl: './course-cards-page.component.html',
@@ -11,6 +12,7 @@ import { generateSortFn } from '../util/util';
 export class CourseCardsPageComponent implements OnInit {
 
   courses: CourseDto[] = [];
+  allCourses: CourseDto[] = [];
   loaded = false;
   constructor(private dataManagerService: DataManagerService, private navService: NavService) {
     this.navService.headlineObservable.next("Courses");
@@ -27,6 +29,11 @@ export class CourseCardsPageComponent implements OnInit {
 
   private start() {
     this.courses = this.dataManagerService.getCourses().sort(generateSortFn([c => c.course]));
+    this.allCourses = deepCopy(this.courses);
+    this.dataManagerService.searchFilterObservable.subscribe(
+      (value: SearchDto) => {
+        this.courses = this.dataManagerService.selectCourses(this.allCourses, value).sort(generateSortFn([c => c.course]));
+      });
   }
 
   openDetails(name: string): Promise<boolean> {

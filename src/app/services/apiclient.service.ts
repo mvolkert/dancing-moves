@@ -46,7 +46,7 @@ export class ApiclientService {
   getCourses(): Observable<Array<CourseDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
-      'Courses!A1:H1000'
+      'Courses!A1:J1000'
     ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 
@@ -60,7 +60,7 @@ export class ApiclientService {
   getVideos(name: string): Observable<Array<VideoDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.courseDatesSheetId as string,
-      `Videos ${name}!A1:B1000`
+      `${name}!A1:C1000`
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDtoFunc(name))));
   }
 
@@ -92,13 +92,13 @@ export class ApiclientService {
   }
 
   appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
-    const sheetRange = 'Courses!A26:H26';
+    const sheetRange = 'Courses!A26:J26';
     const body = { values: [this.courseToLine(courseDto)] }
     return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
   }
 
   patchDataCourse(courseDto: CourseDto): Observable<ResponseUpdate> {
-    const sheetRange = `Courses!A${courseDto.row}:H${courseDto.row}`;
+    const sheetRange = `Courses!A${courseDto.row}:J${courseDto.row}`;
     const body = { values: [this.courseToLine(courseDto)] }
     return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
   }
@@ -114,6 +114,13 @@ export class ApiclientService {
     const body = { values: [this.courseDateToLine(courseDateDto)] }
     return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
   }
+
+  appendCourseContent(name: string, courseData: VideoDto): Observable<ResponseCreate> {
+    const sheetRange = `${name}!A1:C2`;
+    const body = { values: [this.courseContentToLine(courseData)] }
+    return this.spreadsheetsPost(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body, ':append');
+  }
+
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
     if (this.userMode === UserMode.test) {
       return of(apiTestData);
@@ -212,6 +219,9 @@ export class ApiclientService {
       level: row[5],
       start: parseDate(row[6]),
       end: parseDate(row[7]),
+      time: row[8],
+      groupName: row[9],
+      contents: [],
       row: i + 1
     };
   }
@@ -238,6 +248,7 @@ export class ApiclientService {
     return {
       name: row[0],
       link: row[1],
+      courseName: row[2],
       groupName: groupName,
       row: i + 1
     };
@@ -266,5 +277,9 @@ export class ApiclientService {
 
   private courseToLine(courseDto: CourseDto): string[] {
     return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end)]
+  }
+
+  private courseContentToLine(courseDataDto: VideoDto): string[] {
+    return [courseDataDto.name, courseDataDto.link]
   }
 }
