@@ -115,12 +115,17 @@ export class ApiclientService {
     return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
   }
 
-  appendCourseContent(name: string, courseData: VideoDto): Observable<ResponseCreate> {
+  appendCourseContent(name: string, content: VideoDto): Observable<ResponseCreate> {
     const sheetRange = `${name}!A1:C2`;
-    const body = { values: [this.courseContentToLine(courseData)] }
+    const body = { values: [this.courseContentToLine(content)] }
     return this.spreadsheetsPost(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body, ':append');
   }
 
+  patchCourseContent(name: string, content: VideoDto): Observable<ResponseUpdate> {
+    const sheetRange = `${name}!A${content.row}:C${content.row}`;
+    const body = { values: [this.courseContentToLine(content)] }
+    return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
+  }
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
     if (this.userMode === UserMode.test) {
       return of(apiTestData);

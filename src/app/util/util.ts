@@ -3,6 +3,8 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 export const regexGermanDate = /([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})/;
 export const regexIsoDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
 export const regexTable = /[A-Za-z0-9\s]+\![A-Z]+[0-9]+\:[A-Z]+([0-9]+)/;
+export const youtube = /(https:\/\/www.youtube.com)\/watch\?v=(\w+)/;
+export const mega = /(https:\/\/mega.nz)\/file\/(.+)/;
 
 export const parseDate = (dateString: string): Date | null => {
     dateString = dateString?.trim();
@@ -79,3 +81,15 @@ export const generateSortFn = <T>(getters: Array<(x: T) => any>) => {
         return 0;
     };
 };
+
+export const convertToEmbed = (link: string): string => {
+    let match = youtube.exec(link);
+    if (match) {
+        return `${match[1]}/embed/${match[2]}`
+    }
+    match = mega.exec(link);
+    if (match) {
+        return `${match[1]}/embed/${match[2]}`
+    }
+    return link;
+}

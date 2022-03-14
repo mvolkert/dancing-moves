@@ -274,6 +274,21 @@ export class DataManagerService {
     }
   }
 
+  private saveOrCreateCourseContents = (courseDto: CourseDto): Observable<CourseDto> => {
+    return forkJoin(courseDto.contents.filter(c => c.name && c.link).map(c => { c.courseName = courseDto.course; c.groupName = courseDto.groupName; return c; }).map(this.saveOrCreateCourseContent))
+      .pipe(defaultIfEmpty([]), map(contents => { courseDto.contents = contents; return courseDto; }));
+  }
+  private saveOrCreateCourseContent = (contentDto: VideoDto): Observable<VideoDto> => {
+    if (contentDto.row) {
+      return this.apiclientService.patchCourseContent(contentDto.groupName, contentDto).pipe(map(r => contentDto), this.tapRequest);
+    } else {
+      return this.apiclientService.appendCourseContent(contentDto.groupName, contentDto).pipe(map(r => {
+        contentDto.row = getRow(r.updates.updatedRange);
+        return contentDto;
+      }), this.tapRequest)
+    }
+  }
+
   private updateMoveData = (moveDto: MoveDto): MoveDto => {
     const moves = deepCopy(this.movesSubject.value).filter(m => m.name != moveDto.name);
     moves.push(moveDto);
@@ -294,7 +309,6 @@ export class DataManagerService {
     console.log('normalize');
     for (const move of this.movesSubject.value) {
       if (move.description) {
-        console.log(move);
         this.saveOrCreate(move);
         await delay(1000);
       }
@@ -303,12 +317,12 @@ export class DataManagerService {
 
   saveOrCreateCourse(courseDto: CourseDto): Observable<CourseDto> {
     if (courseDto.row) {
-      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, map(this.updateCourseData));
+      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData));
     } else {
       return this.apiclientService.appendDataCourse(courseDto).pipe(map(r => {
         courseDto.row = getRow(r.updates.updatedRange);
         return courseDto;
-      }), this.tapRequest, map(this.updateCourseData))
+      }), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData))
     }
   }
 }

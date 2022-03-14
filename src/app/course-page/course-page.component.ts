@@ -4,10 +4,11 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { CourseDto } from '../model/course-dto';
 import { UserMode } from '../model/user-mode';
+import { VideoDto } from '../model/video-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
-import { deepCopy, nameExistsValidator } from '../util/util';
+import { convertToEmbed, deepCopy, nameExistsValidator } from '../util/util';
 
 @Component({
   templateUrl: './course-page.component.html',
@@ -65,7 +66,6 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       }
     }
     this.valueChangesSubscription = this.courseForm.valueChanges.subscribe(value => {
-      console.log(value);
       if (!this.course) {
         this.course = {} as CourseDto;
       }
@@ -77,6 +77,9 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.course.level = value.level;
       this.course.start = value.start;
       this.course.end = value.end;
+      this.course.time = value.time;
+      this.course.groupName = value.groupName;
+      this.course.contents = value.contents.map((c: VideoDto) => { c.link = convertToEmbed(c.link); return c });
       this.schools = new Set(courses.map(course => course.school));
       this.levels = new Set(courses.map(course => course.level));
     });
