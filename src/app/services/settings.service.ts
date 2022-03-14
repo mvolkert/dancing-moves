@@ -75,7 +75,7 @@ export class SettingsService {
       }
     });
     const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
-    this.navService.navigate([this.navService.getPath()], queryJson);
+    //this.navService.navigate([this.navService.getPath()], queryJson);
   }
 
   private getFile(filename: string) {
