@@ -237,6 +237,10 @@ export class DataManagerService {
   selectCourses(course: CourseDto[], search: SearchDto): CourseDto[] {
     return course
       .filter(course => !search.dance || course.dances.includes(search.dance))
+      .filter(course => !search.move || this.moves.filter(move => move.name.includes(search.move)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
+      .filter(course => !search.type || this.moves.filter(move => move.type.includes(search.type)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
+      .filter(course => !search.course || course.course == search.course)
+      .filter(course => !search.notcourse || course.course != search.notcourse)
       .filter(course => !search.script || Boolean(eval(search.script)));
   }
 

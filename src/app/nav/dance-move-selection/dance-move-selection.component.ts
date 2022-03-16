@@ -23,7 +23,7 @@ export class DanceMoveSelectionComponent implements OnInit {
   loading = true;
   isAdmin = false;
   codeSnippets!: Observable<Array<string>>;
-  initalCodeSnippets = new Array<string>("move.name", "move.dance", "move.date", "move.order", "move.count", "move.nameVerified", "move.type", "move.startMove", "move.endMove", "move.relatedMoves", "move.relatedMovesOtherDances", "move.videoname", "move.description", "move.toDo", "move.links", "move.row", "move.courseDates", "move.videos", "move.courseDates.filter(c=>c.date).length==0", "move.courseDates.filter(c=>c.date&&c.date>'2021-01-01').length>0");
+  initalCodeSnippets = new Array<string>("move.name", "move.dance", "move.order", "move.count", "move.nameVerified", "move.type", "move.startMove", "move.endMove", "move.relatedMoves", "move.relatedMovesOtherDances", "move.videoname", "move.description", "move.toDo", "move.links", "move.row", "move.courseDates", "move.videos", "move.courseDates.filter(c=>c.date).length==0", "move.courseDates.filter(c=>c.date&&c.date>'2021-01-01').length>0", "course.school", "course.teacher", "course.level", "course.description", "course.groupName", "course.start", "course.end");
 
   movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
   moveSearch = new FormControl("");
@@ -86,13 +86,13 @@ export class DanceMoveSelectionComponent implements OnInit {
   }
 
   private filterCodeSnippets = (search: SearchDto): string[] => {
-    if(search.script){
+    if (search.script) {
       return this.initalCodeSnippets.filter(snip => snip.includes(search.script));
     }
     return this.initalCodeSnippets;
   }
 
-  private handleEasterEggs(value: SearchDto){
+  private handleEasterEggs(value: SearchDto) {
     if (value.move?.toLowerCase() === "konami" || value.move?.toLowerCase() === "++--<><>ab") {
       this.navService.navigate(["move", "Konami"]);
     }
