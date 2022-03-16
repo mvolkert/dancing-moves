@@ -4,7 +4,6 @@ import { VideoDto } from "./video-dto";
 export interface MoveDto {
     name: string,
     dance: string,
-    date: Date | null,
     order: number,
     count: string,
     nameVerified: boolean,
@@ -15,7 +14,9 @@ export interface MoveDto {
     relatedMoves: string[],
     relatedMovesOtherDances: string[],
     videoname: string,
+    media: string,
     description: string,
+    descriptionEng: string,
     toDo: string,
     links: string,
     row: number,

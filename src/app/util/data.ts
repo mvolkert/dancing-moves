@@ -11,7 +11,7 @@ export const apiTestData = {
             "Name",
             "Tanz",
             "Beschreibung",
-            "Lerndatum",
+            "Description Eng",
             "Lernreihenfolge",
             "Count",
             "Name gesichert",
@@ -22,17 +22,17 @@ export const apiTestData = {
             "Ähnliche Tanzfiguren",
             "In anderen Tänzen",
             "Videoname",
+            "Media",
             "Links",
             "ToDo",
             "Benutzer",
-            "test",
             "__id"
         ],
         [
             "Basico (B)",
             "Bachata",
             "",
-            "04.11.2021",
+            "",
             "0",
             "8",
             "TRUE",
@@ -45,8 +45,8 @@ export const apiTestData = {
             "",
             "",
             "",
-            "mvolkert",
             "",
+            "mvolkert",
             "TTtVY2FVb0AoK0VJVjR2OUtPV0U"
         ]]
 } as ResponseGet;

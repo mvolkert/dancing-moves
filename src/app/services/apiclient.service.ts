@@ -195,7 +195,7 @@ export class ApiclientService {
       name: row[0],
       dance: row[1],
       description: row[2],
-      date: parseDate(row[3]),
+      descriptionEng: row[3],
       order: Number(row[4]),
       count: row[5],
       nameVerified: parseBoolean(row[6]),
@@ -206,8 +206,9 @@ export class ApiclientService {
       relatedMoves: this.stringToArray(row[11]),
       relatedMovesOtherDances: this.stringToArray(row[12]),
       videoname: row[13],
-      links: row[14],
-      toDo: row[15],
+      media: row[14],
+      links: row[15],
+      toDo: row[16],
       row: i + 1,
       courseDates: [],
       videos: []
@@ -270,10 +271,10 @@ export class ApiclientService {
 
 
   private moveToLine(moveDto: MoveDto): string[] {
-    return [moveDto.name, moveDto.dance, moveDto.description, toGermanDate(moveDto.date),
+    return [moveDto.name, moveDto.dance, moveDto.description, moveDto.descriptionEng,
     String(moveDto.order), moveDto.count, String(moveDto.nameVerified),
     moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.containedMoves?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
-    moveDto.videoname, moveDto.links, moveDto.toDo]
+    moveDto.videoname, moveDto.media, moveDto.links, moveDto.toDo]
   }
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {
