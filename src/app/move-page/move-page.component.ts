@@ -179,7 +179,6 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.loaded = false;
       this.moveForm.disable();
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
-        console.log(m);
         this.moveForm.patchValue(m);
         this.loaded = true;
         this.moveForm.enable();
