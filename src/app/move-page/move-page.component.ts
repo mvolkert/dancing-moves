@@ -92,6 +92,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.type = value.type;
       this.move.startMove = value.startMove;
       this.move.endMove = value.endMove;
+      this.move.containedMoves = value.containedMoves;
       this.move.relatedMoves = value.relatedMoves;
       this.move.relatedMovesOtherDances = value.relatedMovesOtherDances;
       this.move.videoname = value.videoname;
