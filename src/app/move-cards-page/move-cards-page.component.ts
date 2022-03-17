@@ -36,8 +36,8 @@ export class MoveCardsPageComponent implements OnInit {
     this.dataManagerService.searchFilterObservable.subscribe(
       (value: SearchDto) => {
         this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDanceNames(), value)
-        if (value.course) {
-          this.moves.sort(generateSortFn([m => m.dance, m => m.courseDates.filter(c => c.course === value.course).map(c => c.date).pop(), m => m.order, m => m.name]));
+        if (value.courses && value.courses.length > 0) {
+          this.moves.sort(generateSortFn([m => m.dance, m => m.courseDates.filter(c => value.courses.includes(c.course)).map(c => c.date).pop(), m => m.order, m => m.name]));
         } else {
           this.moves.sort(generateSortFn([m => m.dance, m => m.order, m => m.name]));
         }

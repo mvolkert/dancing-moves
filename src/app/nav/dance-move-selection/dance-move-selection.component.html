@@ -18,9 +18,8 @@
         </mat-autocomplete>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Course</mat-label>
-        <mat-select formControlName="course">
-            <mat-option>None</mat-option>
+        <mat-label>Courses</mat-label>
+        <mat-select formControlName="courses" multiple>
             <mat-option *ngFor="let course of courseNames" [value]="course">{{course}}</mat-option>
         </mat-select>
     </mat-form-field>

@@ -30,7 +30,7 @@ export class DanceMoveSelectionComponent implements OnInit {
   searchForm = new FormGroup({
     dance: new FormControl(""),
     move: new FormControl(""),
-    course: new FormControl(""),
+    courses: new FormControl([]),
     notcourse: new FormControl(""),
     type: new FormControl(""),
     todo: new FormControl(""),

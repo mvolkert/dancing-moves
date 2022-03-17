@@ -227,7 +227,7 @@ export class DataManagerService {
     return moves
       .filter(move => !dances.has(search.dance) || move.dance == search.dance)
       .filter(move => !search.move || move.name.includes(search.move))
-      .filter(move => !search.course || move.courseDates.map(c => c.course).includes(search.course))
+      .filter(move => !search.courses || search.courses.length == 0 || move.courseDates.map(c => c.course).filter(c => search.courses.includes(c)).length > 0)
       .filter(move => !search.notcourse || !move.courseDates.map(c => c.course).includes(search.notcourse))
       .filter(move => !search.type || move.type.includes(search.type))
       .filter(move => !search.todo || move.toDo.includes(search.todo))
@@ -239,7 +239,7 @@ export class DataManagerService {
       .filter(course => !search.dance || course.dances.includes(search.dance))
       .filter(course => !search.move || this.moves.filter(move => move.name.includes(search.move)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
       .filter(course => !search.type || this.moves.filter(move => move.type.includes(search.type)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
-      .filter(course => !search.course || course.course == search.course)
+      .filter(course => !search.courses || search.courses.length == 0 || search.courses.includes(course.course))
       .filter(course => !search.notcourse || course.course != search.notcourse)
       .filter(course => !search.script || Boolean(eval(search.script)));
   }

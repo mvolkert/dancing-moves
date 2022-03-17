@@ -104,7 +104,6 @@ export class SettingsService {
 
   hash(key: string) {
     const hash = CryptoES.SHA256(key).toString();
-    console.log(hash);
     return hash;
   }
 
