@@ -10,7 +10,6 @@ export class NavService {
   constructor(private router: Router) { }
 
   navigate(route: string[] = [], queryParams: Params | undefined = undefined): Promise<boolean> {
-    console.log(route);
     if (queryParams) {
       return this.router.navigate(route, { queryParams: queryParams, queryParamsHandling: 'merge' });
     }
@@ -25,7 +24,6 @@ export class NavService {
 
   openWebsiteIfEasterEggFound(name: string) {
     const nameNormalized = name?.toLocaleLowerCase().replace(/\s/g, '').replace(/-/g, '');
-    console.log(nameNormalized);
     if (nameNormalized === "supersecretmoves") {
       document.location.href = 'https://www.super-secret-moves.com/';
     } else if (nameNormalized === "tanzstudioschlegl") {
