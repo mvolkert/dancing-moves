@@ -282,7 +282,7 @@ export class ApiclientService {
   }
 
   private courseToLine(courseDto: CourseDto): string[] {
-    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end)]
+    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end), courseDto.time, courseDto.groupName]
   }
 
   private courseContentToLine(courseDataDto: VideoDto): string[] {
