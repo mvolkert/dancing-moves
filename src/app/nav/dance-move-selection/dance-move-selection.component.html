@@ -8,7 +8,8 @@
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width">
         <mat-label>Name</mat-label>
-        <input type="text" matInput formControlName="move" [matAutocomplete]="autoGroup">
+        <input type="text" matInput formControlName="move" [matAutocomplete]="autoGroup"
+            matAutocompletePosition="below">
         <mat-autocomplete #autoGroup="matAutocomplete">
             <mat-optgroup *ngFor="let group of movesGroupOptions | async" [label]="group.dance">
                 <mat-option *ngFor="let name of group.names" [value]="name">
@@ -43,7 +44,8 @@
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width">
         <mat-label>Script</mat-label>
-        <input type="text" matInput formControlName="script" [matAutocomplete]="autoCodeSnippets">
+        <input type="text" matInput formControlName="script" [matAutocomplete]="autoCodeSnippets"
+            matAutocompletePosition="below">
         <mat-autocomplete #autoCodeSnippets="matAutocomplete">
             <mat-option *ngFor="let snippet of codeSnippets | async" [value]="snippet">{{snippet}}</mat-option>
         </mat-autocomplete>
