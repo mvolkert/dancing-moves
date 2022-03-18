@@ -36,7 +36,7 @@ export class DataManagerService {
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
-      this.searchFilterObservable.next(params as SearchDto);
+      this.searchFilterObservable.next({ dance: params['dance'], move: params['move'], courses: this.readArrayParam(params, 'courses'), notcourse: params['notcourse'], type: params['type'], todo: params['todo'], script: params['script'] });
       let relationTypeParams = params["relationTypes"];
       if (!relationTypeParams) {
         relationTypeParams = [RelationType.start, RelationType.end]
@@ -50,6 +50,16 @@ export class DataManagerService {
       this.relationsSelectionObservable.next({ relationTypes: relationTypeParams, displayType: displayTypeParam });
     })
 
+  }
+
+
+  private readArrayParam(params: any, key: string): Array<string> {
+    if (!params[key]) {
+      return []
+    } else if (typeof params[key] === 'string') {
+      return [params[key]];
+    }
+    return params[key];
   }
 
   async start() {
@@ -252,6 +262,14 @@ export class DataManagerService {
       this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
     }
   })
+
+  findDependent(moveDto: MoveDto): Array<MoveDto> {
+    return this.moves.filter(m => m.startMove.includes(moveDto.name)
+      || m.endMove.includes(moveDto.name)
+      || m.containedMoves.includes(moveDto.name)
+      || m.relatedMoves.includes(moveDto.name)
+      || m.relatedMovesOtherDances.includes(moveDto.name));
+  }
 
   saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
     if (moveDto.row) {
