@@ -263,12 +263,12 @@ export class DataManagerService {
     }
   })
 
-  findDependent(moveDto: MoveDto): Array<MoveDto> {
-    return this.moves.filter(m => m.startMove.includes(moveDto.name)
-      || m.endMove.includes(moveDto.name)
-      || m.containedMoves.includes(moveDto.name)
-      || m.relatedMoves.includes(moveDto.name)
-      || m.relatedMovesOtherDances.includes(moveDto.name));
+  findDependent(moveName: string): Array<MoveDto> {
+    return this.moves.filter(m => m.startMove.includes(moveName)
+      || m.endMove.includes(moveName)
+      || m.containedMoves.includes(moveName)
+      || m.relatedMoves.includes(moveName)
+      || m.relatedMovesOtherDances.includes(moveName));
   }
 
   saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
@@ -281,6 +281,15 @@ export class DataManagerService {
       }), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData))
     }
   }
+
+  mulitSave(moveDtos: Array<MoveDto>): Observable<Array<MoveDto>> {
+    return forkJoin<Array<MoveDto>>(moveDtos.filter(m => m.row).map(this.patchMove));
+  }
+
+  private patchMove = (moveDto: MoveDto) => {
+    return this.apiclientService.patchData(moveDto).pipe(map(r => moveDto), this.tapRequest, map(this.updateMoveData))
+  }
+
   private saveOrCreateCourseDates = (moveDto: MoveDto): Observable<MoveDto> => {
     return forkJoin(moveDto.courseDates.filter(c => c.course && c.date).map(c => { c.moveName = moveDto.name; return c; }).map(this.saveOrCreateCourseDate))
       .pipe(defaultIfEmpty([]), map(courseDates => { moveDto.courseDates = courseDates; return moveDto; }));
@@ -315,7 +324,6 @@ export class DataManagerService {
     const moves = deepCopy(this.movesSubject.value).filter(m => m.name != moveDto.name);
     moves.push(moveDto);
     this.setMoves(moves);
-    this.navService.navigate(["move", moveDto.name]);
     return moveDto;
   }
 

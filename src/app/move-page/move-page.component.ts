@@ -180,8 +180,24 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.moveForm.disable();
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
         this.moveForm.patchValue(m);
-        this.loaded = true;
-        this.moveForm.enable();
+        const newName = m.name;
+        if (this.nameParam != newName && this.nameParam != "new") {
+          const dependentMoves = this.dataManager.findDependent(this.nameParam);
+          dependentMoves.forEach(m => m.startMove = m.startMove.map(n => n == this.nameParam ? newName : n));
+          dependentMoves.forEach(m => m.endMove = m.endMove.map(n => n == this.nameParam ? newName : n));
+          dependentMoves.forEach(m => m.containedMoves = m.containedMoves.map(n => n == this.nameParam ? newName : n));
+          dependentMoves.forEach(m => m.relatedMoves = m.relatedMoves.map(n => n == this.nameParam ? newName : n));
+          dependentMoves.forEach(m => m.relatedMovesOtherDances = m.relatedMovesOtherDances.map(n => n == this.nameParam ? newName : n));
+          this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
+            this.loaded = true;
+            this.moveForm.enable();
+            this.navService.navigate(["move", m.name]);
+          });
+        } else {
+          this.loaded = true;
+          this.moveForm.enable();
+          this.navService.navigate(["move", m.name]);
+        }
       });
     }
   }
