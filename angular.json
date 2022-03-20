@@ -34,7 +34,11 @@
             "customWebpackConfig": {
               "path": "./webpack.config.js",
               "replaceDuplcatePlugins": true
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "codemirror",
+              "cytoscape"
+            ]
           },
           "configurations": {
             "production": {

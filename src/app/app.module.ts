@@ -22,6 +22,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownEditorModule } from '@mvolkert/ngx-markdown-editor';
 import { AppRoutingModuleModule } from './app-routing-module/app-routing-module.module';
 import { AppComponent } from './app.component';
 import { DanceCardsPageComponent } from './dance-cards-page/dance-cards-page.component';
@@ -75,6 +76,7 @@ import { CoursePageComponent } from './course-page/course-page.component';
     MatSnackBarModule,
     MatExpansionModule,
     MarkdownModule.forRoot(),
+    MarkdownEditorModule
   ],
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' }],
   bootstrap: [AppComponent]
