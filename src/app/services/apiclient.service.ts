@@ -32,7 +32,7 @@ export class ApiclientService {
   getMoves(): Observable<Array<MoveDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
-      'Tanzfiguren!A1:S500'
+      'Tanzfiguren!A1:S1000'
     ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
   }
 
