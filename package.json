@@ -8,7 +8,7 @@
     "build:github": "ng build --prod --base-href https://mvolkert.github.io",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng deploy --base-href=/dancing-moves/"
+    "deploy": "ng deploy --base-href=/dancing-moves/ --no-silent"
   },
   "private": true,
   "dependencies": {
