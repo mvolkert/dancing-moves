@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
@@ -15,7 +15,7 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
-import { deepCopy, delay, getRow, olderThanADay } from '../util/util';
+import { deepCopy, delay, generateSortFn, getRow, olderThanADay } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
@@ -144,7 +144,7 @@ export class DataManagerService {
     if (this.settingsService.hasOneSpecialRight([SpecialRight.video_tsc, SpecialRight.admin])) {
       observables.push(this.apiclientService.getVideos("Videos TSC"));
     }
-    return forkJoin(observables).pipe(defaultIfEmpty([]), map(x => x.flatMap(y => y)));
+    return forkJoin(observables).pipe(defaultIfEmpty([]), map(x => x.flatMap(y => y).sort(generateSortFn([c => c.courseName, c => c.name]))));
   }
 
   async loading() {

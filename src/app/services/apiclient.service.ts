@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
@@ -24,6 +24,7 @@ export class ApiclientService {
   private lastUpdated!: number;
   private writeToken!: ApiToken;
   private userMode!: UserMode;
+  private appendPossible = new BehaviorSubject(true);
 
   constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
@@ -136,8 +137,9 @@ export class ApiclientService {
     if (this.userMode !== UserMode.write) {
       return of({ updates: { updatedRange: 'T!A42:S42' } } as ResponseCreate);
     }
-    return this.loginWrite().pipe(switchMap(r => {
-      return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+    return this.appendPossible.pipe(filter(p => p), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
+      this.appendPossible.next(false);
+      return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => this.appendPossible.next(true)))
     }));
   }
 
