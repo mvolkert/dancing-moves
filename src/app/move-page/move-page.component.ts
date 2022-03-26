@@ -196,7 +196,9 @@ export class MovePageComponent implements OnInit, OnDestroy {
         } else {
           this.loaded = true;
           this.moveForm.enable();
+          if(this.nameParam=="new"){
           this.navService.navigate(["move", m.name]);
+          }
         }
       });
     }
