@@ -1,5 +1,5 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
-<form *ngIf="loaded||move" [formGroup]="moveForm" (ngSubmit)="onSubmit()">
+<form *ngIf="loaded||move" [formGroup]="moveForm">
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name">
@@ -107,8 +107,8 @@
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
         </div>
-        <button *ngIf="!readonly" [disabled]="moveForm.disabled" mat-icon-button color="primary" type=button aria-label="Add"
-            (click)="addCourseDateForm()" matTooltip="Add Course Date">
+        <button *ngIf="!readonly" [disabled]="moveForm.disabled" mat-icon-button color="primary" type=button
+            aria-label="Add" (click)="addCourseDateForm()" matTooltip="Add Course Date">
             <mat-icon>add_circle_outline</mat-icon>Add Course Date
         </button>
     </div>
@@ -118,7 +118,7 @@
             formControlName="description"></textarea>
     </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
-        [disabled]="moveForm.invalid || moveForm.disabled">Save</button>
+        [disabled]="moveForm.invalid || moveForm.disabled" (click)="onSave()">Save</button>
 </form>
 <div class="description" markdown [data]="moveForm.value.description">
 </div>

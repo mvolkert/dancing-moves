@@ -174,7 +174,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
     return (this.moveForm.get('courseDates') as FormArray).controls;
   }
 
-  onSubmit() {
+  onSave() {
     if (this.moveForm.valid && this.move) {
       this.loaded = false;
       this.moveForm.disable();
