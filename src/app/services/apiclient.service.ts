@@ -116,7 +116,7 @@ export class ApiclientService {
   }
 
   appendCourseContent(name: string, content: VideoDto): Observable<ResponseCreate> {
-    const sheetRange = `${name}!A1:C2`;
+    const sheetRange = `${name}!A1:C1`;
     const body = { values: [this.courseContentToLine(content)] }
     return this.spreadsheetsPost(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body, ':append');
   }
@@ -286,6 +286,6 @@ export class ApiclientService {
   }
 
   private courseContentToLine(courseDataDto: VideoDto): string[] {
-    return [courseDataDto.name, courseDataDto.link]
+    return [courseDataDto.name, courseDataDto.link, courseDataDto.courseName]
   }
 }
