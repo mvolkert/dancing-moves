@@ -65,6 +65,13 @@ export class ApiclientService {
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDtoFunc(name))));
   }
 
+  getAccess(name: string): Observable<Array<VideoDto>> {
+    return this.spreadsheetsGet(
+      this.settingsService.secret?.courseDatesSheetId as string,
+      `Data Access!A1:B1000`
+    ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDtoFunc(name))));
+  }
+
 
   private mapRows<T>(response: ResponseGet, mapfunc: (row: string[], i: number) => T): Array<T> {
     const result = new Array<T>();
