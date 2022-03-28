@@ -131,19 +131,7 @@ export class DataManagerService {
 
 
   private getVideos(): Observable<VideoDto[]> {
-    const observables = new Array<Observable<VideoDto[]>>()
-    if (this.settingsService.hasOneSpecialRight([SpecialRight.video_ssm, SpecialRight.video_ssm_sc, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("Videos SSM"));
-    }
-    if (this.settingsService.hasOneSpecialRight([SpecialRight.video_fau, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("Videos FAU"));
-    }
-    if (this.settingsService.hasOneSpecialRight([SpecialRight.video_tsm, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("Videos TSM"));
-    }
-    if (this.settingsService.hasOneSpecialRight([SpecialRight.video_tsc, SpecialRight.admin])) {
-      observables.push(this.apiclientService.getVideos("Videos TSC"));
-    }
+    const observables = this.settingsService.specialRights.map(s => s.sheetName).map(s => this.apiclientService.getVideos(s));
     return forkJoin(observables).pipe(defaultIfEmpty([]), map(x => x.flatMap(y => y).sort(generateSortFn([c => c.courseName, c => c.name]))));
   }
 

@@ -16,6 +16,7 @@ import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
 import { VideoDto } from '../model/video-dto';
 import { apiTestData } from '../util/data';
+import { DataAccessDto } from '../model/data-access-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,9 @@ export class ApiclientService {
   }
 
   getMoves(): Observable<Array<MoveDto>> {
+    if (this.userMode === UserMode.test) {
+      return of(apiTestData).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));;
+    }
     return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
       'Tanzfiguren!A1:S1000'
@@ -65,11 +69,11 @@ export class ApiclientService {
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDtoFunc(name))));
   }
 
-  getAccess(name: string): Observable<Array<VideoDto>> {
+  getDataAccess(): Observable<Array<DataAccessDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.courseDatesSheetId as string,
-      `Data Access!A1:B1000`
-    ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDtoFunc(name))));
+      `Data Access!A1:E1000`
+    ).pipe(map(response => this.mapRows<DataAccessDto>(response, this.createDataAccessDto)));
   }
 
 
@@ -135,9 +139,6 @@ export class ApiclientService {
     return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
   }
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
-    if (this.userMode === UserMode.test) {
-      return of(apiTestData);
-    }
     return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
   }
   private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {
@@ -265,6 +266,17 @@ export class ApiclientService {
       link: row[1],
       courseName: row[2],
       groupName: groupName,
+      row: i + 1
+    };
+  }
+
+  private createDataAccessDto = (row: any, i: number): DataAccessDto => {
+    return {
+      hash: row[0],
+      sheetName: row[1],
+      name: row[2],
+      description: row[3],
+      salt: row[4],
       row: i + 1
     };
   }

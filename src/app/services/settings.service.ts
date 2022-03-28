@@ -2,11 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import CryptoES from 'crypto-es';
-import { BehaviorSubject, firstValueFrom, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject, switchMap, tap } from 'rxjs';
+import { DataAccessDto } from '../model/data-access-dto';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { SpecialRight } from '../model/special-right';
 import { UserMode } from '../model/user-mode';
+import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 
 @Injectable({
@@ -21,21 +23,13 @@ export class SettingsService {
   isStarting = new Subject<boolean>();
   userMode = new BehaviorSubject<UserMode>(UserMode.test);
   specialRightsString!: string;
-  specialRights!: Array<string>;
-  specialRightsMap = {
-    '8ccc189d957167a5f153089f7f50bc7574332880011eefd0470ac84534471a7c': SpecialRight.admin,
-    'e9a03c9d033097130b229c2044eae02c80fd47dd2214952a6558c656b5386640': SpecialRight.video_ssm,
-    'e0644e066bfe48ac317a8073b017af01e67506ad3d28144ec5a9f98f928aad0f': SpecialRight.video_ssm_sc,
-    '2a81a551f614d45c8a87fd178d4a135d37fb79280fd108183cb17393d354d66c': SpecialRight.video_fau,
-    'cca543992247230ebe41022d5e14ba0e8337c97b98c1fc1118bc30d07b672ca4': SpecialRight.video_tsm,
-    '28c48b8eb4d51ab963b42acb377ab809b8bd15c0977ca6325439bff6ea5e61be': SpecialRight.video_tsc
-  } as { [key: string]: string };
+  specialRights!: Array<DataAccessDto>;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private navService: NavService) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
-  fetchSettings() {
+  fetchSettings(getDataAccess: () => Observable<DataAccessDto[]>) {
     this.route.queryParams.subscribe(params => {
-      this.initSettings(params);
+      this.initSettings(params, getDataAccess);
     })
   }
 
@@ -45,37 +39,32 @@ export class SettingsService {
     }
   }
 
-  initSettings(params: Params) {
+  initSettings(params: Params, getDataAccess: () => Observable<DataAccessDto[]>) {
     this.secretReadString = this.getSetting(params, 'secret');
     this.secretWriteString = this.getSetting(params, 'secret-write');
 
-    if (this.secretReadString) {
-      this.getFile('secret-read.txt').pipe(tap(data => {
-        this.secret = this.decrypt(data, this.secretReadString);
-      }), switchMap(() => this.getFile('secret-write.txt'))).subscribe(data => {
-        this.secretWrite = this.decrypt(data, this.secretWriteString);
-        if (this.secret && this.secretWrite) {
-          this.userMode.next(UserMode.write)
-        } else if (this.secret) {
-          this.userMode.next(UserMode.read)
-        } else {
-          this.userMode.next(UserMode.test)
-        }
+    forkJoin({ read: this.getFile('secret-read.txt'), write: this.getFile('secret-write.txt') }).subscribe(data => {
+      this.secret = this.decrypt(data.read, this.secretReadString);
+      this.secretWrite = this.decrypt(data.write, this.secretWriteString);
+      if (this.secret && this.secretWrite) {
+        this.userMode.next(UserMode.write)
+      } else if (this.secret) {
+        this.userMode.next(UserMode.read)
+      } else {
+        this.userMode.next(UserMode.test)
+      }
+      this.specialRightsString = this.getArraySetting(params, 'special-rights');
+      const specialRightsArray = this.specialRightsString?.split(",").map(this.hash);
+      console.log(specialRightsArray);
+      getDataAccess().subscribe(dataSpecial => {
+        this.specialRights = dataSpecial.filter(s => specialRightsArray.includes(s.hash));
+        const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
+        //this.navService.navigate([this.navService.getPath()], queryJson);
         this.isStarting.next(false);
         this.isStarted = true;
-      });;
-    }
+      });
+    });;
 
-    this.specialRightsString = this.getArraySetting(params, 'special-rights');
-    this.specialRights = new Array<string>();
-    this.specialRightsString?.split(",").forEach((key: string) => {
-      const hash = this.hash(key);
-      if (this.specialRightsMap[hash]) {
-        this.specialRights.push(this.specialRightsMap[hash]);
-      }
-    });
-    const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
-    //this.navService.navigate([this.navService.getPath()], queryJson);
   }
 
   private getFile(filename: string) {
@@ -102,17 +91,13 @@ export class SettingsService {
     console.log(encryptedString);
   }
 
-  hash(key: string) {
+  hash = (key: string) => {
     const hash = CryptoES.SHA256(key).toString();
     return hash;
   }
 
   hasSpecialRight = (key: string) => {
-    return this.specialRights.includes(key);
-  }
-
-  hasOneSpecialRight(keys: Array<string>) {
-    return keys.filter(this.hasSpecialRight).length > 0;
+    return this.specialRights.map(a => a.name).includes(key);
   }
 
   private getSetting(params: Params, key: string): string {

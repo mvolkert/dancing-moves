@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiclientService } from './services/apiclient.service';
 import { DataManagerService } from './services/data-manager.service';
 import { SettingsService } from './services/settings.service';
 
@@ -12,12 +13,12 @@ export class AppComponent implements OnInit {
 
   title = 'dancing-moves';
 
-  constructor(private settingsService: SettingsService, private dataManagerService: DataManagerService) {
+  constructor(private settingsService: SettingsService, private dataManagerService: DataManagerService, private apiclientService: ApiclientService) {
 
   }
 
   ngOnInit(): void {
-    this.settingsService.fetchSettings();
+    this.settingsService.fetchSettings(() => this.apiclientService.getDataAccess());
     this.dataManagerService.start();
   }
 }
