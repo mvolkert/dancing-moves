@@ -13,12 +13,12 @@ export class AppComponent implements OnInit {
 
   title = 'dancing-moves';
 
-  constructor(private settingsService: SettingsService, private dataManagerService: DataManagerService, private apiclientService: ApiclientService) {
+  constructor(private settingsService: SettingsService, private dataManagerService: DataManagerService) {
 
   }
 
   ngOnInit(): void {
-    this.settingsService.fetchSettings(() => this.apiclientService.getDataAccess());
+    this.settingsService.fetchSettings(() => this.dataManagerService.getDataAccess());
     this.dataManagerService.start();
   }
 }

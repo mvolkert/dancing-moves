@@ -7,6 +7,7 @@ import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
+import { DataAccessDto } from '../model/data-access-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { RelationDisplayType } from '../model/relation-display-type-enum';
@@ -342,6 +343,14 @@ export class DataManagerService {
         return courseDto;
       }), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData))
     }
+  }
+
+
+  getDataAccess(): Array<DataAccessDto> {
+    const dataAccess = JSON.parse(localStorage.getItem("dataAccess") ?? "[]");
+    const date = new Date(localStorage.getItem("date") ?? "2022-03-04");
+    this.apiclientService.getDataAccess().subscribe(d => localStorage.setItem("dataAccess", JSON.stringify(d)));
+    return dataAccess;
   }
 }
 

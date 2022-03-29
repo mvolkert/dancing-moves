@@ -27,7 +27,7 @@ export class SettingsService {
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
-  fetchSettings(getDataAccess: () => Observable<DataAccessDto[]>) {
+  fetchSettings(getDataAccess: () => DataAccessDto[]) {
     this.route.queryParams.subscribe(params => {
       this.initSettings(params, getDataAccess);
     })
@@ -39,7 +39,7 @@ export class SettingsService {
     }
   }
 
-  initSettings(params: Params, getDataAccess: () => Observable<DataAccessDto[]>) {
+  initSettings(params: Params, getDataAccess: () => DataAccessDto[]) {
     this.secretReadString = this.getSetting(params, 'secret');
     this.secretWriteString = this.getSetting(params, 'secret-write');
 
@@ -56,13 +56,11 @@ export class SettingsService {
       this.specialRightsString = this.getArraySetting(params, 'special-rights');
       const specialRightsArray = this.specialRightsString?.split(",").map(this.hash);
       console.log(specialRightsArray);
-      getDataAccess().subscribe(dataSpecial => {
-        this.specialRights = dataSpecial.filter(s => specialRightsArray.includes(s.hash));
-        const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
-        //this.navService.navigate([this.navService.getPath()], queryJson);
-        this.isStarting.next(false);
-        this.isStarted = true;
-      });
+      this.specialRights = getDataAccess().filter(s => specialRightsArray.includes(s.hash));
+      const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
+      //this.navService.navigate([this.navService.getPath()], queryJson);
+      this.isStarting.next(false);
+      this.isStarted = true;
     });;
 
   }
