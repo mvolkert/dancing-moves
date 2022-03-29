@@ -16,7 +16,7 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
-import { deepCopy, delay, generateSortFn, getRow, olderThanADay } from '../util/util';
+import { deepCopy, delay, generateSortFn, getRow, olderThanADay, convertToEmbed} from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
@@ -88,7 +88,7 @@ export class DataManagerService {
           // deep copy for different options in each move
           move.videos = deepCopy(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name)));
           move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
-          videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: v.name } as VideoDto }).forEach(v => move.videos.push(v));
+          videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: convertToEmbed(v.name)} as VideoDto }).forEach(v => move.videos.push(v));
         }
       }
       this.setMoves(results.moves);
