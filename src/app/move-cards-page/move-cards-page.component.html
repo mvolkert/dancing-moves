@@ -1,4 +1,12 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+<mat-card>
+    <mat-card-content>
+        <div>
+            <span>Moves: &nbsp;</span>
+            <span>{{moves.length}}</span>
+        </div>
+    </mat-card-content>
+</mat-card>
 <ng-container *ngFor="let move of moves">
     <app-move-card [move-dto]=move></app-move-card>
 </ng-container>
