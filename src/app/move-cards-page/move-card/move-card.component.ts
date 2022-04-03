@@ -11,10 +11,12 @@ import { NavService } from 'src/app/services/nav.service';
 export class MoveCardComponent implements OnInit {
 
   @Input("move-dto") moveDto!: MoveDto
+  nameUri = "";
 
   constructor(private navService: NavService) { }
 
   ngOnInit(): void {
+    this.nameUri = encodeURI(this.moveDto.name)
   }
 
   openDetails(): Promise<boolean> {

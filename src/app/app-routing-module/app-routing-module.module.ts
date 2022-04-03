@@ -10,7 +10,7 @@ import { SettingsPageComponent } from '../settings-page/settings-page.component'
 
 
 const routes: Routes = [
-  { path: '',   redirectTo: 'moves', pathMatch: 'full' },
+  { path: '', redirectTo: 'moves', pathMatch: 'full' },
   { path: 'settings', component: SettingsPageComponent },
   { path: 'dances', component: DanceCardsPageComponent },
   { path: 'courses', component: CourseCardsPageComponent },
@@ -20,7 +20,9 @@ const routes: Routes = [
   { path: 'relations', component: RelationsPageComponent }];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    anchorScrolling: 'enabled'
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModuleModule { }
