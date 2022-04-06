@@ -21,7 +21,7 @@ import { deepCopy, nameExistsValidator } from '../util/util';
 })
 export class MovePageComponent implements OnInit, OnDestroy {
   move: MoveDto | undefined;
-  dances = new Set<string>();
+  dances = new Array<string>();
   types = new Set<string>();
   courseNames = new Set<string>();
   moveForm = this.create_form();
@@ -57,7 +57,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.valueChangesSubscription?.unsubscribe();
     this.userModeSubscription?.unsubscribe();
     this.moveForm = this.create_form();
-    this.dances = new Set(this.dataManager.getDances().map(dance => dance.name));
+    this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
     this.otherMovesNames = this.dataManager.getMovesNames();
