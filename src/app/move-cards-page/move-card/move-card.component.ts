@@ -16,10 +16,11 @@ export class MoveCardComponent implements OnInit {
   constructor(private navService: NavService) { }
 
   ngOnInit(): void {
-    this.nameUri = encodeURI(this.moveDto.name)
+    this.nameUri = this.moveDto.name.replace(/[^\w]/g, '');
   }
 
   openDetails(): Promise<boolean> {
+    this.navService.fragment = this.moveDto.name.replace(/[^\w]/g, '');
     return this.navService.navigate(["move", encodeURI(this.moveDto.name)]);
   }
 

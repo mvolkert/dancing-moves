@@ -7,13 +7,14 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class NavService {
   headlineObservable = new BehaviorSubject<string>("Dancing Moves");
+  fragment?: string;
   constructor(private router: Router) { }
 
-  navigate(route: string[] = [], queryParams: Params | undefined = undefined): Promise<boolean> {
+  navigate(route: string[] = [], queryParams: Params | undefined = undefined, fragment?: string): Promise<boolean> {
     if (queryParams) {
-      return this.router.navigate(route, { queryParams: queryParams, queryParamsHandling: 'merge' });
+      return this.router.navigate(route, { queryParams: queryParams, queryParamsHandling: 'merge', fragment: fragment });
     }
-    return this.router.navigate(route, { queryParamsHandling: 'merge' });
+    return this.router.navigate(route, { queryParamsHandling: 'merge', fragment: fragment });
   }
 
   getPath(): string {
