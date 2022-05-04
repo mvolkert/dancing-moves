@@ -33,6 +33,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
   readonly = false;
   valueChangesSubscription: Subscription | undefined;
   userModeSubscription: Subscription | undefined;
+  description: string = "";
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
@@ -100,6 +101,8 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.toDo = value.toDo;
       this.move.courseDates = value.courseDates;
       this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
+      this.description = value.description;
+      this.danceMovesNames.forEach(m => this.description = this.description.replace(m, `[${m}](move/${encodeURI(m)})`))
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
@@ -183,21 +186,29 @@ export class MovePageComponent implements OnInit, OnDestroy {
         const newName = m.name;
         if (this.nameParam != newName && this.nameParam != "new") {
           const dependentMoves = this.dataManager.findDependent(this.nameParam);
-          dependentMoves.forEach(m => m.startMove = m.startMove.map(n => n == this.nameParam ? newName : n));
-          dependentMoves.forEach(m => m.endMove = m.endMove.map(n => n == this.nameParam ? newName : n));
-          dependentMoves.forEach(m => m.containedMoves = m.containedMoves.map(n => n == this.nameParam ? newName : n));
-          dependentMoves.forEach(m => m.relatedMoves = m.relatedMoves.map(n => n == this.nameParam ? newName : n));
-          dependentMoves.forEach(m => m.relatedMovesOtherDances = m.relatedMovesOtherDances.map(n => n == this.nameParam ? newName : n));
-          this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
+          if (dependentMoves && dependentMoves.length > 0) {
+            dependentMoves.forEach(m => m.startMove = m.startMove.map(n => n == this.nameParam ? newName : n));
+            dependentMoves.forEach(m => m.endMove = m.endMove.map(n => n == this.nameParam ? newName : n));
+            dependentMoves.forEach(m => m.containedMoves = m.containedMoves.map(n => n == this.nameParam ? newName : n));
+            dependentMoves.forEach(m => m.relatedMoves = m.relatedMoves.map(n => n == this.nameParam ? newName : n));
+            dependentMoves.forEach(m => m.relatedMovesOtherDances = m.relatedMovesOtherDances.map(n => n == this.nameParam ? newName : n));
+            dependentMoves.forEach(m => m.description = m.description.replace(this.nameParam, newName));
+            this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
+              this.loaded = true;
+              this.moveForm.enable();
+              this.navService.navigate(["move", m.name]);
+            });
+          } else {
             this.loaded = true;
             this.moveForm.enable();
             this.navService.navigate(["move", m.name]);
-          });
+          }
+
         } else {
           this.loaded = true;
           this.moveForm.enable();
-          if(this.nameParam=="new"){
-          this.navService.navigate(["move", m.name]);
+          if (this.nameParam == "new") {
+            this.navService.navigate(["move", m.name]);
           }
         }
       });
