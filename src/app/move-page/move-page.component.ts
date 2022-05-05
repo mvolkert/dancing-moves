@@ -12,7 +12,7 @@ import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 import { easterEggMoves } from '../util/data';
-import { deepCopy, nameExistsValidator } from '../util/util';
+import { deepCopy, encodeUriAll, nameExistsValidator } from '../util/util';
 
 @Component({
   selector: 'app-move-page',
@@ -102,7 +102,9 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.courseDates = value.courseDates;
       this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
       this.description = value.description;
-      Array.from(this.danceMovesNames).sort((a,b)=> a.length>b.length? -1:1).forEach(m => this.description = this.description.replace(` ${m}`, ` [${m}](move/${encodeURI(m)})`))
+      Array.from(this.danceMovesNames)
+        .sort((a, b) => a.length > b.length ? -1 : 1)
+        .forEach(m => this.description = this.description.replace(` ${m}`, ` [${m}](move/${encodeUriAll(m)})`))
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
