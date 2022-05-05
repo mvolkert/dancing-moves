@@ -37,3 +37,7 @@
 .description {
 	margin-top: 10px;
 }
+
+.description ::ng-deep a {
+	color: #c2185b
+}
