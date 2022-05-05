@@ -102,7 +102,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.courseDates = value.courseDates;
       this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
       this.description = value.description;
-      this.danceMovesNames.sort((a,b)=> a.length>b.lenght? -1:1).forEach(m => this.description = this.description.replace(` ${m}`, ` [${m}](move/${encodeURI(m)})`))
+      Array.from(this.danceMovesNames).sort((a,b)=> a.length>b.lenght? -1:1).forEach(m => this.description = this.description.replace(` ${m}`, ` [${m}](move/${encodeURI(m)})`))
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
