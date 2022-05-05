@@ -66,7 +66,10 @@ export class DataManagerService {
   async start() {
     await this.settingsService.loading();
     this.local_get();
-    const date = new Date(localStorage.getItem("date") ?? "2022-03-04");
+    let date = new Date(localStorage.getItem("date") ?? "2022-03-04");
+    if (!date || isNaN(date.getTime())) {
+      date = new Date("2022-03-04");
+    }
     if (this.moves.length == 0 || this.dances.length == 0 || this.courses.length == 0 || olderThanADay(date)) {
       this.api_get();
     }
@@ -92,7 +95,7 @@ export class DataManagerService {
         }
       }
       this.setMoves(results.moves);
-      localStorage.setItem("date", JSON.stringify(new Date()));
+      localStorage.setItem("date", new Date().toISOString());
       this.isStarting.next(false);
     })
   }

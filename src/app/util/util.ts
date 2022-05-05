@@ -57,7 +57,7 @@ export const getRow = (tableString: string): number => {
 }
 
 export const olderThanADay = (date: Date): boolean => {
-    return ((new Date().getTime()) - date.getTime()) > 24 * 60 * 60 * 1000;
+    return ((new Date().getTime()) - date.getTime()) > 86400000;
 }
 
 export const deepCopy = <T>(obj: T): T => {
