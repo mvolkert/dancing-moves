@@ -26,6 +26,8 @@ export class ApiclientService {
   private writeToken!: ApiToken;
   private userMode!: UserMode;
   private appendPossible = new BehaviorSubject(true);
+  private appendNumber = 0;
+  private appendNumberDue = 0;
 
   constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
@@ -145,9 +147,13 @@ export class ApiclientService {
     if (this.userMode !== UserMode.write) {
       return of({ updates: { updatedRange: 'T!A42:S42' } } as ResponseCreate);
     }
-    return this.appendPossible.pipe(filter(p => p), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
+    const localAppendNummer = this.appendNumber++;
+    return this.appendPossible.pipe(filter(p => p && localAppendNummer == this.appendNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
       this.appendPossible.next(false);
-      return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => this.appendPossible.next(true)))
+      return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => {
+        this.appendNumberDue++;
+        this.appendPossible.next(true);
+      }))
     }));
   }
 
