@@ -20,7 +20,7 @@ export class NavComponent implements OnInit {
   readonly = true;
   headline = "Dancing Moves"
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet])
     .pipe(
       map(result => result.matches),
       shareReplay()
