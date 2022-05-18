@@ -104,7 +104,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.description = value.description;
       Array.from(this.danceMovesNames)
         .sort((a, b) => a.length > b.length ? -1 : 1)
-        .forEach(m => this.description = this.description.replace(` ${m}`, ` [${m}](move/${encodeUriAll(m)})`))
+        .forEach(m => this.description = this.description.replaceAll(` ${m}`, ` [${m}](move/${encodeUriAll(m)})`))
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
