@@ -4,6 +4,7 @@ export interface SearchDto {
     courses: Array<string>,
     notcourse: string,
     type: string,
+    related: string,
     todo: string,
     script: string
 }

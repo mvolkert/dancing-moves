@@ -38,6 +38,18 @@
             <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
         </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Related To</mat-label>
+        <input type="text" matInput formControlName="related" [matAutocomplete]="autoGroup2"
+            matAutocompletePosition="below">
+        <mat-autocomplete #autoGroup2="matAutocomplete">
+            <mat-optgroup *ngFor="let group of movesGroupOptions2 | async" [label]="group.dance">
+                <mat-option *ngFor="let name of group.names" [value]="name">
+                    {{name}}
+                </mat-option>
+            </mat-optgroup>
+        </mat-autocomplete>
+    </mat-form-field>
     <mat-form-field *ngIf="isAdmin" appearance="fill" class="full-width">
         <mat-label>ToDo</mat-label>
         <input type="text" matInput formControlName="todo">

@@ -26,6 +26,7 @@ export class DanceMoveSelectionComponent implements OnInit {
   initalCodeSnippets = new Array<string>("move.name", "move.dance", "move.order", "move.count", "move.nameVerified", "move.type", "move.startMove", "move.endMove", "move.relatedMoves", "move.relatedMovesOtherDances", "move.videoname", "move.description", "move.toDo", "move.links", "move.row", "move.courseDates", "move.videos", "move.courseDates.filter(c=>c.date).length==0", "move.courseDates.filter(c=>c.date&&c.date>'2021-01-01').length>0", "course.school", "course.teacher", "course.level", "course.description", "course.groupName", "course.start", "course.end");
 
   movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
+  movesGroupOptions2: Observable<MoveGroupDto[]> | undefined;
   moveSearch = new FormControl("");
   searchForm = new FormGroup({
     dance: new FormControl(""),
@@ -33,6 +34,7 @@ export class DanceMoveSelectionComponent implements OnInit {
     courses: new FormControl([]),
     notcourse: new FormControl(""),
     type: new FormControl(""),
+    related: new FormControl(""),
     todo: new FormControl(""),
     video: new FormControl(""),
     script: new FormControl("")
@@ -57,6 +59,9 @@ export class DanceMoveSelectionComponent implements OnInit {
       this.movesGroupOptions = this.dataManagerService.searchFilterObservable.pipe(
         map((value: SearchDto) => this.filterGroup(value)),
       );
+      this.movesGroupOptions2 = this.dataManagerService.searchFilterObservable.pipe(
+        map((value: SearchDto) => this.filterGroup(value, v => v.related)),
+      );
     });
     this.codeSnippets = this.dataManagerService.searchFilterObservable.pipe(map(this.filterCodeSnippets));
     this.dataManagerService.searchFilterObservable.subscribe(searchFilter => {
@@ -74,11 +79,11 @@ export class DanceMoveSelectionComponent implements OnInit {
     this.isAdmin = this.settingsService.hasSpecialRight(SpecialRight.admin);
   }
 
-  private filterGroup(search: SearchDto): MoveGroupDto[] {
-    if (search.move || search.dance) {
+  private filterGroup(search: SearchDto, moveGetter = (search: SearchDto) => search.move): MoveGroupDto[] {
+    if (moveGetter(search) || search.dance) {
       return this.movesGroup
         .filter(group => !this.dances.has(search.dance) || group.dance == search.dance)
-        .map(group => ({ dance: group.dance, names: group.names.filter(item => item?.toLowerCase()?.includes(search.move?.toLowerCase())) }))
+        .map(group => ({ dance: group.dance, names: group.names.filter(item => item?.toLowerCase()?.includes(moveGetter(search)?.toLowerCase())) }))
         .filter(group => group.names.length > 0);
     }
 
