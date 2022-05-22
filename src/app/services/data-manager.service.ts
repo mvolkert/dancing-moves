@@ -78,23 +78,25 @@ export class DataManagerService {
   api_get() {
     this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
-      this.setDances(results.dances);
-      for (const course of results.courses) {
-        course.contents = results.videos.filter(content => course.course == content.courseName);
-      }
-      this.setCourses(results.courses);
-      for (const move of results.moves) {
-        move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
-        if (move.videoname) {
-          const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) } });
-
-          // deep copy for different options in each move
-          move.videos = deepCopy(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name)));
-          move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
-          videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: convertToEmbed(v.name) } as VideoDto }).forEach(v => move.videos.push(v));
+      if (results.moves.length > 0) {
+        this.setDances(results.dances);
+        for (const course of results.courses) {
+          course.contents = results.videos.filter(content => course.course == content.courseName);
         }
+        this.setCourses(results.courses);
+        for (const move of results.moves) {
+          move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
+          if (move.videoname) {
+            const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) } });
+
+            // deep copy for different options in each move
+            move.videos = deepCopy(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name)));
+            move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
+            videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: convertToEmbed(v.name) } as VideoDto }).forEach(v => move.videos.push(v));
+          }
+        }
+        this.setMoves(results.moves);
       }
-      this.setMoves(results.moves);
       localStorage.setItem("date", new Date().toISOString());
       this.isStarting.next(false);
     })
