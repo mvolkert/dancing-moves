@@ -140,7 +140,23 @@ export class ApiclientService {
     const body = { values: [this.courseContentToLine(content)] }
     return this.spreadsheetsPut(this.settingsService.secret?.courseDatesSheetId as string, sheetRange, body);
   }
+
+  appendDance(danceDto: DanceDto): Observable<ResponseCreate> {
+    const sheetRange = 'Tänze!A20:H20';
+    const body = { values: [this.danceToLine(danceDto)] }
+    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+  }
+
+  patchDance(danceDto: DanceDto): Observable<ResponseUpdate> {
+    const sheetRange = `Tänze!A${danceDto.row}:J${danceDto.row}`;
+    const body = { values: [this.danceToLine(danceDto)] }
+    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+  }
+
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
+    if (this.userMode === UserMode.test) {
+      return of({ range: '', majorDimension: '', values: [] } as ResponseGet);
+    }
     return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
   }
   private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {
@@ -314,5 +330,9 @@ export class ApiclientService {
 
   private courseContentToLine(courseDataDto: VideoDto): string[] {
     return [courseDataDto.name, courseDataDto.link, courseDataDto.courseName]
+  }
+
+  private danceToLine(danceDto: DanceDto): string[] {
+    return [danceDto.name, danceDto.type, danceDto.music, danceDto.rhythm, danceDto.school, danceDto.level, danceDto.description, danceDto.links]
   }
 }

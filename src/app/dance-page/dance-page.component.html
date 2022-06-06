@@ -1,0 +1,34 @@
+<mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+<form *ngIf="loaded||dance" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name">
+        <mat-error *ngIf="form.get('name')?.hasError('nameExists') && !form.get('name')?.hasError('required')">
+            Name must be unique
+        </mat-error>
+        <mat-error *ngIf="form.get('name')?.hasError('required')">
+            Name is <strong>required</strong>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Type</mat-label>
+        <input matInput formControlName="type">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Music</mat-label>
+        <input matInput formControlName="music">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Rhythm</mat-label>
+        <input matInput formControlName="rhythm">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Links</mat-label>
+        <input matInput formControlName="links">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description">
+    </mat-form-field>
+    <button *ngIf="!readonly" mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
+</form>

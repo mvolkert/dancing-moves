@@ -28,7 +28,7 @@ export class CourseCardsPageComponent implements OnInit {
   }
 
   private start() {
-    this.courses = this.dataManagerService.getCourses().sort(generateSortFn([c => c.course]));
+    this.courses = this.dataManagerService.getCourses();
     this.allCourses = deepCopy(this.courses);
     this.dataManagerService.searchFilterObservable.subscribe(
       (value: SearchDto) => {

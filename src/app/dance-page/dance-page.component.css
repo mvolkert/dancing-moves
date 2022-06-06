@@ -1,0 +1,39 @@
+.full-width {
+	width: 100%;
+}
+
+.full-width-adaptive {
+	width: 100%;
+	max-width: 500px;
+}
+
+.half-width {
+	width: 50%;
+	max-width: 250px;
+}
+
+.mat-input-element:disabled, .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
+	color: rgb(255, 255, 255);
+}
+
+.mat-select-disabled ::ng-deep .mat-select-value {
+	color: rgb(255, 255, 255);
+}
+
+.video-container {
+	position: relative;
+	height: 0;
+	padding-bottom: 56.25%;
+}
+
+.video-container iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.description {
+	margin-top: 10px;
+}

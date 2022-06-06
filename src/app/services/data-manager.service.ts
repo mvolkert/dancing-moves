@@ -107,7 +107,7 @@ export class DataManagerService {
   }
 
   private setDances(dances: DanceDto[]) {
-    this.dances = dances;
+    this.dances = dances.sort(generateSortFn([d => d.name]));
     localStorage.setItem("dances", JSON.stringify(this.dances));
   }
 
@@ -241,14 +241,23 @@ export class DataManagerService {
       .filter(move => !search.script || Boolean(eval(search.script)));
   }
 
-  selectCourses(course: CourseDto[], search: SearchDto): CourseDto[] {
-    return course
+  selectCourses(courses: CourseDto[], search: SearchDto): CourseDto[] {
+    return courses
       .filter(course => !search.dance || course.dances.includes(search.dance))
       .filter(course => !search.move || this.moves.filter(move => move.name.includes(search.move)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
       .filter(course => !search.type || this.moves.filter(move => move.type.includes(search.type)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
       .filter(course => !search.courses || search.courses.length == 0 || search.courses.includes(course.course))
       .filter(course => !search.notcourse || course.course != search.notcourse)
       .filter(course => !search.script || Boolean(eval(search.script)));
+  }
+
+  selectDances(dances: DanceDto[], search: SearchDto): DanceDto[] {
+    return dances
+      .filter(dance => !search.dance || dance.name.includes(search.dance))
+      .filter(dance => !search.move || this.moves.filter(move => move.name.includes(search.move)).filter(move => move.dance === dance.name).length > 0)
+      .filter(dance => !search.courses || search.courses.length == 0 || this.courses.filter(course => course.dances.includes(dance.name)).filter(c => search.courses.includes(c.course)).length > 0)
+      .filter(dance => !search.notcourse || this.courses.filter(course => course.dances.includes(dance.name)).filter(c => search.courses.includes(c.course)).length === 0)
+      .filter(dance => !search.script || Boolean(eval(search.script)));
   }
 
   private tapRequest = tap({
@@ -333,6 +342,14 @@ export class DataManagerService {
     return courseDto;
   }
 
+  private updateDanceData = (danceDto: DanceDto): DanceDto => {
+    const dances = deepCopy(this.dances).filter(m => m.name != danceDto.name);
+    dances.push(danceDto);
+    this.setDances(dances);
+    this.navService.navigate(["dance", danceDto.name]);
+    return danceDto;
+  }
+
   async normalize() {
     console.log('normalize');
     for (const move of this.movesSubject.value) {
@@ -351,6 +368,17 @@ export class DataManagerService {
         courseDto.row = getRow(r.updates.updatedRange);
         return courseDto;
       }), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData))
+    }
+  }
+
+  saveOrCreateDance(danceDto: DanceDto): Observable<DanceDto> {
+    if (danceDto.row) {
+      return this.apiclientService.patchDance(danceDto).pipe(map(r => danceDto), this.tapRequest, map(this.updateDanceData));
+    } else {
+      return this.apiclientService.appendDance(danceDto).pipe(map(r => {
+        danceDto.row = getRow(r.updates.updatedRange);
+        return danceDto;
+      }), this.tapRequest, map(this.updateDanceData))
     }
   }
 

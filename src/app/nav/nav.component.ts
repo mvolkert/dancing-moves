@@ -45,6 +45,9 @@ export class NavComponent implements OnInit {
     if (this.navService.getPath().includes('course')) {
       return this.navService.navigate(['course/new']);
     }
+    if (this.navService.getPath().includes('dance')) {
+      return this.navService.navigate(['dance/new']);
+    }
     return this.navService.navigate(['move/new']);
   }
 
