@@ -14,7 +14,6 @@ import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
-import { SpecialRight } from '../model/special-right';
 import { VideoDto } from '../model/video-dto';
 import { deepCopy, delay, generateSortFn, getRow, olderThanADay, convertToEmbed } from '../util/util';
 import { ApiclientService } from './apiclient.service';
@@ -103,7 +102,7 @@ export class DataManagerService {
   }
 
   private setCourses(courses: CourseDto[]) {
-    this.courses = courses;
+    this.courses = courses.sort(generateSortFn([c => c.course]));
     localStorage.setItem("courses", JSON.stringify(this.courses));
   }
 
@@ -181,7 +180,7 @@ export class DataManagerService {
   }
 
   getCourseNames(): Set<string> {
-    return new Set(this.movesSubject.value.flatMap(move => move.courseDates.map(c => c.course)));
+    return new Set(this.courses.map(course => course.course));
   }
 
   getCourses(): Array<CourseDto> {
