@@ -86,8 +86,13 @@ export class MovePageComponent implements OnInit, OnDestroy {
       }
       this.move.name = value.name;
       this.move.dance = value.dance;
+      if (value.dance && value.order === null) {
+        this.move.order = this.dataManager.getNextOrder(value.dance);
+        console.log(this.move);
+      } else {
+        this.move.order = Number(value.order);
+      }
       this.move.description = value.description;
-      this.move.order = Number(value.order);
       this.move.count = value.count;
       this.move.nameVerified = value.nameVerified;
       this.move.type = value.type;

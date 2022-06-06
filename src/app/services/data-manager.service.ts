@@ -167,6 +167,12 @@ export class DataManagerService {
     return new Set(this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.name));
   }
 
+  getNextOrder(dance: string | undefined): number {
+    const orders = this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.order).sort((a, b) => a - b);
+    console.log(orders);
+    return (orders.pop() ?? -1) + 1;
+  }
+
   getMovesNames(): Set<string> {
     return new Set(this.movesSubject.value.map(move => move.name));
   }

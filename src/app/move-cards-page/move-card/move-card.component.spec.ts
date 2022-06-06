@@ -25,7 +25,7 @@ describe('MovecardComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MoveCardComponent);
     component = fixture.componentInstance;
-    component.moveDto = {} as MoveDto;
+    component.moveDto = { name: 'foo' } as MoveDto;
     fixture.detectChanges();
   });
 
