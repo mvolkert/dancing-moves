@@ -18,6 +18,7 @@ export interface MoveDto {
     description: string,
     descriptionEng: string,
     toDo: string,
+    id: string,
     links: string,
     row: number,
     courseDates: CourseDateDto[]

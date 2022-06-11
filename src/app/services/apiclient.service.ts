@@ -241,6 +241,7 @@ export class ApiclientService {
       media: row[14],
       links: row[15],
       toDo: row[16],
+      id: row[17],
       row: i + 1,
       courseDates: [],
       videos: []
@@ -317,7 +318,7 @@ export class ApiclientService {
     return [moveDto.name, moveDto.dance, moveDto.description, moveDto.descriptionEng,
     String(moveDto.order), moveDto.count, String(moveDto.nameVerified),
     moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.containedMoves?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
-    moveDto.videoname, moveDto.media, moveDto.links, moveDto.toDo]
+    moveDto.videoname, moveDto.media, moveDto.links, moveDto.toDo, moveDto.id]
   }
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {

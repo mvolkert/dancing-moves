@@ -20,6 +20,7 @@ import { deepCopy, delay, generateSortFn, getRow, olderThanADay, convertToEmbed 
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -277,7 +278,7 @@ export class DataManagerService {
       console.log(response);
     }, error: (response: any) => {
       console.log(response);
-      this.snackBar.open(`error:${response?.result?.error?.message}`, "OK");
+      this.snackBar.open(`error:${response?.error?.error?.message}`, "OK");
     }
   })
 
@@ -291,6 +292,9 @@ export class DataManagerService {
   }
 
   saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
+    if (!moveDto.id) {
+      moveDto.id = uuidv4();
+    }
     if (moveDto.row) {
       return this.apiclientService.patchData(moveDto).pipe(map(r => moveDto), this.tapRequest, switchMap(this.saveOrCreateCourseDates), map(this.updateMoveData));
     } else {
@@ -365,8 +369,8 @@ export class DataManagerService {
   async normalize() {
     console.log('normalize');
     for (const move of this.movesSubject.value) {
-      if (move.description) {
-        this.saveOrCreate(move);
+      if (!move.id) {
+        this.saveOrCreate(move).subscribe(console.log);
         await delay(1000);
       }
     }
@@ -402,5 +406,3 @@ export class DataManagerService {
     return dataAccess;
   }
 }
-
-
