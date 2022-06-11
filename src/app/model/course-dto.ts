@@ -11,6 +11,8 @@ export interface CourseDto {
     end: Date | null,
     time: string,
     groupName: string,
+    hash: string,
+    salt: string,
     contents: VideoDto[],
     row: number
 }

@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import CryptoES from 'crypto-es';
+import { Subscription } from 'rxjs';
 import { CourseDto } from '../model/course-dto';
 import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
@@ -9,6 +10,7 @@ import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 import { convertToEmbed, deepCopy, nameExistsValidator } from '../util/util';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   templateUrl: './course-page.component.html',
@@ -80,6 +82,10 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.course.time = value.time;
       this.course.groupName = value.groupName;
       this.course.contents = value.contents.map((c: VideoDto) => { c.link = convertToEmbed(c.link); return c });
+      if (value.password) {
+        this.course.salt = uuidv4();
+        this.course.hash = this.hash(value.password);
+      }
       this.schools = new Set(courses.map(course => course.school));
       this.levels = new Set(courses.map(course => course.level));
     });
@@ -90,8 +96,20 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       if (userMode === UserMode.read) {
         this.courseForm.disable();
         this.readonly = true;
+      } else if (userMode === UserMode.write) {
+        if (this.course?.hash && this.course?.salt) {
+          const password = this.settings.specialRightPasswords.find(p => this.course?.hash == this.hash(p));
+          if (!password) {
+            this.courseForm.disable();
+            this.readonly = true;
+          }
+        }
       }
     });
+  }
+
+  private hash(password: string): string {
+    return CryptoES.SHA256(this.course?.salt + password).toString();
   }
 
   private create_form() {
@@ -106,6 +124,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       end: new FormControl(null),
       time: new FormControl(''),
       groupName: new FormControl(''),
+      password: new FormControl(''),
       contents: new FormArray([]),
       row: new FormControl(''),
     });

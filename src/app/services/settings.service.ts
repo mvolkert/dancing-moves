@@ -24,6 +24,7 @@ export class SettingsService {
   userMode = new BehaviorSubject<UserMode>(UserMode.test);
   specialRightsString!: string;
   specialRights!: Array<DataAccessDto>;
+  specialRightPasswords!: Array<string>;
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
@@ -54,7 +55,8 @@ export class SettingsService {
         this.userMode.next(UserMode.test)
       }
       this.specialRightsString = this.getArraySetting(params, 'special-rights');
-      const specialRightsArray = this.specialRightsString?.split(",").map(this.hash);
+      this.specialRightPasswords = this.specialRightsString?.split(",")
+      const specialRightsArray = this.specialRightPasswords.map(this.hash);
       console.log(specialRightsArray);
       this.specialRights = getDataAccess().filter(s => specialRightsArray.includes(s.hash));
       const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };

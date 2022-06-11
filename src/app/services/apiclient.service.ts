@@ -53,7 +53,7 @@ export class ApiclientService {
   getCourses(): Observable<Array<CourseDto>> {
     return this.spreadsheetsGet(
       this.settingsService.secret?.movesSheetId as string,
-      'Courses!A1:J1000'
+      'Courses!A1:L1000'
     ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 
@@ -112,7 +112,7 @@ export class ApiclientService {
   }
 
   patchDataCourse(courseDto: CourseDto): Observable<ResponseUpdate> {
-    const sheetRange = `Courses!A${courseDto.row}:J${courseDto.row}`;
+    const sheetRange = `Courses!A${courseDto.row}:L${courseDto.row}`;
     const body = { values: [this.courseToLine(courseDto)] }
     return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
   }
@@ -260,6 +260,8 @@ export class ApiclientService {
       end: parseDate(row[7]),
       time: row[8],
       groupName: row[9],
+      hash: row[10],
+      salt: row[11],
       contents: [],
       row: i + 1
     };
@@ -326,7 +328,7 @@ export class ApiclientService {
   }
 
   private courseToLine(courseDto: CourseDto): string[] {
-    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end), courseDto.time, courseDto.groupName]
+    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end), courseDto.time, courseDto.groupName, courseDto.hash, courseDto.salt]
   }
 
   private courseContentToLine(courseDataDto: VideoDto): string[] {
