@@ -50,10 +50,6 @@
         <mat-datepicker #pickerEnd></mat-datepicker>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Description</mat-label>
-        <input matInput formControlName="description">
-    </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width">
         <mat-label>Time</mat-label>
         <input matInput formControlName="time">
     </mat-form-field>
@@ -77,6 +73,14 @@
             <mat-icon>add_circle_outline</mat-icon>Add Content
         </button>
     </div>
+
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="description"></textarea>
+    </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="courseForm.invalid">Save</button>
 </form>
+<div class="description" markdown [data]="course?.description">
+</div>

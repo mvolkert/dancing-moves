@@ -4,7 +4,15 @@
     <mat-card-title>{{dance.name}}</mat-card-title>
     <mat-card-subtitle>{{dance.type}}, Takt: {{dance.rhythm}}</mat-card-subtitle>
     <mat-card-content>
-      <div>{{dance.description}}</div>
+      <mat-expansion-panel hideToggle *ngIf="dance.description">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Description
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="description" markdown [data]="dance.description">
+        </div>
+      </mat-expansion-panel>
     </mat-card-content>
     <mat-card-actions align="end">
       <a mat-raised-button *ngIf="dance.music" [href]="dance.music">Playlist</a>

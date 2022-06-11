@@ -26,9 +26,12 @@
         <mat-label>Links</mat-label>
         <input matInput formControlName="links">
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width">
+    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width">
         <mat-label>Description</mat-label>
-        <input matInput formControlName="description">
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="description"></textarea>
     </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
 </form>
+<div class="description" markdown [data]="dance?.description">
+</div>
