@@ -27,7 +27,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
   moveForm = this.create_form();
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
-  danceMovesNames: Set<string> = new Set<string>();
+  danceMovesNames: Array<string> = new Array<string>();
   loaded = false;
   nameParam = ""
   readonly = false;

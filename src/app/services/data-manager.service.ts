@@ -14,6 +14,7 @@ import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
+import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
 import { deepCopy, delay, generateSortFn, getRow, olderThanADay, convertToEmbed } from '../util/util';
 import { ApiclientService } from './apiclient.service';
@@ -33,6 +34,7 @@ export class DataManagerService {
   moves!: Array<MoveDto>;
   courses!: Array<CourseDto>;
   isStarting = new BehaviorSubject<boolean>(true);
+  private userMode!: UserMode;
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
@@ -49,7 +51,7 @@ export class DataManagerService {
       }
       this.relationsSelectionObservable.next({ relationTypes: relationTypeParams, displayType: displayTypeParam });
     })
-
+    this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
   }
 
 
@@ -75,6 +77,9 @@ export class DataManagerService {
   }
 
   api_get() {
+    if (this.userMode == UserMode.test) {
+      return;
+    }
     this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
       if (results.moves.length > 0) {
@@ -112,6 +117,7 @@ export class DataManagerService {
   }
 
   private setMoves(moves: MoveDto[]) {
+    moves.sort(generateSortFn([m => m.dance, m => m.name]));
     this.moves = moves;
     localStorage.setItem("moves", JSON.stringify(this.moves));
     this.movesSubject.next(this.moves);
@@ -163,8 +169,8 @@ export class DataManagerService {
       ))
   }
 
-  getMovesNamesOf(dance: string | undefined): Set<string> {
-    return new Set(this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.name));
+  getMovesNamesOf(dance: string | undefined): Array<string> {
+    return this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.name);
   }
 
   getNextOrder(dance: string | undefined): number {
