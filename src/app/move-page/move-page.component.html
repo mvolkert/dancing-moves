@@ -34,32 +34,32 @@
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Start Move</mat-label>
         <mat-select formControlName="startMove" multiple>
-            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
-                {{name}}
+            <mat-option *ngFor="let move of danceMoves" [value]="move.id">
+                {{move.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>End Move</mat-label>
         <mat-select formControlName="endMove" multiple>
-            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
-                {{name}}
+            <mat-option *ngFor="let move of danceMoves" [value]="move.id">
+                {{move.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Contains</mat-label>
         <mat-select formControlName="containedMoves" multiple>
-            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
-                {{name}}
+            <mat-option *ngFor="let move of danceMoves" [value]="move.id">
+                {{move.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Related Moves</mat-label>
         <mat-select formControlName="relatedMoves" multiple>
-            <mat-option *ngFor="let name of danceMovesNames" [value]="name">
-                {{name}}
+            <mat-option *ngFor="let move of danceMoves" [value]="move.id">
+                {{move.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -67,8 +67,8 @@
         <mat-label>Related Moves Other Dances</mat-label>
         <mat-select formControlName="relatedMovesOtherDances" multiple>
             <mat-optgroup *ngFor="let group of movesGroup" [label]="group.dance">
-                <mat-option *ngFor="let name of group.names" [value]="name">
-                    {{name}}
+                <mat-option *ngFor="let move of group.moves" [value]="move.id">
+                    {{move.name}}
                 </mat-option>
             </mat-optgroup>
         </mat-select>

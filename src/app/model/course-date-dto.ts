@@ -1,5 +1,5 @@
 export interface CourseDateDto {
-    moveName: string,
+    moveId: string,
     course: string,
     date: Date | null,
     row: number

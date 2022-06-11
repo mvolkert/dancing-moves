@@ -47,8 +47,8 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
   };
 
   createCytoscape(pairs: Array<Connection>) {
-    const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { data: { id: m, width: m.length * 10 } } });
-    const links = pairs.map(m => { return { data: { id: m.from + m.to, source: m.from, target: m.to } } });
+    const nodes = Array.from(new Set(pairs.flatMap(m => [m.from, m.to])).values()).map(m => { return { data: { id: m.id, width: m.name.length * 10, name: m.name, } } });
+    const links = pairs.map(m => { return { data: { id: m.from.id + m.to.id, source: m.from.id, target: m.to.id } } });
     const options: cytoscape.CytoscapeOptions = {
       container: this.chartViewChildCytoscape.nativeElement,
 
@@ -60,7 +60,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
         {
           selector: 'node',
           style: {
-            'label': 'data(id)',
+            'label': 'data(name)',
             'height': 30,
             'width': 'data(width)',
             'border-color': '#000',

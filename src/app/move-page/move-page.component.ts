@@ -1,13 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CourseDateDto } from '../model/course-date-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { UserMode } from '../model/user-mode';
-import { VideoDto } from '../model/video-dto';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
@@ -27,9 +25,10 @@ export class MovePageComponent implements OnInit, OnDestroy {
   moveForm = this.create_form();
   movesGroup: MoveGroupDto[] | undefined;
   otherMovesNames: Set<string> = new Set<string>();
-  danceMovesNames: Array<string> = new Array<string>();
+  danceMoves: Array<MoveDto> = new Array<MoveDto>();
   loaded = false;
-  nameParam = ""
+  idParam = "";
+  nameOriginal = "";
   readonly = false;
   valueChangesSubscription: Subscription | undefined;
   userModeSubscription: Subscription | undefined;
@@ -61,24 +60,28 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
     this.types = this.dataManager.getTypes();
     this.courseNames = this.dataManager.getCourseNames();
-    this.otherMovesNames = this.dataManager.getMovesNames();
     this.otherMovesNames.add("new");
 
-    if (this.nameParam == "new") {
+    if (this.idParam == "new") {
       if (this.move) {
         this.move = deepCopy(this.move);
         this.move.row = NaN;
         this.moveForm?.markAllAsTouched();
       }
-    } else if (Object.keys(easterEggMoves).includes(this.nameParam)) {
-      this.move = deepCopy(easterEggMoves[this.nameParam]);
+      this.navService.headlineObservable.next(this.idParam);
+    } else if (Object.keys(easterEggMoves).includes(this.idParam)) {
+      this.move = deepCopy(easterEggMoves[this.idParam]);
+      this.navService.headlineObservable.next(this.idParam);
     } else {
-      this.move = this.dataManager.getMove(this.nameParam);
+      this.move = this.dataManager.getMove(this.idParam);
       if (this.move) {
         this.move.courseDates.forEach(this.addCourseDateForm);
-        this.otherMovesNames.delete(this.move.name);
+        this.dataManager.getMovesOf(this.move?.dance).map(m => m.name).filter(name => this.move?.name != name).forEach(name => this.otherMovesNames.add(name))
+        this.nameOriginal = this.move.name;
       }
+      this.navService.headlineObservable.next(this.move?.name ?? 'Not Found');
     }
+
     this.valueChangesSubscription = this.moveForm.valueChanges.subscribe(value => {
       console.log(value);
       if (!this.move) {
@@ -88,7 +91,6 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.dance = value.dance;
       if (value.dance && value.order === null) {
         this.move.order = this.dataManager.getNextOrder(value.dance);
-        console.log(this.move);
       } else {
         this.move.order = Number(value.order);
       }
@@ -105,11 +107,8 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.links = value.links;
       this.move.toDo = value.toDo;
       this.move.courseDates = value.courseDates;
-      this.danceMovesNames = this.dataManager.getMovesNamesOf(this.move?.dance);
-      this.description = value.description;
-      Array.from(this.danceMovesNames)
-        .sort((a, b) => a.length > b.length ? -1 : 1)
-        .forEach(m => this.description = this.description.replaceAll(` ${m}`, ` [${m}](move/${encodeUriAll(m)})`))
+      this.danceMoves = this.dataManager.getMovesOf(this.move?.dance);
+      this.description = this.dataManager.enrichDescription(this.move);
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
@@ -150,9 +149,9 @@ export class MovePageComponent implements OnInit, OnDestroy {
     if (!params.has('name')) {
       return;
     }
-    this.nameParam = params.get('name') as string;
-    this.nameParam = decodeURI(this.nameParam);
-    this.navService.headlineObservable.next(this.nameParam);
+    this.idParam = params.get('name') as string;
+    this.idParam = decodeURI(this.idParam);
+    this.nameOriginal = this.idParam;
     if (this.loaded) {
       this.start();
     }
@@ -191,31 +190,26 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
         this.moveForm.patchValue(m);
         const newName = m.name;
-        if (this.nameParam != newName && this.nameParam != "new") {
-          const dependentMoves = this.dataManager.findDependent(this.nameParam);
+        if (this.nameOriginal != newName && this.nameOriginal != "new") {
+          const dependentMoves = this.dataManager.findDependent(this.nameOriginal);
           if (dependentMoves && dependentMoves.length > 0) {
-            dependentMoves.forEach(m => m.startMove = m.startMove.map(n => n == this.nameParam ? newName : n));
-            dependentMoves.forEach(m => m.endMove = m.endMove.map(n => n == this.nameParam ? newName : n));
-            dependentMoves.forEach(m => m.containedMoves = m.containedMoves.map(n => n == this.nameParam ? newName : n));
-            dependentMoves.forEach(m => m.relatedMoves = m.relatedMoves.map(n => n == this.nameParam ? newName : n));
-            dependentMoves.forEach(m => m.relatedMovesOtherDances = m.relatedMovesOtherDances.map(n => n == this.nameParam ? newName : n));
-            dependentMoves.forEach(m => m.description = m.description.replace(this.nameParam, newName));
+            dependentMoves.forEach(m => m.description = m.description.replace(this.nameOriginal, newName));
             this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
               this.loaded = true;
               this.moveForm.enable();
-              this.navService.navigate(["move", m.name]);
+              this.navService.navigate(["move", m.id]);
             });
           } else {
             this.loaded = true;
             this.moveForm.enable();
-            this.navService.navigate(["move", m.name]);
+            this.navService.navigate(["move", m.id]);
           }
 
         } else {
           this.loaded = true;
           this.moveForm.enable();
-          if (this.nameParam == "new") {
-            this.navService.navigate(["move", m.name]);
+          if (this.idParam == "new") {
+            this.navService.navigate(["move", m.id]);
           }
         }
       });

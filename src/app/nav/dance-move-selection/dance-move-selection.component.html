@@ -12,8 +12,8 @@
             matAutocompletePosition="below">
         <mat-autocomplete #autoGroup="matAutocomplete">
             <mat-optgroup *ngFor="let group of movesGroupOptions | async" [label]="group.dance">
-                <mat-option *ngFor="let name of group.names" [value]="name">
-                    {{name}}
+                <mat-option *ngFor="let move of group.moves" [value]="move.name">
+                    {{move.name}}
                 </mat-option>
             </mat-optgroup>
         </mat-autocomplete>
@@ -44,8 +44,8 @@
             matAutocompletePosition="below">
         <mat-autocomplete #autoGroup2="matAutocomplete">
             <mat-optgroup *ngFor="let group of movesGroupOptions2 | async" [label]="group.dance">
-                <mat-option *ngFor="let name of group.names" [value]="name">
-                    {{name}}
+                <mat-option *ngFor="let move of group.moves" [value]="move.name">
+                    {{move.name}}
                 </mat-option>
             </mat-optgroup>
         </mat-autocomplete>

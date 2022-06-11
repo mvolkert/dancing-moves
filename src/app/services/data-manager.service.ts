@@ -90,7 +90,7 @@ export class DataManagerService {
         }
         this.setCourses(results.courses);
         for (const move of results.moves) {
-          move.courseDates = results.courseDates.filter(c => c.moveName == move.name);
+          move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id);
           if (move.videoname) {
             const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) } });
 
@@ -154,11 +154,12 @@ export class DataManagerService {
   }
 
 
-  getMove(name: string): MoveDto | undefined {
-    const moves = this.movesSubject.value.filter(m => m.name == name);
+  getMove(id: string): MoveDto | undefined {
+    const moves = this.movesSubject.value.filter(m => m.name == id || m.id == id);
     if (moves.length > 0) {
       return moves[0];
     }
+    console.log('not found', id)
     return
   }
 
@@ -166,12 +167,16 @@ export class DataManagerService {
     return this.movesSubject.asObservable()
       .pipe(map(moves =>
         Object.entries(this.groupByDance(moves))
-          .map(([key, value]) => { return { dance: key, names: value } as MoveGroupDto; })
+          .map(([key, value]) => { return { dance: key, moves: value } as MoveGroupDto; })
       ))
   }
 
   getMovesNamesOf(dance: string | undefined): Array<string> {
     return this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.name);
+  }
+
+  getMovesOf(dance: string | undefined): Array<MoveDto> {
+    return this.movesSubject.value.filter(move => !dance || move.dance == dance);
   }
 
   getNextOrder(dance: string | undefined): number {
@@ -203,15 +208,30 @@ export class DataManagerService {
   getTypes(): Set<string> {
     return new Set(this.movesSubject.value.map(move => move.type).sort());
   }
-  private groupByDance = (xs: MoveDto[]): [string, string[]] => {
+  private groupByDance = (xs: MoveDto[]): [string, MoveDto[]] => {
     return xs.reduce((rv: any, x: MoveDto) => {
       if (!rv[x.dance]) {
         rv[x.dance] = []
       }
-      rv[x.dance].push(x.name);
+      rv[x.dance].push(x);
       return rv;
     }, {});
   };
+
+  enrichDescription(move: MoveDto): string {
+    let description = move.description;
+    Array.from(this.moves)
+      .filter(m => m.dance == move.dance)
+      .sort((a, b) => a.name.length > b.name.length ? -1 : 1)
+      .forEach(m => description = description.replaceAll(` ${m.name}`, ` [${m.name}](move/${m.id})`))
+    Array.from(this.moves)
+      .sort((a, b) => a.name.length > b.name.length ? -1 : 1)
+      .forEach(m => description = description.replaceAll(` ${m.dance}/${m.name}`, ` [${m.dance}/${m.name}](move/${m.id})`))
+    Array.from(this.courses)
+      .sort((a, b) => a.course.length > b.course.length ? -1 : 1)
+      .forEach(course => description = description.replaceAll(` ${course.course}`, ` [${course.course}](course/${course.course})`))
+    return description;
+  }
 
   getRelationPairs(types: Array<string>): Observable<Array<Connection>> {
     return this.searchFilterObservable.pipe(map(searchFilter => {
@@ -219,19 +239,19 @@ export class DataManagerService {
       const moves = this.selectMoves(this.movesSubject.value, this.getDanceNames(), searchFilter);
       for (const move of moves) {
         if (types.includes(RelationType.start)) {
-          move.startMove.filter(name => name).forEach(name => pairs.push({ to: move.name, from: name }));
+          move.startMove.filter(id => id).forEach(id => pairs.push({ to: move, from: this.getMove(id) ?? { id: id, name: id } as MoveDto }));
         }
         if (types.includes(RelationType.end)) {
-          move.endMove.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
+          move.endMove.filter(id => id).forEach(id => pairs.push({ from: move, to: this.getMove(id) ?? { id: id, name: id } as MoveDto }));
         }
         if (types.includes(RelationType.contained)) {
-          move.containedMoves.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
+          move.containedMoves.filter(id => id).forEach(id => pairs.push({ from: move, to: this.getMove(id) ?? { id: id, name: id } as MoveDto }));
         }
         if (types.includes(RelationType.related)) {
-          move.relatedMoves.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
+          move.relatedMoves.filter(id => id).forEach(id => pairs.push({ from: move, to: this.getMove(id) ?? { id: id, name: id } as MoveDto }));
         }
         if (types.includes(RelationType.otherDance)) {
-          move.relatedMovesOtherDances.filter(name => name).forEach(name => pairs.push({ from: move.name, to: name }));
+          move.relatedMovesOtherDances.filter(id => id).forEach(id => pairs.push({ from: move, to: this.getMove(id) ?? { id: id, name: id } as MoveDto }));
         }
       }
       return pairs;
@@ -283,12 +303,7 @@ export class DataManagerService {
   })
 
   findDependent(moveName: string): Array<MoveDto> {
-    return this.moves.filter(m => m.startMove.includes(moveName)
-      || m.endMove.includes(moveName)
-      || m.containedMoves.includes(moveName)
-      || m.relatedMoves.includes(moveName)
-      || m.relatedMovesOtherDances.includes(moveName)
-      || m.description.includes(moveName));
+    return this.moves.filter(m => m.description.includes(moveName));
   }
 
   saveOrCreate(moveDto: MoveDto): Observable<MoveDto> {
@@ -314,7 +329,7 @@ export class DataManagerService {
   }
 
   private saveOrCreateCourseDates = (moveDto: MoveDto): Observable<MoveDto> => {
-    return forkJoin(moveDto.courseDates.filter(c => c.course && c.date).map(c => { c.moveName = moveDto.name; return c; }).map(this.saveOrCreateCourseDate))
+    return forkJoin(moveDto.courseDates.filter(c => c.course && c.date).map(c => { c.moveId = moveDto.id; return c; }).map(this.saveOrCreateCourseDate))
       .pipe(defaultIfEmpty([]), map(courseDates => { moveDto.courseDates = courseDates; return moveDto; }));
   }
   private saveOrCreateCourseDate = (courseDateDto: CourseDateDto): Observable<CourseDateDto> => {
@@ -369,7 +384,13 @@ export class DataManagerService {
   async normalize() {
     console.log('normalize');
     for (const move of this.movesSubject.value) {
-      if (!move.id) {
+      if (move.courseDates.filter(d => !d?.moveId?.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/)).length > 0) {
+        move.startMove = move.startMove.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
+        move.endMove = move.endMove.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
+        move.containedMoves = move.containedMoves.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
+        move.relatedMoves = move.relatedMoves.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
+        move.relatedMovesOtherDances = move.relatedMovesOtherDances.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
+        console.log(move);
         this.saveOrCreate(move).subscribe(console.log);
         await delay(1000);
       }

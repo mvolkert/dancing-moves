@@ -216,7 +216,7 @@ export class ApiclientService {
     return {
       date: parseDate(row[0]),
       course: row[1],
-      moveName: row[2],
+      moveId: row[2],
       row: i + 1
     };
   }
@@ -322,7 +322,7 @@ export class ApiclientService {
   }
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {
-    return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveName]
+    return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveId]
   }
 
   private courseToLine(courseDto: CourseDto): string[] {

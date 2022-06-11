@@ -83,8 +83,8 @@ export class DanceMoveSelectionComponent implements OnInit {
     if (moveGetter(search) || search.dance) {
       return this.movesGroup
         .filter(group => !this.dances.has(search.dance) || group.dance == search.dance)
-        .map(group => ({ dance: group.dance, names: group.names.filter(item => item?.toLowerCase()?.includes(moveGetter(search)?.toLowerCase())) }))
-        .filter(group => group.names.length > 0);
+        .map(group => ({ dance: group.dance, moves: group.moves.filter(item => item.name?.toLowerCase()?.includes(moveGetter(search)?.toLowerCase())) }))
+        .filter(group => group.moves.length > 0);
     }
 
     return this.movesGroup;

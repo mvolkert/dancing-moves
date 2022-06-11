@@ -1,4 +1,6 @@
+import { MoveDto } from "./move-dto";
+
 export interface MoveGroupDto {
     dance: string,
-    names: string[]
+    moves: MoveDto[]
 }
