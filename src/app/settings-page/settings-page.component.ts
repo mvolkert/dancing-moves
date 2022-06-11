@@ -21,6 +21,7 @@ export class SettingsPageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.settings.loading();
+    this.loginGoogle();
     this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
       const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights };
@@ -46,6 +47,26 @@ export class SettingsPageComponent implements OnInit {
   }
 
   onSubmit() {
+
+  }
+
+  handleCredentialResponse = (response: any) => {
+    console.log("Encoded JWT ID token: " + response.credential);
+  }
+  // @ts-ignore
+  loginGoogle() {
+    // @ts-ignore
+    google.accounts.id.initialize({
+      client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
+      callback: this.handleCredentialResponse
+    });
+    // @ts-ignore
+    google.accounts.id.renderButton(
+      document.getElementById("google_button"),
+      { theme: "outline", size: "large" }  // customization attributes
+    );
+    // @ts-ignore
+    google.accounts.id.prompt(); // also display the One Tap dialog
 
   }
 }
