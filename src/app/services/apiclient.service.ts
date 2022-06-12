@@ -289,6 +289,7 @@ export class ApiclientService {
     return {
       name: row[0],
       link: row[1],
+      linkEncripted: row[1],
       courseName: row[2],
       groupName: groupName,
       row: i + 1
