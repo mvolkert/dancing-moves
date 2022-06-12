@@ -1,0 +1,6 @@
+hint_order;Good learning order in respect to mutal dependencies and complexity;Eine sinnvolle Lernreihenfolge, nach gegenseitigen Abhängigkeiten und Schwiergigkeitsgrad
+hint_count;How many beats the pattern has;Wie viele Schläge die Figur geht
+hint_nameVerified;Whether it is the offical name of the pattern;Ob der Name von einem Tanzleherer verwendet wurde, oder frei erfunden ist
+hint_videoname;;Name der Video Dateien in seperat geteilten Quellen, häufig sind mehre Figuren innerhalb eines Videos. Oder es gibt mehre Videos in denen eine Figur enthalten ist
+hint_description;;Ein paar Worte zu Figur, Ablauf der Figur, meist nach Zählzeit struckturiert, Do and Don'ts, Was kannst du an der Figur Variieren
+hint_toDo;;Was gibts noch zu, also Beipspielsweise noch mehr üben, da unbekannt...
