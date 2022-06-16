@@ -34,7 +34,7 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit {
 
   private start() {
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
-      this.moves = moves.sort(generateSortFn([m => m.dance, m => m.order, m => m.name]));
+      this.moves = deepCopy(moves).sort(generateSortFn([m => m.dance, m => m.order, m => m.name]));
       this.allMoves = deepCopy(this.moves);
     });
     this.dataManagerService.searchFilterObservable.subscribe(

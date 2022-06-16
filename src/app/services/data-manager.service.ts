@@ -36,6 +36,8 @@ export class DataManagerService {
   courses!: Array<CourseDto>;
   isStarting = new BehaviorSubject<boolean>(true);
   private userMode!: UserMode;
+  movesLenghtSorted!: MoveDto[];
+  coursesLenghtSorted!: CourseDto[];
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
@@ -109,6 +111,7 @@ export class DataManagerService {
 
   private setCourses(courses: CourseDto[]) {
     this.courses = courses.sort(generateSortFn([c => c.course]));
+    this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.course.length > b.course.length ? -1 : 1);
     localStorage.setItem("courses", JSON.stringify(this.courses));
   }
 
@@ -120,6 +123,7 @@ export class DataManagerService {
   private setMoves(moves: MoveDto[]) {
     moves.sort(generateSortFn([m => m.dance, m => m.name]));
     this.moves = moves;
+    this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
     localStorage.setItem("moves", JSON.stringify(this.moves));
     this.movesSubject.next(this.moves);
   }
@@ -129,6 +133,8 @@ export class DataManagerService {
     this.moves = JSON.parse(localStorage.getItem("moves") ?? "[]");
     this.courses = JSON.parse(localStorage.getItem("courses") ?? "[]");
     this.movesSubject.next(this.moves);
+    this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
+    this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.course.length > b.course.length ? -1 : 1);
     this.isStarting.next(false);
   }
 
@@ -220,15 +226,12 @@ export class DataManagerService {
 
   enrichDescription(move: MoveDto): string {
     let description = move.description;
-    Array.from(this.moves)
+    this.movesLenghtSorted
       .filter(m => m.dance == move.dance)
-      .sort((a, b) => a.name.length > b.name.length ? -1 : 1)
       .forEach(m => description = description.replaceAll(` ${m.name}`, ` [${m.name}](move/${m.id})`))
-    Array.from(this.moves)
-      .sort((a, b) => a.name.length > b.name.length ? -1 : 1)
+    this.movesLenghtSorted
       .forEach(m => description = description.replaceAll(` ${m.dance}/${m.name}`, ` [${m.dance}/${m.name}](move/${m.id})`))
-    Array.from(this.courses)
-      .sort((a, b) => a.course.length > b.course.length ? -1 : 1)
+    this.coursesLenghtSorted
       .forEach(course => description = description.replaceAll(` ${course.course}`, ` [${course.course}](course/${course.course})`))
     return description;
   }

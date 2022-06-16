@@ -10,7 +10,7 @@ import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 import { easterEggMoves } from '../util/data';
-import { deepCopy, encodeUriAll, nameExistsValidator } from '../util/util';
+import { deepCopy, nameExistsValidator } from '../util/util';
 
 @Component({
   selector: 'app-move-page',
@@ -30,32 +30,31 @@ export class MovePageComponent implements OnInit, OnDestroy {
   idParam = "";
   nameOriginal = "";
   readonly = false;
-  valueChangesSubscription: Subscription | undefined;
-  userModeSubscription: Subscription | undefined;
+  subscriptionsGlobal = new Array<Subscription>();
+  subscriptions = new Array<Subscription>();
   description: string = "";
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
-    this.route.paramMap.subscribe(params => {
+    this.subscriptionsGlobal.push(this.route.paramMap.subscribe(params => {
       this.readParams(params);
-    });
+    }));
   }
 
   async ngOnInit(): Promise<void> {
-    this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
+    this.subscriptionsGlobal.push(this.dataManager.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
-    });
-    this.dataManager.isStarting.subscribe(starting => {
+    }));
+    this.subscriptionsGlobal.push(this.dataManager.isStarting.subscribe(starting => {
       if (!starting) {
         this.start();
       }
       this.loaded = !starting;
-    });
+    }));
   }
 
   private start() {
-    this.valueChangesSubscription?.unsubscribe();
-    this.userModeSubscription?.unsubscribe();
+    this.subscriptions.forEach(s => s.unsubscribe());
     this.moveForm = this.create_form();
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
     this.types = this.dataManager.getTypes();
@@ -65,6 +64,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
     if (this.idParam == "new") {
       if (this.move) {
         this.move = deepCopy(this.move);
+        this.move.id = '';
         this.move.row = NaN;
         this.moveForm?.markAllAsTouched();
       }
@@ -82,7 +82,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.navService.headlineObservable.next(this.move?.name ?? 'Not Found');
     }
 
-    this.valueChangesSubscription = this.moveForm.valueChanges.subscribe(value => {
+    this.subscriptions.push(this.moveForm.valueChanges.subscribe(value => {
       console.log(value);
       if (!this.move) {
         this.move = {} as MoveDto;
@@ -109,16 +109,16 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.courseDates = value.courseDates;
       this.danceMoves = this.dataManager.getMovesOf(this.move?.dance);
       this.description = this.dataManager.enrichDescription(this.move);
-    });
+    }));
     if (this.move) {
       this.moveForm.patchValue(this.move);
     }
-    this.userModeSubscription = this.settings.userMode.subscribe(userMode => {
+    this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
         this.moveForm.disable();
         this.readonly = true;
       }
-    });
+    }));
     this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
   }
 
@@ -217,7 +217,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.valueChangesSubscription?.unsubscribe();
-    this.userModeSubscription?.unsubscribe();
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptionsGlobal.forEach(s => s.unsubscribe());
   }
 }
