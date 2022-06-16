@@ -190,6 +190,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
         this.moveForm.patchValue(m);
         const newName = m.name;
+        this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
         if (this.nameOriginal != newName && this.nameOriginal != "new") {
           const dependentMoves = this.dataManager.findDependent(this.nameOriginal);
           if (dependentMoves && dependentMoves.length > 0) {

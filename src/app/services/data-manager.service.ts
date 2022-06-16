@@ -93,20 +93,25 @@ export class DataManagerService {
         this.setCourses(results.courses);
         for (const move of results.moves) {
           move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id);
-          if (move.videoname) {
-            const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) } });
-
-            // deep copy for different options in each move
-            move.videos = deepCopy(results.videos.filter(v => videoNameDtos.map(n => n.name).includes(v.name)));
-            move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
-            videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: convertToEmbed(v.name) } as VideoDto }).forEach(v => move.videos.push(v));
-          }
         }
         this.setMoves(results.moves);
       }
       localStorage.setItem("date", new Date().toISOString());
       this.isStarting.next(false);
     })
+  }
+
+  private linkCourseContents = (move: MoveDto) => {
+    if (move.videoname) {
+      const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) }; });
+      const courseNames = move.courseDates.map(c => c.course);
+      const contents = this.courses.filter(c => courseNames.includes(c.name)).flatMap(c => c.contents);
+
+      // deep copy for different options in each move
+      move.videos = deepCopy(contents.filter(v => videoNameDtos.map(n => n.name).includes(v.name)));
+      move.videos.forEach(videoDto => videoDto.link = videoDto.link + videoNameDtos.find(n => n.name === videoDto.name)?.options ?? '');
+      videoNameDtos.filter(v => v.name.startsWith("http")).map(v => { return { name: v.name, link: convertToEmbed(v.name) } as VideoDto; }).forEach(v => move.videos.push(v));
+    }
   }
 
   private setCourses(courses: CourseDto[]) {
@@ -124,6 +129,7 @@ export class DataManagerService {
     moves.sort(generateSortFn([m => m.dance, m => m.name]));
     this.moves = moves;
     this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
+    this.moves.forEach(this.linkCourseContents);
     localStorage.setItem("moves", JSON.stringify(this.moves));
     this.movesSubject.next(this.moves);
   }
