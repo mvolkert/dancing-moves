@@ -26,28 +26,27 @@ export class CoursePageComponent implements OnInit, OnDestroy {
   nameParam = "";
   readonly = false;
   courseForm = this.create_form();
-  valueChangesSubscription: Subscription | undefined;
-  userModeSubscription: Subscription | undefined;
+  subscriptionsGlobal = new Array<Subscription>();
+  subscriptions = new Array<Subscription>();
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService) {
-    this.route.paramMap.subscribe(params => {
+    this.subscriptionsGlobal.push(this.route.paramMap.subscribe(params => {
       this.readParams(params);
-    });
+    }));
   }
 
   ngOnInit(): void {
-    this.dataManager.isStarting.subscribe(starting => {
+    this.subscriptionsGlobal.push(this.dataManager.isStarting.subscribe(starting => {
       if (!starting) {
         this.start();
       }
       this.loaded = !starting;
-    });
+    }));
   }
 
   private start() {
-    this.valueChangesSubscription?.unsubscribe();
-    this.userModeSubscription?.unsubscribe();
+    this.subscriptions.forEach(s => s.unsubscribe());
     this.courseForm = this.create_form();
     this.dances = new Set(this.dataManager.getDances().map(dance => dance.name));
     const courses = this.dataManager.getCourses();
@@ -67,7 +66,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         this.otherNames.delete(this.course.name);
       }
     }
-    this.valueChangesSubscription = this.courseForm.valueChanges.subscribe(value => {
+    this.subscriptions.push(this.courseForm.valueChanges.subscribe(value => {
       if (!this.course) {
         this.course = {} as CourseDto;
       }
@@ -88,11 +87,11 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       }
       this.schools = new Set(courses.map(course => course.school));
       this.levels = new Set(courses.map(course => course.level));
-    });
+    }));
     if (this.course) {
       this.courseForm.patchValue(this.course);
     }
-    this.userModeSubscription = this.settings.userMode.subscribe(userMode => {
+    this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
         this.courseForm.disable();
         this.readonly = true;
@@ -105,7 +104,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
           }
         }
       }
-    });
+    }));
   }
 
   private hash(password: string): string {
@@ -172,7 +171,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.valueChangesSubscription?.unsubscribe();
-    this.userModeSubscription?.unsubscribe();
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptionsGlobal.forEach(s => s.unsubscribe());
   }
 }

@@ -23,28 +23,27 @@ export class DancePageComponent implements OnInit, OnDestroy {
   nameParam = "";
   readonly = false;
   form = this.create_form();
-  valueChangesSubscription: Subscription | undefined;
-  userModeSubscription: Subscription | undefined;
+  subscriptionsGlobal = new Array<Subscription>();
+  subscriptions = new Array<Subscription>();
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService) {
-    this.route.paramMap.subscribe(params => {
+    this.subscriptionsGlobal.push(this.route.paramMap.subscribe(params => {
       this.readParams(params);
-    });
+    }));
   }
 
   ngOnInit(): void {
-    this.dataManager.isStarting.subscribe(starting => {
+    this.subscriptionsGlobal.push(this.dataManager.isStarting.subscribe(starting => {
       if (!starting) {
         this.start();
       }
       this.loaded = !starting;
-    });
+    }));
   }
 
   private start() {
-    this.valueChangesSubscription?.unsubscribe();
-    this.userModeSubscription?.unsubscribe();
+    this.subscriptions.forEach(s => s.unsubscribe());
     this.form = this.create_form();
     this.dances = new Set(this.dataManager.getDances().map(dance => dance.name));
     const dances = this.dataManager.getDances();
@@ -63,7 +62,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
         this.otherNames.delete(this.dance.name);
       }
     }
-    this.valueChangesSubscription = this.form.valueChanges.subscribe(value => {
+    this.subscriptions.push(this.form.valueChanges.subscribe(value => {
       if (!this.dance) {
         this.dance = {} as DanceDto;
       }
@@ -73,16 +72,16 @@ export class DancePageComponent implements OnInit, OnDestroy {
       this.dance.rhythm = value.rhythm;
       this.dance.description = value.description;
       this.dance.links = value.links;
-    });
+    }));
     if (this.dance) {
       this.form.patchValue(this.dance);
     }
-    this.userModeSubscription = this.settings.userMode.subscribe(userMode => {
+    this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
         this.form.disable();
         this.readonly = true;
       }
-    });
+    }));
   }
 
   private create_form() {
@@ -139,7 +138,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.valueChangesSubscription?.unsubscribe();
-    this.userModeSubscription?.unsubscribe();
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptionsGlobal.forEach(s => s.unsubscribe());
   }
 }
