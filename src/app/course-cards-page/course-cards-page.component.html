@@ -1,7 +1,7 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
 <ng-container *ngFor="let course of courses">
   <mat-card>
-    <mat-card-title>{{course.course}}</mat-card-title>
+    <mat-card-title>{{course.name}}</mat-card-title>
     <mat-card-subtitle>{{course.school}}</mat-card-subtitle>
     <mat-card-content>
       <div>Dances: {{course.dances}}</div>
@@ -20,7 +20,7 @@
       </mat-expansion-panel>
     </mat-card-content>
     <mat-card-actions align="end">
-      <button mat-button (click)="openDetails(course.course)">Details</button>
+      <button mat-button (click)="openDetails(course.name)">Details</button>
     </mat-card-actions>
   </mat-card>
   <mat-divider></mat-divider>

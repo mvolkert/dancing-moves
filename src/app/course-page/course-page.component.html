@@ -2,7 +2,7 @@
 <form *ngIf="loaded||course" [formGroup]="courseForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Name</mat-label>
-        <input matInput formControlName="course">
+        <input matInput formControlName="name">
         <mat-error
             *ngIf="courseForm.get('course')?.hasError('nameExists') && !courseForm.get('course')?.hasError('required')">
             Name must be unique

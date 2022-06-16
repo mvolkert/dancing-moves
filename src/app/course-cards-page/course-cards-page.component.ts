@@ -32,7 +32,7 @@ export class CourseCardsPageComponent implements OnInit {
     this.allCourses = deepCopy(this.courses);
     this.dataManagerService.searchFilterObservable.subscribe(
       (value: SearchDto) => {
-        this.courses = this.dataManagerService.selectCourses(this.allCourses, value).sort(generateSortFn([c => c.course]));
+        this.courses = this.dataManagerService.selectCourses(this.allCourses, value).sort(generateSortFn([c => c.name]));
       });
   }
 

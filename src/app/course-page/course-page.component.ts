@@ -51,7 +51,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     this.courseForm = this.create_form();
     this.dances = new Set(this.dataManager.getDances().map(dance => dance.name));
     const courses = this.dataManager.getCourses();
-    this.otherNames = new Set(courses.map(course => course.course));
+    this.otherNames = new Set(courses.map(course => course.name));
     this.otherNames.add("new");
 
     if (this.nameParam == "new") {
@@ -61,17 +61,17 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         this.courseForm?.markAllAsTouched();
       }
     } else {
-      this.course = courses.find(course => course.course == this.nameParam);
+      this.course = courses.find(course => course.name == this.nameParam);
       if (this.course) {
         this.course.contents?.forEach(this.addContentForm);
-        this.otherNames.delete(this.course.course);
+        this.otherNames.delete(this.course.name);
       }
     }
     this.valueChangesSubscription = this.courseForm.valueChanges.subscribe(value => {
       if (!this.course) {
         this.course = {} as CourseDto;
       }
-      this.course.course = value.course;
+      this.course.name = value.name;
       this.course.dances = value.dances;
       this.course.school = value.school;
       this.course.description = value.description;
@@ -114,7 +114,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
 
   private create_form() {
     return new FormGroup({
-      course: new FormControl('', [Validators.required, nameExistsValidator(() => this.otherNames)]),
+      name: new FormControl('', [Validators.required, nameExistsValidator(() => this.otherNames)]),
       dances: new FormControl([]),
       school: new FormControl(''),
       description: new FormControl(''),

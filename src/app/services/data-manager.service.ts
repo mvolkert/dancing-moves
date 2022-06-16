@@ -88,7 +88,7 @@ export class DataManagerService {
       if (results.moves.length > 0) {
         this.setDances(results.dances);
         for (const course of results.courses) {
-          course.contents = results.videos.filter(content => course.course == content.courseName);
+          course.contents = results.videos.filter(content => course.name == content.courseName);
         }
         this.setCourses(results.courses);
         for (const move of results.moves) {
@@ -110,8 +110,8 @@ export class DataManagerService {
   }
 
   private setCourses(courses: CourseDto[]) {
-    this.courses = courses.sort(generateSortFn([c => c.course]));
-    this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.course.length > b.course.length ? -1 : 1);
+    this.courses = courses.sort(generateSortFn([c => c.name]));
+    this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
     localStorage.setItem("courses", JSON.stringify(this.courses));
   }
 
@@ -134,7 +134,7 @@ export class DataManagerService {
     this.courses = JSON.parse(localStorage.getItem("courses") ?? "[]");
     this.movesSubject.next(this.moves);
     this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
-    this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.course.length > b.course.length ? -1 : 1);
+    this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
     this.isStarting.next(false);
   }
 
@@ -204,7 +204,7 @@ export class DataManagerService {
   }
 
   getCourseNames(): Set<string> {
-    return new Set(this.courses.map(course => course.course));
+    return new Set(this.courses.map(course => course.name));
   }
 
   getCourses(): Array<CourseDto> {
@@ -232,7 +232,7 @@ export class DataManagerService {
     this.movesLenghtSorted
       .forEach(m => description = description.replaceAll(` ${m.dance}/${m.name}`, ` [${m.dance}/${m.name}](move/${m.id})`))
     this.coursesLenghtSorted
-      .forEach(course => description = description.replaceAll(` ${course.course}`, ` [${course.course}](course/${course.course})`))
+      .forEach(course => description = description.replaceAll(` ${course.name}`, ` [${course.name}](course/${course.name})`))
     return description;
   }
 
@@ -280,10 +280,10 @@ export class DataManagerService {
   selectCourses(courses: CourseDto[], search: SearchDto): CourseDto[] {
     return courses
       .filter(course => !search.dance || course.dances.includes(search.dance))
-      .filter(course => !search.move || this.moves.filter(move => move.name.includes(search.move)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
-      .filter(course => !search.type || this.moves.filter(move => move.type.includes(search.type)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.course))
-      .filter(course => !search.courses || search.courses.length == 0 || search.courses.includes(course.course))
-      .filter(course => !search.notcourse || course.course != search.notcourse)
+      .filter(course => !search.move || this.moves.filter(move => move.name.includes(search.move)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.name))
+      .filter(course => !search.type || this.moves.filter(move => move.type.includes(search.type)).flatMap(move => move.courseDates.map(c => c.course)).includes(course.name))
+      .filter(course => !search.courses || search.courses.length == 0 || search.courses.includes(course.name))
+      .filter(course => !search.notcourse || course.name != search.notcourse)
       .filter(course => !search.script || Boolean(eval(search.script)));
   }
 
@@ -291,8 +291,8 @@ export class DataManagerService {
     return dances
       .filter(dance => !search.dance || dance.name.includes(search.dance))
       .filter(dance => !search.move || this.moves.filter(move => move.name.includes(search.move)).filter(move => move.dance === dance.name).length > 0)
-      .filter(dance => !search.courses || search.courses.length == 0 || this.courses.filter(course => course.dances.includes(dance.name)).filter(c => search.courses.includes(c.course)).length > 0)
-      .filter(dance => !search.notcourse || this.courses.filter(course => course.dances.includes(dance.name)).filter(c => search.courses.includes(c.course)).length === 0)
+      .filter(dance => !search.courses || search.courses.length == 0 || this.courses.filter(course => course.dances.includes(dance.name)).filter(c => search.courses.includes(c.name)).length > 0)
+      .filter(dance => !search.notcourse || this.courses.filter(course => course.dances.includes(dance.name)).filter(c => search.courses.includes(c.name)).length === 0)
       .filter(dance => !search.script || Boolean(eval(search.script)));
   }
 
@@ -347,7 +347,7 @@ export class DataManagerService {
   }
 
   private saveOrCreateCourseContents = (courseDto: CourseDto): Observable<CourseDto> => {
-    return forkJoin(courseDto.contents.filter(c => c.name && c.link).map(c => { c.courseName = courseDto.course; c.groupName = courseDto.groupName; return c; }).map(this.saveOrCreateCourseContent))
+    return forkJoin(courseDto.contents.filter(c => c.name && c.link).map(c => { c.courseName = courseDto.name; c.groupName = courseDto.groupName; return c; }).map(this.saveOrCreateCourseContent))
       .pipe(defaultIfEmpty([]), map(contents => { courseDto.contents = contents; return courseDto; }));
   }
   private saveOrCreateCourseContent = (contentDto: VideoDto): Observable<VideoDto> => {
@@ -369,10 +369,10 @@ export class DataManagerService {
   }
 
   private updateCourseData = (courseDto: CourseDto): CourseDto => {
-    const courses = deepCopy(this.courses).filter(m => m.course != courseDto.course);
+    const courses = deepCopy(this.courses).filter(m => m.name != courseDto.name);
     courses.push(courseDto);
     this.setCourses(courses);
-    this.navService.navigate(["course", courseDto.course]);
+    this.navService.navigate(["course", courseDto.name]);
     return courseDto;
   }
 

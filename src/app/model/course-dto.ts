@@ -1,7 +1,7 @@
 import { VideoDto } from "./video-dto"
 
 export interface CourseDto {
-    course: string,
+    name: string,
     dances: string[],
     school: string,
     description: string,

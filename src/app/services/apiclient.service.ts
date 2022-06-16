@@ -250,7 +250,7 @@ export class ApiclientService {
 
   private createCourseDto = (row: any, i: number): CourseDto => {
     return {
-      course: row[0],
+      name: row[0],
       dances: this.stringToArray(row[1]),
       school: row[2],
       description: row[3],
@@ -329,7 +329,7 @@ export class ApiclientService {
   }
 
   private courseToLine(courseDto: CourseDto): string[] {
-    return [courseDto.course, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end), courseDto.time, courseDto.groupName, courseDto.hash, courseDto.salt]
+    return [courseDto.name, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end), courseDto.time, courseDto.groupName, courseDto.hash, courseDto.salt]
   }
 
   private courseContentToLine(courseDataDto: VideoDto): string[] {
