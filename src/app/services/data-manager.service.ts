@@ -209,8 +209,8 @@ export class DataManagerService {
     return this.dances;
   }
 
-  getCourseNames(): Set<string> {
-    return new Set(this.courses.map(course => course.name));
+  getCourseNames(dance?: string): Set<string> {
+    return new Set(this.courses.filter(c => !dance || c.dances.includes(dance)).map(course => course.name));
   }
 
   getCourses(): Array<CourseDto> {

@@ -58,7 +58,6 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.moveForm = this.create_form();
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
     this.types = this.dataManager.getTypes();
-    this.courseNames = this.dataManager.getCourseNames();
     this.otherMovesNames.add("new");
 
     if (this.idParam == "new") {
@@ -89,6 +88,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       }
       this.move.name = value.name;
       this.move.dance = value.dance;
+      this.courseNames = this.dataManager.getCourseNames(this.move?.dance);
       if (value.dance && value.order === null) {
         this.move.order = this.dataManager.getNextOrder(value.dance);
       } else {
