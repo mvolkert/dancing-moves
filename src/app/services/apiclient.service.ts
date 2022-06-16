@@ -217,6 +217,7 @@ export class ApiclientService {
       date: parseDate(row[0]),
       course: row[1],
       moveId: row[2],
+      description: row[3],
       row: i + 1
     };
   }
@@ -273,10 +274,8 @@ export class ApiclientService {
       type: row[1],
       music: row[2],
       rhythm: row[3],
-      school: row[4],
-      level: row[5],
-      description: row[6],
-      links: row[7],
+      description: row[4],
+      links: row[5],
       row: i + 1
     };
   }
@@ -325,7 +324,7 @@ export class ApiclientService {
   }
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {
-    return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveId]
+    return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveId, courseDateDto.description]
   }
 
   private courseToLine(courseDto: CourseDto): string[] {
@@ -337,6 +336,6 @@ export class ApiclientService {
   }
 
   private danceToLine(danceDto: DanceDto): string[] {
-    return [danceDto.name, danceDto.type, danceDto.music, danceDto.rhythm, danceDto.school, danceDto.level, danceDto.description, danceDto.links]
+    return [danceDto.name, danceDto.type, danceDto.music, danceDto.rhythm, danceDto.description, danceDto.links]
   }
 }
