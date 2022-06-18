@@ -174,7 +174,7 @@ export class ApiclientService {
       return of({} as ResponseUpdate);
     }
     const localPutNummer = this.putNumber++;
-    const doWait = localPutNummer !== 0 && (localPutNummer % 50) === 0;
+    const doWait = localPutNummer !== 0 && (localPutNummer % 250) === 0;
     return this.putPossible.pipe(filter(p => p && localPutNummer == this.putNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
       return this.http.put<ResponseUpdate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(async (r) => {
         if (doWait) {
