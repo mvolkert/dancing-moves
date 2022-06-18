@@ -52,6 +52,7 @@ export class SettingsPageComponent implements OnInit {
 
   handleCredentialResponse = (response: any) => {
     console.log("Encoded JWT ID token: " + response.credential);
+    this.settings.googleJwtString = response.credential;
   }
   // @ts-ignore
   loginGoogle() {

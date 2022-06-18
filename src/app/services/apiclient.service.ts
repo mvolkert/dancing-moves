@@ -189,13 +189,18 @@ export class ApiclientService {
   }
 
   private loginWrite(): Observable<ApiToken> {
-    if (!this.settingsService.secretWrite) {
+    if (!this.settingsService.secretWrite && !this.settingsService.googleJwtString) {
       return of({} as ApiToken);
     }
     if (this.writeToken && this.lastUpdated && (this.nowInSec() - this.lastUpdated) < (this.writeToken.expires_in - 100)) {
       return of(this.writeToken);
     }
-    const token = this.createJwt();
+    let token;
+    if (token = this.settingsService.secretWrite) {
+      token = this.createJwt();
+    } else if (this.settingsService.googleJwtString) {
+      token = this.settingsService.googleJwtString
+    }
     this.lastUpdated = this.nowInSec();
     return this.http.post<ApiToken>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(tap(r => this.writeToken = r));
   }

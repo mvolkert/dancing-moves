@@ -27,6 +27,7 @@ export class SettingsService {
   specialRightPasswords!: Array<string>;
   passwordPerCourse = new Map<string, string>();
   sheetNames = new Set<string>();
+  googleJwtString!: string;
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
