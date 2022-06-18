@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
-import { parseBoolean, parseDate, toGermanDate } from '../util/util';
+import { delay, parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 import * as jwt from 'jwt-simple';
 import { SecretWriteDto } from '../model/secret-write-dto';
@@ -28,6 +28,9 @@ export class ApiclientService {
   private appendPossible = new BehaviorSubject(true);
   private appendNumber = 0;
   private appendNumberDue = 0;
+  private putPossible = new BehaviorSubject(true);
+  private putNumber = 0;
+  private putNumberDue = 0;
 
   constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
@@ -177,8 +180,18 @@ export class ApiclientService {
     if (this.userMode !== UserMode.write) {
       return of({} as ResponseUpdate);
     }
-    return this.loginWrite().pipe(switchMap(r => {
-      return this.http.put<ResponseUpdate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } })
+    const localPutNummer = this.putNumber++;
+    const doWait = localPutNummer !== 0 && (localPutNummer % 50) === 0;
+    return this.putPossible.pipe(filter(p => p && localPutNummer == this.putNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
+      return this.http.put<ResponseUpdate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(async (r) => {
+        if (doWait) {
+          console.log('wait a minute', localPutNummer);
+          this.putPossible.next(false);
+          await delay(60000);
+        }
+        this.putNumberDue++;
+        this.putPossible.next(true);
+      }))
     }));
   }
 
@@ -291,6 +304,7 @@ export class ApiclientService {
       linkEncripted: row[1],
       courseName: row[2],
       groupName: groupName,
+      changed: false,
       row: i + 1
     };
   }
