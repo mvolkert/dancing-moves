@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Params } from '@angular/router';
+import { UserMode } from '../model/user-mode';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -52,7 +53,10 @@ export class SettingsPageComponent implements OnInit {
 
   handleCredentialResponse = (response: any) => {
     console.log("Encoded JWT ID token: " + response.credential);
-    this.settings.googleJwtString = response.credential;
+    if (response.credential) {
+      this.settings.googleJwtString = response.credential;
+      this.settings.userMode.next(UserMode.write)
+    }
   }
   // @ts-ignore
   loginGoogle() {
