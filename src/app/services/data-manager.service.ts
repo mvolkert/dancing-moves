@@ -303,7 +303,7 @@ export class DataManagerService {
       console.log(response);
     }, error: (response: any) => {
       console.log(response);
-      this.snackBar.open(`error:${response?.error?.error?.message}`, "OK");
+      this.snackBar.open(`error:${response?.error?.error?.message ?? response?.error?.error_description}`, "OK");
     }
   })
 
