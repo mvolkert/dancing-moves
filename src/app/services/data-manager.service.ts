@@ -90,6 +90,7 @@ export class DataManagerService {
         for (const course of results.courses) {
           course.contents = results.videos.filter(content => course.name == content.courseName);
         }
+        this.settingsService.initCourses(results.courses);
         this.setCourses(results.courses);
         for (const move of results.moves) {
           move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id);
@@ -138,6 +139,7 @@ export class DataManagerService {
     this.dances = JSON.parse(localStorage.getItem("dances") ?? "[]");
     this.moves = JSON.parse(localStorage.getItem("moves") ?? "[]");
     this.courses = JSON.parse(localStorage.getItem("courses") ?? "[]");
+    this.settingsService.initCourses(this.courses);
     this.movesSubject.next(this.moves);
     this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
     this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
@@ -392,21 +394,14 @@ export class DataManagerService {
 
   async normalize() {
     console.log('normalize');
-    for (const move of this.movesSubject.value) {
-      if (move.courseDates.filter(d => !d?.moveId?.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/)).length > 0) {
-        move.startMove = move.startMove.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
-        move.endMove = move.endMove.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
-        move.containedMoves = move.containedMoves.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
-        move.relatedMoves = move.relatedMoves.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
-        move.relatedMovesOtherDances = move.relatedMovesOtherDances.map(name => this.movesSubject.value.find(m => m.name == name)?.id ?? name);
-        console.log(move);
-        this.saveOrCreate(move).subscribe(console.log);
-        await delay(1000);
-      }
+    for (const course of this.courses) {
+      this.saveOrCreateCourse(course).subscribe(console.log);
+      await delay(10000);
     }
   }
 
   saveOrCreateCourse(courseDto: CourseDto): Observable<CourseDto> {
+    this.settingsService.encrpytCourse(courseDto);
     if (courseDto.row) {
       return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData));
     } else {

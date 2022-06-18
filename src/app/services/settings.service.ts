@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import CryptoES from 'crypto-es';
 import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject, switchMap, tap } from 'rxjs';
+import { CourseDto } from '../model/course-dto';
 import { DataAccessDto } from '../model/data-access-dto';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
@@ -25,6 +26,8 @@ export class SettingsService {
   specialRightsString!: string;
   specialRights!: Array<DataAccessDto>;
   specialRightPasswords!: Array<string>;
+  passwordPerCourse = new Map<string, string>();
+  sheetNames = new Set<string>();
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
@@ -65,6 +68,68 @@ export class SettingsService {
       this.isStarted = true;
     });;
 
+  }
+
+  public initCourses(courses: CourseDto[]) {
+    for (const course of courses) {
+      for (const pwd of this.specialRightPasswords) {
+        const hash = this.hashCourse(course, pwd);
+        if (hash === course.hash) {
+          this.passwordPerCourse.set(course.name, pwd);
+          this.sheetNames.add(course.groupName);
+        }
+      }
+      this.decrpytCourse(course);
+    }
+  }
+
+  public decrpytCourse(course: CourseDto) {
+    if (!this.hasAccessToCourse(course)) {
+      return;
+    }
+    const password = this.passwordPerCourse.get(course.name);
+    for (const content of course.contents) {
+      try {
+        const decrypted = CryptoES.AES.decrypt(content.linkEncripted, password);
+        const decryptedString = decrypted.toString(CryptoES.enc.Utf8);
+        if (decryptedString) {
+          content.link = decryptedString;
+        } else {
+          console.log("no content", content, password, decryptedString);
+        }
+      } catch (e) {
+        console.log('incorrect password', content, password, e);
+        return;
+      }
+    }
+  }
+
+  public encrpytCourse(course: CourseDto) {
+    if (!this.hasAccessToCourse(course)) {
+      return;
+    }
+    const password = this.passwordPerCourse.get(course.name);
+    for (const content of course.contents) {
+      try {
+        const encrypted = CryptoES.AES.encrypt(content.link, password);
+        const encryptedString = encrypted.toString();
+        content.linkEncripted = encryptedString;
+      } catch (e) {
+        console.log('incorrect password', content, password, e);
+        return;
+      }
+    }
+  }
+
+  public hasAccessToCourse(course?: CourseDto): boolean {
+    if (!course?.hash || !course?.salt) {
+      return true;
+    }
+    return this.passwordPerCourse.has(course.name);
+  }
+
+  public hashCourse(course: CourseDto, password: string): string {
+    return CryptoES.SHA256(course?.salt + password).toString();
   }
 
   private getFile(filename: string) {

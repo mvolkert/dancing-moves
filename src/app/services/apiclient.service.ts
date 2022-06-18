@@ -332,7 +332,7 @@ export class ApiclientService {
   }
 
   private courseContentToLine(courseDataDto: VideoDto): string[] {
-    return [courseDataDto.name, courseDataDto.link, courseDataDto.courseName]
+    return [courseDataDto.name, courseDataDto.linkEncripted, courseDataDto.courseName]
   }
 
   private danceToLine(danceDto: DanceDto): string[] {

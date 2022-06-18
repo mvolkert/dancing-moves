@@ -83,7 +83,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.course.contents = value.contents.map((c: VideoDto) => { c.link = convertToEmbed(c.link); return c });
       if (value.password) {
         this.course.salt = uuidv4();
-        this.course.hash = this.hash(value.password);
+        this.course.hash = this.settings.hashCourse(this.course, value.password);
       }
       this.schools = new Set(courses.map(course => course.school));
       this.levels = new Set(courses.map(course => course.level));
@@ -96,19 +96,12 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         this.courseForm.disable();
         this.readonly = true;
       } else if (userMode === UserMode.write) {
-        if (this.course?.hash && this.course?.salt) {
-          const password = this.settings.specialRightPasswords.find(p => this.course?.hash == this.hash(p));
-          if (!password) {
-            this.courseForm.disable();
-            this.readonly = true;
-          }
+        if (!this.settings.hasAccessToCourse(this.course)) {
+          this.courseForm.disable();
+          this.readonly = true;
         }
       }
     }));
-  }
-
-  private hash(password: string): string {
-    return CryptoES.SHA256(this.course?.salt + password).toString();
   }
 
   private create_form() {
