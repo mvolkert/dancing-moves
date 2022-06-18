@@ -14,6 +14,7 @@ export class SettingsPageComponent implements OnInit {
     secretRead: new FormControl(''),
     secretWrite: new FormControl(''),
     specialRights: new FormControl(''),
+    sheetId: new FormControl('')
   });
   url!: string;
   constructor(private settings: SettingsService, private navService: NavService) {
@@ -31,11 +32,13 @@ export class SettingsPageComponent implements OnInit {
       localStorage.setItem('secret', value.secretRead);
       localStorage.setItem('secret-write', value.secretWrite);
       localStorage.setItem('special-rights', value.specialRights);
+      localStorage.setItem('sheetId', value.sheetId);
     });
     this.settingsForm.patchValue({
       secretRead: this.settings.secretReadString,
       secretWrite: this.settings.secretWriteString,
-      specialRights: this.settings.specialRightsString
+      specialRights: this.settings.specialRightsString,
+      sheetId: this.settings.sheetId
     });
   }
 
@@ -63,6 +66,7 @@ export class SettingsPageComponent implements OnInit {
     // @ts-ignore
     google.accounts.id.initialize({
       client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
+      scope: "https://www.googleapis.com/auth/spreadsheets",
       callback: this.handleCredentialResponse
     });
     // @ts-ignore

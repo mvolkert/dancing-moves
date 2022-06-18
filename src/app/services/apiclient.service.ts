@@ -41,35 +41,35 @@ export class ApiclientService {
       return of(apiTestData).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));;
     }
     return this.spreadsheetsGet(
-      this.settingsService.secret?.movesSheetId as string,
+      this.settingsService.sheetId as string,
       'Moves!A1:S1000'
     ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
   }
 
   getCourseDates(): Observable<Array<CourseDateDto>> {
     return this.spreadsheetsGet(
-      this.settingsService.secret?.movesSheetId as string,
+      this.settingsService.sheetId as string,
       'CourseDates!A1:C1000'
     ).pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
   }
 
   getCourses(): Observable<Array<CourseDto>> {
     return this.spreadsheetsGet(
-      this.settingsService.secret?.movesSheetId as string,
+      this.settingsService.sheetId as string,
       'Courses!A1:L1000'
     ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 
   getDances(): Observable<Array<DanceDto>> {
     return this.spreadsheetsGet(
-      this.settingsService.secret?.movesSheetId as string,
+      this.settingsService.sheetId as string,
       'Dances!A1:H100'
     ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto)));
   }
 
   getVideos(): Observable<Array<VideoDto>> {
     return this.spreadsheetsGet(
-      this.settingsService.secret?.movesSheetId as string,
+      this.settingsService.sheetId as string,
       `CourseContents!A1:C1000`
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
   }
@@ -90,63 +90,63 @@ export class ApiclientService {
   }
 
   appendData(moveDto: MoveDto): Observable<ResponseCreate> {
-    const sheetRange = 'Moves!A400:U400';
+    const sheetRange = 'Moves!A2:U2';
     const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
 
   patchData(moveDto: MoveDto): Observable<ResponseUpdate> {
     const sheetRange = `Moves!A${moveDto.row}:U${moveDto.row}`;
     const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
   }
 
   appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
-    const sheetRange = 'Courses!A26:J26';
+    const sheetRange = 'Courses!A2:J2';
     const body = { values: [this.courseToLine(courseDto)] }
-    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
 
   patchDataCourse(courseDto: CourseDto): Observable<ResponseUpdate> {
     const sheetRange = `Courses!A${courseDto.row}:L${courseDto.row}`;
     const body = { values: [this.courseToLine(courseDto)] }
-    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
   }
 
   appendCourseDate(courseDateDto: CourseDateDto): Observable<ResponseCreate> {
-    const sheetRange = 'CourseDates!A400:C400';
+    const sheetRange = 'CourseDates!A2:C2';
     const body = { values: [this.courseDateToLine(courseDateDto)] }
-    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
 
   patchCourseDate(courseDateDto: CourseDateDto): Observable<ResponseUpdate> {
     const sheetRange = `CourseDates!A${courseDateDto.row}:C${courseDateDto.row}`;
     const body = { values: [this.courseDateToLine(courseDateDto)] }
-    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
   }
 
   appendCourseContent(content: VideoDto): Observable<ResponseCreate> {
-    const sheetRange = `CourseContents!A1:C1`;
+    const sheetRange = `CourseContents!A2:C2`;
     const body = { values: [this.courseContentToLine(content)] }
-    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
 
   patchCourseContent(content: VideoDto): Observable<ResponseUpdate> {
     const sheetRange = `CourseContents!A${content.row}:C${content.row}`;
     const body = { values: [this.courseContentToLine(content)] }
-    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
   }
 
   appendDance(danceDto: DanceDto): Observable<ResponseCreate> {
-    const sheetRange = 'Dances!A20:H20';
+    const sheetRange = 'Dances!A2:H2';
     const body = { values: [this.danceToLine(danceDto)] }
-    return this.spreadsheetsPost(this.settingsService.secret?.movesSheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
 
   patchDance(danceDto: DanceDto): Observable<ResponseUpdate> {
     const sheetRange = `Dances!A${danceDto.row}:J${danceDto.row}`;
     const body = { values: [this.danceToLine(danceDto)] }
-    return this.spreadsheetsPut(this.settingsService.secret?.movesSheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
   }
 
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
@@ -201,6 +201,7 @@ export class ApiclientService {
     } else if (this.settingsService.googleJwtString) {
       token = this.settingsService.googleJwtString
     }
+    console.log(token);
     this.lastUpdated = this.nowInSec();
     return this.http.post<ApiToken>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(tap(r => this.writeToken = r));
   }

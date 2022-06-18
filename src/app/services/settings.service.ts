@@ -28,6 +28,7 @@ export class SettingsService {
   passwordPerCourse = new Map<string, string>();
   sheetNames = new Set<string>();
   googleJwtString!: string;
+  sheetId!: string;
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
@@ -46,10 +47,14 @@ export class SettingsService {
   initSettings(params: Params) {
     this.secretReadString = this.getSetting(params, 'secret');
     this.secretWriteString = this.getSetting(params, 'secret-write');
+    this.sheetId = this.getSetting(params, 'sheetId');
 
     forkJoin({ read: this.getFile('secret-read.txt'), write: this.getFile('secret-write.txt') }).subscribe(data => {
       this.secret = this.decrypt(data.read, this.secretReadString);
       this.secretWrite = this.decrypt(data.write, this.secretWriteString);
+      if (this.secret && !this.sheetId) {
+        this.sheetId = this.secret.movesSheetId;
+      }
       if (this.secret && this.secretWrite) {
         this.userMode.next(UserMode.write)
       } else if (this.secret) {
