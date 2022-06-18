@@ -84,7 +84,7 @@ export class DataManagerService {
       return;
     }
     this.isStarting.next(true);
-    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
+    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.apiclientService.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
       if (results.moves.length > 0) {
         this.setDances(results.dances);
         for (const course of results.courses) {
@@ -153,12 +153,6 @@ export class DataManagerService {
       return '!' + videoname.split('!')[1];
     }
     return '';
-  }
-
-
-  private getVideos(): Observable<VideoDto[]> {
-    const observables = this.settingsService.specialRights.map(s => s.sheetName).map(s => this.apiclientService.getVideos(s));
-    return forkJoin(observables).pipe(defaultIfEmpty([]), map(x => x.flatMap(y => y).sort(generateSortFn([c => c.courseName, c => c.name]))));
   }
 
   async loading() {
@@ -355,14 +349,14 @@ export class DataManagerService {
   }
 
   private saveOrCreateCourseContents = (courseDto: CourseDto): Observable<CourseDto> => {
-    return forkJoin(courseDto.contents.filter(c => c.name && c.link).map(c => { c.courseName = courseDto.name; c.groupName = courseDto.groupName; return c; }).map(this.saveOrCreateCourseContent))
+    return forkJoin(courseDto.contents.filter(c => c.name && c.link).map(c => { c.courseName = courseDto.name; return c; }).map(this.saveOrCreateCourseContent))
       .pipe(defaultIfEmpty([]), map(contents => { courseDto.contents = contents; return courseDto; }));
   }
   private saveOrCreateCourseContent = (contentDto: VideoDto): Observable<VideoDto> => {
     if (contentDto.row) {
-      return this.apiclientService.patchCourseContent(contentDto.groupName, contentDto).pipe(map(r => contentDto), this.tapRequest);
+      return this.apiclientService.patchCourseContent(contentDto).pipe(map(r => contentDto), this.tapRequest);
     } else {
-      return this.apiclientService.appendCourseContent(contentDto.groupName, contentDto).pipe(map(r => {
+      return this.apiclientService.appendCourseContent(contentDto).pipe(map(r => {
         contentDto.row = getRow(r.updates.updatedRange);
         return contentDto;
       }), this.tapRequest)
@@ -421,13 +415,5 @@ export class DataManagerService {
         return danceDto;
       }), this.tapRequest, map(this.updateDanceData))
     }
-  }
-
-
-  getDataAccess(): Array<DataAccessDto> {
-    const dataAccess = JSON.parse(localStorage.getItem("dataAccess") ?? "[]");
-    const date = new Date(localStorage.getItem("date") ?? "2022-03-04");
-    this.apiclientService.getDataAccess().subscribe(d => localStorage.setItem("dataAccess", JSON.stringify(d)));
-    return dataAccess;
   }
 }

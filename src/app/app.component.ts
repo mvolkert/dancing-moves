@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settingsService.fetchSettings(() => this.dataManagerService.getDataAccess());
+    this.settingsService.fetchSettings();
     this.dataManagerService.start();
   }
 }

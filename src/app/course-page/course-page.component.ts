@@ -80,7 +80,10 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.course.end = value.end;
       this.course.time = value.time;
       this.course.groupName = value.groupName;
-      this.course.contents = value.contents.map((c: VideoDto) => { c.link = convertToEmbed(c.link); return c });
+      this.course.contents = value.contents.map((c: VideoDto) => {
+        c.link = convertToEmbed(c.link);
+        return c
+      });
       if (value.password) {
         this.course.salt = uuidv4();
         this.course.hash = this.settings.hashCourse(this.course, value.password);

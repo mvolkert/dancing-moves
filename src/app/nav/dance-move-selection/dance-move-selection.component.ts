@@ -76,7 +76,6 @@ export class DanceMoveSelectionComponent implements OnInit {
     this.searchForm!.valueChanges.subscribe((value: SearchDto) => {
       this.dataManagerService.searchFilterObservable.next(value);
     });
-    this.isAdmin = this.settingsService.hasSpecialRight(SpecialRight.admin);
   }
 
   private filterGroup(search: SearchDto, moveGetter = (search: SearchDto) => search.move): MoveGroupDto[] {

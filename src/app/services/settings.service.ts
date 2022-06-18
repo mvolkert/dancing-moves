@@ -24,16 +24,15 @@ export class SettingsService {
   isStarting = new Subject<boolean>();
   userMode = new BehaviorSubject<UserMode>(UserMode.test);
   specialRightsString!: string;
-  specialRights!: Array<DataAccessDto>;
   specialRightPasswords!: Array<string>;
   passwordPerCourse = new Map<string, string>();
   sheetNames = new Set<string>();
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
-  fetchSettings(getDataAccess: () => DataAccessDto[]) {
+  fetchSettings() {
     this.route.queryParams.subscribe(params => {
-      this.initSettings(params, getDataAccess);
+      this.initSettings(params);
     })
   }
 
@@ -43,7 +42,7 @@ export class SettingsService {
     }
   }
 
-  initSettings(params: Params, getDataAccess: () => DataAccessDto[]) {
+  initSettings(params: Params) {
     this.secretReadString = this.getSetting(params, 'secret');
     this.secretWriteString = this.getSetting(params, 'secret-write');
 
@@ -59,11 +58,6 @@ export class SettingsService {
       }
       this.specialRightsString = this.getArraySetting(params, 'special-rights');
       this.specialRightPasswords = this.specialRightsString?.split(",")
-      const specialRightsArray = this.specialRightPasswords.map(this.hash);
-      console.log(specialRightsArray);
-      this.specialRights = getDataAccess().filter(s => specialRightsArray.includes(s.hash));
-      const queryJson = { 'secret': this.secretReadString, 'secret-write': this.secretWriteString, 'special-rights': this.specialRightsString };
-      //this.navService.navigate([this.navService.getPath()], queryJson);
       this.isStarting.next(false);
       this.isStarted = true;
     });;
@@ -85,6 +79,7 @@ export class SettingsService {
 
   public decrpytCourse(course: CourseDto) {
     if (!this.hasAccessToCourse(course)) {
+      course.contents = [];
       return;
     }
     const password = this.passwordPerCourse.get(course.name);
@@ -95,6 +90,7 @@ export class SettingsService {
         if (decryptedString) {
           content.link = decryptedString;
         } else {
+          content.link = content.linkEncripted;
           console.log("no content", content, password, decryptedString);
         }
       } catch (e) {
@@ -159,10 +155,6 @@ export class SettingsService {
   hash = (key: string) => {
     const hash = CryptoES.SHA256(key).toString();
     return hash;
-  }
-
-  hasSpecialRight = (key: string) => {
-    return this.specialRights.map(a => a.name).includes(key);
   }
 
   private getSetting(params: Params, key: string): string {

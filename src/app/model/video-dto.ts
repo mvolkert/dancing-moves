@@ -6,7 +6,6 @@ export interface VideoDto {
     linkEncripted: string,
     courseName: string,
     safeUrl?: SafeResourceUrl,
-    groupName: string,
     changed: boolean,
     row: number
 }
