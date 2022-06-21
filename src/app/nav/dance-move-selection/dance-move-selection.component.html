@@ -72,7 +72,7 @@
                 </button>
             </mat-chip>
             <input placeholder="add sort key" #sortInput [formControl]="sortControl" [matAutocomplete]="autoSortKey"
-                [matChipInputFor]="chipList" (matChipInputTokenEnd)="add($event)">
+                [matChipInputFor]="chipList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="add($event)">
         </mat-chip-list>
         <mat-autocomplete #autoSortKey="matAutocomplete" (optionSelected)="selected($event)">
             <mat-option *ngFor="let sortKey of sortKeysAll" [value]="sortKey">
