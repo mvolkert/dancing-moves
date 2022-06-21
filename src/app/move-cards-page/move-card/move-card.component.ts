@@ -19,7 +19,6 @@ export class MoveCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.nameUri = this.moveDto.name.replace(/[^\w]/g, '');
-    this.description = this.dataManager.enrichDescription(this.moveDto);
   }
 
   openDetails(): Promise<boolean> {
@@ -29,5 +28,11 @@ export class MoveCardComponent implements OnInit {
 
   isDateValid(courseDate: CourseDateDto) {
     return courseDate?.date && courseDate?.date?.toString() !== 'Invalid Date';
+  }
+
+  initDescription() {
+    if (!this.description) {
+      this.description = this.dataManager.enrichDescription(this.moveDto);
+    }
   }
 }

@@ -6,13 +6,13 @@
       <span *ngIf="isDateValid(courseDate)">{{courseDate.date | date: 'dd.MM.yyyy'}}&nbsp;</span>
       <span>{{courseDate.course}}</span>
     </div>
-    <mat-expansion-panel hideToggle *ngIf="moveDto.description">
+    <mat-expansion-panel hideToggle *ngIf="moveDto.description" (opened)="initDescription()">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Description
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div class="description" markdown [data]="description">
+      <div *ngIf="description" class="description" markdown [data]="description">
       </div>
     </mat-expansion-panel>
   </mat-card-content>
