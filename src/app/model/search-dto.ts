@@ -6,5 +6,6 @@ export interface SearchDto {
     type: string,
     related: string,
     todo: string,
-    script: string
+    script: string,
+    sort: Array<string>,
 }

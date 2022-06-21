@@ -40,11 +40,7 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit {
     this.dataManagerService.searchFilterObservable.subscribe(
       (value: SearchDto) => {
         this.moves = this.dataManagerService.selectMoves(this.allMoves, this.dataManagerService.getDanceNames(), value)
-        if (value.courses && value.courses.length > 0) {
-          this.moves.sort(generateSortFn([m => m.dance, m => m.courseDates.filter(c => value.courses.includes(c.course)).map(c => c.date).pop(), m => m.order, m => m.name]));
-        } else {
-          this.moves.sort(generateSortFn([m => m.dance, m => m.order, m => m.name]));
-        }
+        this.moves.sort(generateSortFn(value.sort.map(key => this.sortKeyToFunction(key, value))));
       });
   }
   scrollTo(id?: string): void {
@@ -54,5 +50,15 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit {
       const element = elementList[0] as HTMLElement;
       element?.scrollIntoView({ block: "start", behavior: 'auto' });
     }
+  }
+
+  sortKeyToFunction(key: string, searchDto: SearchDto): (m: MoveDto) => any {
+    if (key === "courseDate") {
+      if (!searchDto.courses || searchDto.courses.length === 0) {
+        return m => m.courseDates.map(c => c.date).pop();
+      }
+      return m => m.courseDates.filter(c => searchDto.courses.includes(c.course)).map(c => c.date).pop();
+    }
+    return m => eval("m." + key);
   }
 }

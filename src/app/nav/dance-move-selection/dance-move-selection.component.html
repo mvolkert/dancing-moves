@@ -62,4 +62,22 @@
             <mat-option *ngFor="let snippet of codeSnippets | async" [value]="snippet">{{snippet}}</mat-option>
         </mat-autocomplete>
     </mat-form-field>
+    <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Sorting</mat-label>
+        <mat-chip-list #chipList aria-label="sort selection">
+            <mat-chip *ngFor="let sortKey of searchForm.value.sort" (removed)="remove(sortKey)">
+                {{sortKey}}
+                <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip>
+            <input placeholder="add sort key" #sortInput [formControl]="sortControl" [matAutocomplete]="autoSortKey"
+                [matChipInputFor]="chipList" (matChipInputTokenEnd)="add($event)">
+        </mat-chip-list>
+        <mat-autocomplete #autoSortKey="matAutocomplete" (optionSelected)="selected($event)">
+            <mat-option *ngFor="let sortKey of sortKeysAll" [value]="sortKey">
+                {{sortKey}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
 </form>

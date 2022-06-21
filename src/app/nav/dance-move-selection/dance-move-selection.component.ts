@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
@@ -24,6 +26,9 @@ export class DanceMoveSelectionComponent implements OnInit {
   isAdmin = false;
   codeSnippets!: Observable<Array<string>>;
   initalCodeSnippets = new Array<string>("move.name", "move.dance", "move.order", "move.count", "move.nameVerified", "move.type", "move.startMove", "move.endMove", "move.relatedMoves", "move.relatedMovesOtherDances", "move.videoname", "move.description", "move.toDo", "move.links", "move.row", "move.courseDates", "move.videos", "move.courseDates.filter(c=>c.date).length==0", "move.courseDates.filter(c=>c.date&&c.date>'2021-01-01').length>0", "course.school", "course.teacher", "course.level", "course.description", "course.groupName", "course.start", "course.end");
+  sortKeysAll = new Array<string>("dance", "courseDate", "order", "name");
+
+  @ViewChild('sortInput') sortInput!: ElementRef<HTMLInputElement>;
 
   movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
   movesGroupOptions2: Observable<MoveGroupDto[]> | undefined;
@@ -37,8 +42,10 @@ export class DanceMoveSelectionComponent implements OnInit {
     related: new FormControl(""),
     todo: new FormControl(""),
     video: new FormControl(""),
-    script: new FormControl("")
+    script: new FormControl(""),
+    sort: new FormControl([])
   });
+  sortControl = new FormControl("");
 
   constructor(private dataManagerService: DataManagerService, private navService: NavService, private settingsService: SettingsService) {
   }
@@ -101,5 +108,35 @@ export class DanceMoveSelectionComponent implements OnInit {
       this.navService.navigate(["move", "Konami"]);
     }
     this.navService.openWebsiteIfEasterEggFound(value.move);
+  }
+
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      const sortKeys = this.searchForm.get("sort")?.value;
+      sortKeys.push(value);
+      this.searchForm.get("sort")?.setValue(sortKeys);
+    }
+    event.chipInput!.clear();
+    this.sortControl.setValue(null);
+  }
+
+  remove(fruit: string): void {
+    const sortKeys = this.searchForm.get("sort")?.value;
+    const index = sortKeys.indexOf(fruit);
+
+    if (index >= 0) {
+      sortKeys.splice(index, 1);
+      this.searchForm.get("sort")?.setValue(sortKeys);
+    }
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const sortKeys = this.searchForm.get("sort")?.value;
+    sortKeys.push(event.option.viewValue);
+    this.searchForm.get("sort")?.setValue(sortKeys);
+    this.sortInput.nativeElement.value = '';
+    this.sortControl.setValue(null);
   }
 }

@@ -41,26 +41,20 @@ export class DataManagerService {
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
-      this.searchFilterObservable.next({ dance: params['dance'], move: params['move'], courses: this.readArrayParam(params, 'courses'), notcourse: params['notcourse'], type: params['type'], related: params['related'], todo: params['todo'], script: params['script'] });
-      let relationTypeParams = params["relationTypes"];
-      if (!relationTypeParams) {
-        relationTypeParams = [RelationType.start, RelationType.end]
-      } else if (typeof relationTypeParams === 'string') {
-        relationTypeParams = [relationTypeParams];
-      }
+      this.searchFilterObservable.next({ dance: params['dance'], move: params['move'], courses: this.readArrayParam(params, 'courses'), notcourse: params['notcourse'], type: params['type'], related: params['related'], todo: params['todo'], script: params['script'], sort: this.readArrayParam(params, 'sort', ["dance", "courseDate", "order", "name"]) });
       let displayTypeParam = params["displayType"]?.trim();
       if (!displayTypeParam) {
         displayTypeParam = RelationDisplayType.cytoscape
       }
-      this.relationsSelectionObservable.next({ relationTypes: relationTypeParams, displayType: displayTypeParam });
+      this.relationsSelectionObservable.next({ relationTypes: this.readArrayParam(params, "relationTypes", [RelationType.start, RelationType.end]), displayType: displayTypeParam });
     })
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
   }
 
 
-  private readArrayParam(params: any, key: string): Array<string> {
+  private readArrayParam(params: any, key: string, defaultValue: string[] = []): Array<string> {
     if (!params[key]) {
-      return []
+      return defaultValue
     } else if (typeof params[key] === 'string') {
       return [params[key]];
     }

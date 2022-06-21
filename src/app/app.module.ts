@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatChipsModule } from '@angular/material/chips';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MarkdownModule } from 'ngx-markdown';
@@ -76,6 +77,7 @@ import { DancePageComponent } from './dance-page/dance-page.component';
     MatProgressBarModule,
     MatSnackBarModule,
     MatExpansionModule,
+    MatChipsModule,
     MarkdownModule.forRoot()
   ],
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' }],
