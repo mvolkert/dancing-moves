@@ -82,7 +82,7 @@ export class DataManagerService {
       if (results.moves.length > 0) {
         this.setDances(results.dances);
         for (const course of results.courses) {
-          course.contents = results.videos.filter(content => course.name == content.courseName);
+          course.contents = results.videos.filter(content => course.name == content.courseName).sort(generateSortFn([c => c.name]));
         }
         this.settingsService.initCourses(results.courses);
         this.setCourses(results.courses);
