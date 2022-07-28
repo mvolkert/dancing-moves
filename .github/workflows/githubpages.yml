@@ -42,7 +42,7 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{ secrets.TOKEN_GITHUB_ACTION }}
       - name: Build
-        run: npm run build -- --prod
+        run: npm run build
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
