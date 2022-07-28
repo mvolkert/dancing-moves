@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
-    "build:github": "ng build --prod --base-href https://mvolkert.github.io",
+    "build": "ng build --configuration production",
+    "build:github": "ng build --configuration production --base-href https://mvolkert.github.io",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "deploy": "ng deploy --base-href=/dancing-moves/ --no-silent"
