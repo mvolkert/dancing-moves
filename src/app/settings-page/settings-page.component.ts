@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Params } from '@angular/router';
 import { UserMode } from '../model/user-mode';
 import { NavService } from '../services/nav.service';
@@ -10,11 +10,11 @@ import { SettingsService } from '../services/settings.service';
   styleUrls: ['./settings-page.component.css']
 })
 export class SettingsPageComponent implements OnInit {
-  settingsForm = new FormGroup({
-    secretRead: new FormControl(''),
-    secretWrite: new FormControl(''),
-    specialRights: new FormControl(''),
-    sheetId: new FormControl('')
+  settingsForm = new UntypedFormGroup({
+    secretRead: new UntypedFormControl(''),
+    secretWrite: new UntypedFormControl(''),
+    specialRights: new UntypedFormControl(''),
+    sheetId: new UntypedFormControl('')
   });
   url!: string;
   constructor(private settings: SettingsService, private navService: NavService) {

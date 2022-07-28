@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
@@ -32,20 +32,20 @@ export class DanceMoveSelectionComponent implements OnInit {
 
   movesGroupOptions: Observable<MoveGroupDto[]> | undefined;
   movesGroupOptions2: Observable<MoveGroupDto[]> | undefined;
-  moveSearch = new FormControl("");
-  searchForm = new FormGroup({
-    dance: new FormControl(""),
-    move: new FormControl(""),
-    courses: new FormControl([]),
-    notcourse: new FormControl(""),
-    type: new FormControl(""),
-    related: new FormControl(""),
-    todo: new FormControl(""),
-    video: new FormControl(""),
-    script: new FormControl(""),
-    sort: new FormControl([])
+  moveSearch = new UntypedFormControl("");
+  searchForm = new UntypedFormGroup({
+    dance: new UntypedFormControl(""),
+    move: new UntypedFormControl(""),
+    courses: new UntypedFormControl([]),
+    notcourse: new UntypedFormControl(""),
+    type: new UntypedFormControl(""),
+    related: new UntypedFormControl(""),
+    todo: new UntypedFormControl(""),
+    video: new UntypedFormControl(""),
+    script: new UntypedFormControl(""),
+    sort: new UntypedFormControl([])
   });
-  sortControl = new FormControl("");
+  sortControl = new UntypedFormControl("");
 
   constructor(private dataManagerService: DataManagerService, private navService: NavService, private settingsService: SettingsService) {
   }

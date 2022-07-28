@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -122,26 +122,26 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
   }
 
-  private create_form(): FormGroup {
-    return new FormGroup({
-      name: new FormControl('', [Validators.required, nameExistsValidator(() => this.otherMovesNames)]),
-      dance: new FormControl('', Validators.required),
-      date: new FormControl(null),
-      order: new FormControl(),
-      count: new FormControl(''),
-      nameVerified: new FormControl(''),
-      type: new FormControl('Figur', Validators.required),
-      startMove: new FormControl([]),
-      endMove: new FormControl([]),
-      containedMoves: new FormControl([]),
-      relatedMoves: new FormControl([]),
-      relatedMovesOtherDances: new FormControl([]),
-      videoname: new FormControl(''),
-      description: new FormControl(''),
-      toDo: new FormControl(''),
-      links: new FormControl(''),
-      row: new FormControl(''),
-      courseDates: new FormArray([])
+  private create_form(): UntypedFormGroup {
+    return new UntypedFormGroup({
+      name: new UntypedFormControl('', [Validators.required, nameExistsValidator(() => this.otherMovesNames)]),
+      dance: new UntypedFormControl('', Validators.required),
+      date: new UntypedFormControl(null),
+      order: new UntypedFormControl(),
+      count: new UntypedFormControl(''),
+      nameVerified: new UntypedFormControl(''),
+      type: new UntypedFormControl('Figur', Validators.required),
+      startMove: new UntypedFormControl([]),
+      endMove: new UntypedFormControl([]),
+      containedMoves: new UntypedFormControl([]),
+      relatedMoves: new UntypedFormControl([]),
+      relatedMovesOtherDances: new UntypedFormControl([]),
+      videoname: new UntypedFormControl(''),
+      description: new UntypedFormControl(''),
+      toDo: new UntypedFormControl(''),
+      links: new UntypedFormControl(''),
+      row: new UntypedFormControl(''),
+      courseDates: new UntypedFormArray([])
     });
   }
 
@@ -158,20 +158,20 @@ export class MovePageComponent implements OnInit, OnDestroy {
   }
 
   private createCourseDateForm = () => {
-    return new FormGroup({
-      course: new FormControl(''),
-      date: new FormControl(null),
-      row: new FormControl('')
+    return new UntypedFormGroup({
+      course: new UntypedFormControl(''),
+      date: new UntypedFormControl(null),
+      row: new UntypedFormControl('')
     });
   }
 
   addCourseDateForm = () => {
-    const formArray = this.moveForm.get("courseDates") as FormArray;
+    const formArray = this.moveForm.get("courseDates") as UntypedFormArray;
     formArray.push(this.createCourseDateForm());
   }
 
   removeOrClearCourseDate = (i: number) => {
-    const formArray = this.moveForm.get('courseDates') as FormArray
+    const formArray = this.moveForm.get('courseDates') as UntypedFormArray
     if (formArray.length > 1) {
       formArray.removeAt(i)
     } else {
@@ -180,7 +180,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
   }
 
   getCourseDateControls() {
-    return (this.moveForm.get('courseDates') as FormArray).controls;
+    return (this.moveForm.get('courseDates') as UntypedFormArray).controls;
   }
 
   onSave() {

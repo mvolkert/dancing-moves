@@ -119,5 +119,7 @@
       }
     }
   },
-  "defaultProject": "dancing-moves"
+  "cli": {
+    "analytics": false
+  }
 }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import CryptoES from 'crypto-es';
 import { Subscription } from 'rxjs';
@@ -108,20 +108,20 @@ export class CoursePageComponent implements OnInit, OnDestroy {
   }
 
   private create_form() {
-    return new FormGroup({
-      name: new FormControl('', [Validators.required, nameExistsValidator(() => this.otherNames)]),
-      dances: new FormControl([]),
-      school: new FormControl(''),
-      description: new FormControl(''),
-      teacher: new FormControl(''),
-      level: new FormControl(''),
-      start: new FormControl(null),
-      end: new FormControl(null),
-      time: new FormControl(''),
-      groupName: new FormControl(''),
-      password: new FormControl(''),
-      contents: new FormArray([]),
-      row: new FormControl(''),
+    return new UntypedFormGroup({
+      name: new UntypedFormControl('', [Validators.required, nameExistsValidator(() => this.otherNames)]),
+      dances: new UntypedFormControl([]),
+      school: new UntypedFormControl(''),
+      description: new UntypedFormControl(''),
+      teacher: new UntypedFormControl(''),
+      level: new UntypedFormControl(''),
+      start: new UntypedFormControl(null),
+      end: new UntypedFormControl(null),
+      time: new UntypedFormControl(''),
+      groupName: new UntypedFormControl(''),
+      password: new UntypedFormControl(''),
+      contents: new UntypedFormArray([]),
+      row: new UntypedFormControl(''),
     });
   }
   private readParams(params: ParamMap) {
@@ -137,20 +137,20 @@ export class CoursePageComponent implements OnInit, OnDestroy {
   }
 
   private createContentForm = () => {
-    return new FormGroup({
-      name: new FormControl(''),
-      link: new FormControl(null),
-      row: new FormControl('')
+    return new UntypedFormGroup({
+      name: new UntypedFormControl(''),
+      link: new UntypedFormControl(null),
+      row: new UntypedFormControl('')
     });
   }
 
   addContentForm = () => {
-    const formArray = this.courseForm.get("contents") as FormArray;
+    const formArray = this.courseForm.get("contents") as UntypedFormArray;
     formArray.push(this.createContentForm());
   }
 
   getContentControls() {
-    return (this.courseForm.get('contents') as FormArray).controls;
+    return (this.courseForm.get('contents') as UntypedFormArray).controls;
   }
 
   onSubmit() {

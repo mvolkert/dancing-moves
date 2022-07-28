@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DanceDto } from '../model/dance-dto';
@@ -85,14 +85,14 @@ export class DancePageComponent implements OnInit, OnDestroy {
   }
 
   private create_form() {
-    return new FormGroup({
-      name: new FormControl('', [Validators.required, nameExistsValidator(() => this.otherNames)]),
-      type: new FormControl([]),
-      music: new FormControl(''),
-      rhythm: new FormControl(''),
-      description: new FormControl(null),
-      links: new FormControl(null),
-      row: new FormControl(''),
+    return new UntypedFormGroup({
+      name: new UntypedFormControl('', [Validators.required, nameExistsValidator(() => this.otherNames)]),
+      type: new UntypedFormControl([]),
+      music: new UntypedFormControl(''),
+      rhythm: new UntypedFormControl(''),
+      description: new UntypedFormControl(null),
+      links: new UntypedFormControl(null),
+      row: new UntypedFormControl(''),
     });
   }
   private readParams(params: ParamMap) {
@@ -108,20 +108,20 @@ export class DancePageComponent implements OnInit, OnDestroy {
   }
 
   private createContentForm = () => {
-    return new FormGroup({
-      name: new FormControl(''),
-      link: new FormControl(null),
-      row: new FormControl('')
+    return new UntypedFormGroup({
+      name: new UntypedFormControl(''),
+      link: new UntypedFormControl(null),
+      row: new UntypedFormControl('')
     });
   }
 
   addContentForm = () => {
-    const formArray = this.form.get("contents") as FormArray;
+    const formArray = this.form.get("contents") as UntypedFormArray;
     formArray.push(this.createContentForm());
   }
 
   getContentControls() {
-    return (this.form.get('contents') as FormArray).controls;
+    return (this.form.get('contents') as UntypedFormArray).controls;
   }
 
   onSubmit() {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { RelationDisplayType } from 'src/app/model/relation-display-type-enum';
 import { RelationType } from 'src/app/model/relation-type-enum';
 import { DataManagerService } from 'src/app/services/data-manager.service';
@@ -14,9 +14,9 @@ export class RelationsSelectionComponent implements OnInit {
   relationTypes: Array<string> = [RelationType.start, RelationType.end, RelationType.contained, RelationType.related, RelationType.otherDance];
   displayTypes: Array<string> = [RelationDisplayType.cytoscape]
 
-  relationsForm = new FormGroup({
-    relationTypes: new FormControl([]),
-    displayType: new FormControl("")
+  relationsForm = new UntypedFormGroup({
+    relationTypes: new UntypedFormControl([]),
+    displayType: new UntypedFormControl("")
   });
   constructor(private dataManagerService: DataManagerService, private navService: NavService) { }
 
